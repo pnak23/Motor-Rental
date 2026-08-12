@@ -1,0 +1,458 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  STAFF
+}
+
+enum Transmission {
+  AUTOMATIC
+  MANUAL
+  SEMI_AUTOMATIC
+}
+
+enum FuelType {
+  GASOLINE
+  ELECTRIC
+}
+
+enum MotorbikeStatus {
+  AVAILABLE
+  RENTED
+  MAINTENANCE
+  INACTIVE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  PICKED_UP
+  RETURNED
+  CANCELLED
+  REJECTED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+enum PricingRuleType {
+  STANDARD
+  WEEKEND
+  HOLIDAY
+  PROMOTION
+  LONG_TERM
+}
+
+enum MaintenanceType {
+  OIL_CHANGE
+  TIRE
+  BRAKE
+  ENGINE
+  BATTERY
+  GENERAL_SERVICE
+  ACCIDENT_REPAIR
+}
+
+enum MaintenanceStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
+// ─────────────────────────────────────────────
+// AUTH / USERS
+// ─────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(STAFF)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  auditLogs          AuditLog[]
+  bookingStatusEdits BookingStatusHistory[]
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// MOTORBIKES
+// ─────────────────────────────────────────────
+
+model Category {
+  id          String  @id @default(cuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+
+  motorbikes Motorbike[]
+
+  @@map("motorbike_categories")
+}
+
+model Motorbike {
+  id          String @id @default(cuid())
+  name        String
+  slug        String @unique
+  brand       String
+  model       String
+  year        Int?
+  engineCc    Int
+  plateNumber String?
+  color       String?
+
+  categoryId   String?
+  category     Category?    @relation(fields: [categoryId], references: [id])
+  transmission Transmission @default(AUTOMATIC)
+  fuelType     FuelType     @default(GASOLINE)
+
+  seatCapacity     Int?
+  fuelConsumption  String?
+  description      String?
+  status           MotorbikeStatus @default(AVAILABLE)
+  featured         Boolean         @default(false)
+
+  // Features
+  helmetIncluded  Boolean @default(true)
+  phoneHolder     Boolean @default(false)
+  usbCharger      Boolean @default(false)
+  goodForCity     Boolean @default(true)
+  goodForLongTrip Boolean @default(false)
+  isNewBike       Boolean @default(false)
+  popular         Boolean @default(false)
+
+  // Rental info
+  dailyPrice     Decimal @db.Decimal(10, 2)
+  weeklyPrice    Decimal? @db.Decimal(10, 2)
+  monthlyPrice   Decimal? @db.Decimal(10, 2)
+  deposit        Decimal  @default(0) @db.Decimal(10, 2)
+  deliveryFee    Decimal  @default(0) @db.Decimal(10, 2)
+  minRentalDays  Int      @default(1)
+  maxRentalDays  Int      @default(60)
+
+  // SEO
+  seoTitle       String?
+  seoDescription String?
+  seoKeywords    String?
+  ogImage        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  images       MotorbikeImage[]
+  pricingRules PricingRule[]
+  bookings     Booking[]
+  maintenance  MaintenanceRecord[]
+
+  @@index([slug])
+  @@index([status])
+  @@map("motorbikes")
+}
+
+model MotorbikeImage {
+  id          String   @id @default(cuid())
+  motorbikeId String
+  motorbike   Motorbike @relation(fields: [motorbikeId], references: [id], onDelete: Cascade)
+
+  url       String
+  filename  String
+  size      Int
+  mimeType  String
+  isPrimary Boolean  @default(false)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([motorbikeId])
+  @@map("motorbike_images")
+}
+
+model PricingRule {
+  id          String @id @default(cuid())
+  motorbikeId String?
+  motorbike   Motorbike? @relation(fields: [motorbikeId], references: [id], onDelete: Cascade)
+
+  name        String
+  type        PricingRuleType @default(STANDARD)
+  minDays     Int
+  maxDays     Int?
+  pricePerDay Decimal  @db.Decimal(10, 2)
+  startDate   DateTime?
+  endDate     DateTime?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([motorbikeId])
+  @@map("pricing_rules")
+}
+
+// ─────────────────────────────────────────────
+// LOCATIONS
+// ─────────────────────────────────────────────
+
+model Location {
+  id          String  @id @default(cuid())
+  name        String
+  address     String
+  description String?
+  googleMapsUrl String?
+  latitude    Float?
+  longitude   Float?
+  phone       String?
+  openingTime String? // "07:00"
+  closingTime String? // "20:00"
+  isActive    Boolean @default(true)
+  sortOrder   Int     @default(0)
+
+  pickupBookings Booking[] @relation("PickupLocation")
+  returnBookings Booking[] @relation("ReturnLocation")
+
+  @@map("locations")
+}
+
+// ─────────────────────────────────────────────
+// CUSTOMERS
+// ─────────────────────────────────────────────
+
+model Customer {
+  id          String   @id @default(cuid())
+  fullName    String
+  phone       String
+  email       String?
+  nationality String?
+  passportId  String?
+  telegram    String?
+  whatsapp    String?
+  notes       String?
+  isBlocked   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings Booking[]
+
+  @@index([phone])
+  @@index([email])
+  @@map("customers")
+}
+
+// ─────────────────────────────────────────────
+// BOOKINGS
+// ─────────────────────────────────────────────
+
+model Booking {
+  id            String @id @default(cuid())
+  bookingNumber String @unique
+
+  motorbikeId String
+  motorbike   Motorbike @relation(fields: [motorbikeId], references: [id])
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  pickupDate DateTime
+  returnDate DateTime
+
+  pickupLocationId String?
+  pickupLocation   Location? @relation("PickupLocation", fields: [pickupLocationId], references: [id])
+  returnLocationId String?
+  returnLocation   Location? @relation("ReturnLocation", fields: [returnLocationId], references: [id])
+
+  subtotal          Decimal @db.Decimal(10, 2)
+  discount          Decimal @default(0) @db.Decimal(10, 2)
+  deliveryFee       Decimal @default(0) @db.Decimal(10, 2)
+  additionalCharges Decimal @default(0) @db.Decimal(10, 2)
+  deposit           Decimal @default(0) @db.Decimal(10, 2)
+  total             Decimal @db.Decimal(10, 2)
+
+  status BookingStatus @default(PENDING)
+
+  paymentStatus    PaymentStatus @default(UNPAID)
+  paymentMethod    String?
+  paymentReference String?
+  paidAmount       Decimal       @default(0) @db.Decimal(10, 2)
+  paidAt           DateTime?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusHistory BookingStatusHistory[]
+
+  @@index([motorbikeId])
+  @@index([pickupDate])
+  @@index([returnDate])
+  @@index([status])
+  @@map("bookings")
+}
+
+model BookingStatusHistory {
+  id        String   @id @default(cuid())
+  bookingId String
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  status    BookingStatus
+  note      String?
+  changedById String?
+  changedBy   User?   @relation(fields: [changedById], references: [id])
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+  @@map("booking_status_history")
+}
+
+// ─────────────────────────────────────────────
+// MAINTENANCE
+// ─────────────────────────────────────────────
+
+model MaintenanceRecord {
+  id          String @id @default(cuid())
+  motorbikeId String
+  motorbike   Motorbike @relation(fields: [motorbikeId], references: [id], onDelete: Cascade)
+
+  type        MaintenanceType
+  description String?
+  date        DateTime
+  mileage     Int?
+  cost        Decimal  @default(0) @db.Decimal(10, 2)
+  garage      String?
+  notes       String?
+  status      MaintenanceStatus @default(SCHEDULED)
+  createdAt   DateTime @default(now())
+
+  @@index([motorbikeId])
+  @@map("maintenance_records")
+}
+
+// ─────────────────────────────────────────────
+// CONTENT / CMS
+// ─────────────────────────────────────────────
+
+model Banner {
+  id         String    @id @default(cuid())
+  title      String
+  subtitle   String?
+  imageUrl   String
+  buttonText String?
+  buttonUrl  String?
+  startDate  DateTime?
+  endDate    DateTime?
+  isActive   Boolean   @default(true)
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+
+  @@map("banners")
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("faqs")
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("contact_messages")
+}
+
+/// Singleton table (single row, id = "main") holding all editable
+/// business content so nothing is hardcoded in the frontend.
+model BusinessSetting {
+  id String @id @default("main")
+
+  businessName String  @default("Angkor Wheels Rental")
+  logoUrl      String?
+  faviconUrl   String?
+  description  String?
+  phone        String?
+  email        String?
+  address      String?
+
+  telegram  String?
+  whatsapp  String?
+  facebook  String?
+  instagram String?
+  tiktok    String?
+
+  currency String @default("USD")
+
+  heroTitle    String  @default("Explore Siem Reap on Two Wheels")
+  heroSubtitle String  @default("Reliable motorbike rental in Siem Reap, Cambodia.")
+  heroImage    String?
+
+  aboutTitle       String?
+  aboutDescription String?
+  aboutStory       String?
+  aboutMission     String?
+  aboutWhyChooseUs String?
+  aboutImage       String?
+
+  footerText String?
+
+  minRentalDays Int @default(1)
+  maxRentalDays Int @default(60)
+  depositPolicy  String?
+  fuelPolicy     String?
+  lateReturnPolicy String?
+  damagePolicy   String?
+  cancellationPolicy String?
+  accidentPolicy String?
+  trafficViolationPolicy String?
+  helmetPolicy   String?
+  minimumAge     Int? @default(18)
+  requiredDocuments String?
+
+  updatedAt DateTime @updatedAt
+
+  @@map("business_settings")
+}
+
+// ─────────────────────────────────────────────
+// AUDIT LOG
+// ─────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id])
+  action      String
+  entityType  String?
+  entityId    String?
+  description String?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

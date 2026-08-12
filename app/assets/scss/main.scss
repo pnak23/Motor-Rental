@@ -1,0 +1,451 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+/* ── Base palette (admin dashboard + shared chrome) ──────────────────
+   These stay exactly as originally shipped. The premium Siem Reap /
+   Angkor travel theme below is layered on top ONLY inside `.site-public`
+   (the public-site layout wrapper), so the admin dashboard — which
+   reuses these same variable names and utility classes — is completely
+   unaffected by the redesign. */
+:root {
+  --color-charcoal: #21262b;
+  --color-charcoal-2: #2c333a;
+  --color-cream: #faf8f4;
+  --color-white: #ffffff;
+  --color-amber: #e7a03c;
+  --color-amber-deep: #c97f2a;
+  --color-gray-light: #f0efec;
+  --color-gray-mid: #8b8f94;
+  --color-border: #e2ded4;
+  --color-success: #3f8c5f;
+  --color-danger: #c1462f;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 18px;
+}
+
+html,
+body {
+  font-family: var(--font-body);
+  color: var(--color-charcoal);
+  background: var(--color-cream);
+  scroll-behavior: smooth;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+a {
+  color: var(--color-charcoal);
+}
+a:hover {
+  color: var(--color-amber-deep);
+}
+
+/* ── Buttons: override bootstrap defaults with our accent ── */
+.btn-amber {
+  background-color: var(--color-amber);
+  border-color: var(--color-amber);
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+.btn-amber:hover {
+  background-color: var(--color-amber-deep);
+  border-color: var(--color-amber-deep);
+  color: var(--color-white);
+}
+.btn-charcoal {
+  background-color: var(--color-charcoal);
+  border-color: var(--color-charcoal);
+  color: var(--color-white);
+  font-weight: 600;
+}
+.btn-charcoal:hover {
+  background-color: #14181b;
+  border-color: #14181b;
+  color: var(--color-white);
+}
+.btn-outline-charcoal {
+  border-color: var(--color-charcoal);
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+.btn-outline-charcoal:hover {
+  background-color: var(--color-charcoal);
+  color: var(--color-white);
+}
+
+.btn,
+.form-control,
+.form-select {
+  border-radius: var(--radius-sm);
+}
+
+/* ── Cards ────────────────────────────────────────── */
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+}
+
+.price-tag {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+/* ── Section rhythm ──────────────────────────────── */
+.section {
+  padding: 4.5rem 0;
+}
+.section-tight {
+  padding: 2.5rem 0;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-amber-deep);
+  font-weight: 600;
+}
+
+.bg-charcoal {
+  background-color: var(--color-charcoal) !important;
+  color: var(--color-white);
+}
+.bg-cream {
+  background-color: var(--color-cream) !important;
+}
+.bg-gray-light {
+  background-color: var(--color-gray-light) !important;
+}
+.text-amber {
+  color: var(--color-amber-deep) !important;
+}
+
+/* ── Skeleton loading ───────────────────────────────*/
+.skeleton {
+  background: linear-gradient(90deg, var(--color-gray-light) 25%, #e7e4dd 37%, var(--color-gray-light) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ── Motorbike card ─────────────────────────────────*/
+.bike-card {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.bike-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(33, 38, 43, 0.12);
+}
+.bike-card__image {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: var(--color-gray-light);
+}
+
+/* ── Admin shell ────────────────────────────────────*/
+.admin-sidebar {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+  min-height: 100vh;
+}
+.admin-sidebar a {
+  color: rgba(255, 255, 255, 0.75);
+}
+.admin-sidebar a.active,
+.admin-sidebar a:hover {
+  color: var(--color-white);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 8px;
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PUBLIC SITE THEME — "Siem Reap / Angkor Wat" travel identity
+   Scoped entirely under `.site-public` (the public layout's root
+   wrapper) so nothing here reaches the admin dashboard, which lives
+   in a separate layout and never carries this class.
+
+   Because the variable NAMES match the base palette above, every
+   existing utility class (.btn-amber, .bg-charcoal, .text-amber,
+   .bg-gray-light, .card, .eyebrow, .price-tag, etc.) automatically
+   repaints in the new palette for any page rendered inside this
+   wrapper — no template rewrites needed for the retint itself.
+   ════════════════════════════════════════════════════════════════ */
+.site-public {
+  /* Named design tokens, reusable directly in new markup/components */
+  --color-forest: #263a2e;
+  --color-jungle: #405a3d;
+  --color-sand: #c9a66b;
+  --color-gold: #d4af37;
+  --color-gold-deep: #ad8a26;
+  --color-warm-sand: #e8d5b5;
+  --color-cream: #f7f2e8;
+  --color-offwhite: #fcfaf5;
+  --color-brown: #33281f;
+
+  /* Re-map the shared variable names so existing utility classes and
+     components inherit the new theme automatically within this scope. */
+  --color-charcoal: var(--color-forest);
+  --color-charcoal-2: var(--color-jungle);
+  --color-cream: #f7f2e8;
+  --color-amber: var(--color-gold);
+  --color-amber-deep: var(--color-gold-deep);
+  --color-gray-light: #efe6d2;
+  --color-gray-mid: #8a7f6a;
+  --color-border: #e3d6b8;
+
+  --font-display: 'Playfair Display', Georgia, serif;
+
+  background: var(--color-cream);
+}
+
+.site-public h1,
+.site-public h2,
+.site-public h3,
+.site-public h4,
+.site-public .font-display {
+  letter-spacing: -0.01em;
+}
+
+.site-public .text-muted {
+  color: #766c5b !important;
+}
+
+.site-public .card {
+  border-color: var(--color-border);
+  box-shadow: 0 2px 14px rgba(51, 40, 31, 0.05);
+}
+
+.site-public .accordion-button:not(.collapsed) {
+  background-color: var(--color-warm-sand);
+  color: var(--color-brown);
+}
+.site-public .accordion-button:focus {
+  box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+}
+
+/* New accent utilities available only where the design calls for them */
+.site-public .bg-sand {
+  background-color: var(--color-sand) !important;
+  color: var(--color-white);
+}
+.site-public .bg-warm-sand {
+  background-color: var(--color-warm-sand) !important;
+}
+.site-public .bg-offwhite {
+  background-color: var(--color-offwhite) !important;
+}
+.site-public .bg-forest {
+  background-color: var(--color-forest) !important;
+  color: var(--color-cream);
+}
+.site-public .text-sand {
+  color: var(--color-sand) !important;
+}
+.site-public .text-forest {
+  color: var(--color-forest) !important;
+}
+.site-public .text-gold {
+  color: var(--color-gold) !important;
+}
+.site-public .text-brown {
+  color: var(--color-brown) !important;
+}
+.site-public .btn-outline-cream {
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  color: var(--color-white);
+  font-weight: 600;
+}
+.site-public .btn-outline-cream:hover {
+  background-color: var(--color-white);
+  color: var(--color-forest);
+  border-color: var(--color-white);
+}
+
+/* ── Ornamental divider ─────────────────────────────
+   A restrained line-and-diamond motif — a nod to the
+   carved borders on temple lintels — used as a quiet
+   section separator instead of a busy repeating pattern. */
+.site-public .khmer-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto;
+}
+.site-public .khmer-divider::before,
+.site-public .khmer-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+.site-public .khmer-divider__mark {
+  width: 8px;
+  height: 8px;
+  transform: rotate(45deg);
+  background: var(--color-gold);
+  flex-shrink: 0;
+}
+
+/* ── Temple silhouette motif ────────────────────────
+   A low-opacity skyline used as a transition strip
+   between sections (hero → content, footer top). Kept
+   deliberately faint so it reads as texture, not a logo. */
+.site-public .temple-silhouette {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── Scroll-reveal animation ────────────────────────
+   Subtle fade + rise, triggered by IntersectionObserver
+   in useReveal(); respects prefers-reduced-motion via the
+   global rule above. */
+.site-public .reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s ease;
+}
+.site-public .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.site-public .reveal-delay-1 {
+  transition-delay: 0.1s;
+}
+.site-public .reveal-delay-2 {
+  transition-delay: 0.2s;
+}
+.site-public .reveal-delay-3 {
+  transition-delay: 0.3s;
+}
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.site-public .hero-fade-in {
+  animation: heroFadeUp 0.9s ease both;
+}
+.site-public .hero-fade-in-delay {
+  animation: heroFadeUp 0.9s ease both;
+  animation-delay: 0.15s;
+}
+
+/* ── Premium motorbike card ─────────────────────────*/
+.site-public .bike-card {
+  border-radius: var(--radius-lg);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.site-public .bike-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(38, 58, 46, 0.14);
+}
+.site-public .bike-card__media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+.site-public .bike-card__image {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background-color: var(--color-gray-light);
+  transition: transform 0.4s ease;
+}
+.site-public .bike-card:hover .bike-card__image {
+  transform: scale(1.06);
+}
+.site-public .bike-card__badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background: rgba(252, 250, 245, 0.92);
+  color: var(--color-forest);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.site-public .bike-card__badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  display: inline-block;
+}
+.site-public .bike-card__new {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: var(--color-gold);
+  color: var(--color-brown);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+}
+.site-public .btn-outline-charcoal.btn-sm {
+  border-width: 1.5px;
+}
