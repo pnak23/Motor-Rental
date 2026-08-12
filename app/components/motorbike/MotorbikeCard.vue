@@ -7,8 +7,8 @@
         class="w-100 bike-card__image"
         loading="lazy"
       />
-      <span class="bike-card__badge">Available</span>
-      <span v-if="bike.isNewBike" class="bike-card__new">New</span>
+      <span class="bike-card__badge">{{ t('motorbikeCard.available') }}</span>
+      <span v-if="bike.isNewBike" class="bike-card__new">{{ t('motorbikeCard.new') }}</span>
     </NuxtLink>
     <div class="card-body d-flex flex-column">
       <p class="eyebrow mb-1">{{ bike.brand }}</p>
@@ -21,16 +21,17 @@
 
       <div class="mt-auto d-flex align-items-center justify-content-between pt-3">
         <div>
-          <span class="small text-muted d-block">From</span>
-          <span class="price-tag fs-5">${{ Number(bike.dailyPrice).toFixed(0) }}<span class="fs-6 fw-normal">/day</span></span>
+          <span class="small text-muted d-block">{{ t('motorbikeCard.from') }}</span>
+          <span class="price-tag fs-5">${{ Number(bike.dailyPrice).toFixed(0) }}<span class="fs-6 fw-normal">{{ t('motorbikeCard.perDay') }}</span></span>
         </div>
-        <NuxtLink :to="`/motorbikes/${bike.slug}`" class="btn btn-sm btn-outline-charcoal">View Details</NuxtLink>
+        <NuxtLink :to="`/motorbikes/${bike.slug}`" class="btn btn-sm btn-outline-charcoal">{{ t('motorbikeCard.viewDetails') }}</NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 defineProps<{
   bike: {
     id: string

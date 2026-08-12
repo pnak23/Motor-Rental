@@ -1,18 +1,19 @@
 <template>
   <div class="floating-contact d-flex flex-column gap-2">
-    <a v-if="whatsappLink" :href="whatsappLink" target="_blank" rel="noopener" class="fab fab--whatsapp" aria-label="Chat on WhatsApp">
+    <a v-if="whatsappLink" :href="whatsappLink" target="_blank" rel="noopener" class="fab fab--whatsapp" :aria-label="t('contact.chatOnWhatsapp')">
       <i class="bi bi-whatsapp" />
     </a>
-    <a v-if="telegramLink" :href="telegramLink" target="_blank" rel="noopener" class="fab fab--telegram" aria-label="Chat on Telegram">
+    <a v-if="telegramLink" :href="telegramLink" target="_blank" rel="noopener" class="fab fab--telegram" :aria-label="t('contact.chatOnTelegram')">
       <i class="bi bi-telegram" />
     </a>
-    <a v-if="settings?.phone" :href="`tel:${settings.phone}`" class="fab fab--phone" aria-label="Call us">
+    <a v-if="settings?.phone" :href="`tel:${settings.phone}`" class="fab fab--phone" :aria-label="t('common.callUs')">
       <i class="bi bi-telephone-fill" />
     </a>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const settings = computed(() => settingsStore.settings)
 

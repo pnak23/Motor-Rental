@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageHeader eyebrow="Good to Know" title="Frequently Asked Questions" />
+    <PageHeader :eyebrow="t('faq.goodToKnow')" :title="t('faq.title')" />
 
     <div class="container py-5">
       <div class="row justify-content-center">
@@ -25,8 +25,8 @@
           </div>
 
           <div class="text-center mt-5">
-            <p class="text-muted">Still have questions?</p>
-            <NuxtLink to="/contact" class="btn btn-outline-charcoal">Contact Us</NuxtLink>
+            <p class="text-muted">{{ t('faq.stillHaveQuestions') }}</p>
+            <NuxtLink to="/contact" class="btn btn-outline-charcoal">{{ t('faq.contactUs') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 interface Faq {
   id: string
   question: string

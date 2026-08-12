@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageHeader eyebrow="Simple &amp; Fast" title="How It Works" subtitle="From browsing to riding, here's what to expect." />
+    <PageHeader :eyebrow="t('howItWorks.eyebrow')" :title="t('howItWorks.title')" :subtitle="t('howItWorks.subtitle')" />
 
     <div class="container py-5">
       <div class="row justify-content-center">
@@ -19,24 +19,20 @@
       </div>
 
       <div class="text-center mt-3">
-        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg">Start Browsing</NuxtLink>
+        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg">{{ t('howItWorks.startBrowsing') }}</NuxtLink>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t, tm, rt } = useI18n()
 useHead({ title: 'How It Works — Motorbike Rental Siem Reap' })
 
-const steps = [
-  { title: 'Browse motorbikes', text: 'Explore our fleet of scooters and manual bikes, filtered by category, price, or transmission.' },
-  { title: 'Pick your dates', text: 'Choose your pickup and return dates directly on the motorbike page — we check availability instantly.' },
-  { title: 'Enter your details', text: 'Fill in your name, phone, and a few quick details so we can confirm your rental.' },
-  { title: 'Get instant confirmation', text: 'You\u2019ll receive a booking number right away, plus direct Telegram/WhatsApp/phone contact for any questions.' },
-  { title: 'We review & confirm', text: 'Our team reviews your request and confirms it, usually within minutes during business hours.' },
-  { title: 'Pick up & ride', text: 'Collect your motorbike (or have it delivered to your hotel) and start exploring Siem Reap.' },
-  { title: 'Return & done', text: 'Return the motorbike at the end of your rental — your deposit is refunded on the spot.' }
-]
+const steps = computed(() => {
+  const raw = tm('howItWorks.steps') as unknown as { title: unknown; text: unknown }[]
+  return raw.map((step) => ({ title: rt(step.title), text: rt(step.text) }))
+})
 </script>
 
 <style scoped>

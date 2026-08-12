@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2026-01-01',
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt'],
+  modules: ['@pinia/nuxt', '@nuxtjs/i18n'],
   // Every template references components by their bare filename
   // (<SiteHeader>, <StatCard>, <MiniBarChart>, ...) regardless of which
   // subfolder they live in, so disable Nuxt's default directory-prefixed
@@ -24,6 +24,19 @@ export default defineNuxtConfig({
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/images/favicon.svg' }
       ]
+    }
+  },
+  i18n: {
+    defaultLocale: 'en',
+    locales: [
+      { code: 'en', name: 'English', file: 'en.json' },
+      { code: 'km', name: 'ខ្មែរ', file: 'km.json' }
+    ],
+    strategy: 'no_prefix',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'i18n_redirected',
+      redirectOn: 'root'
     }
   },
   runtimeConfig: {

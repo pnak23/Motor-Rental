@@ -23,23 +23,26 @@
           data-bs-toggle="collapse"
           data-bs-target="#mainNav"
           aria-controls="mainNav"
+          :aria-label="t('nav.toggleNavigation')"
           aria-expanded="false"
-          aria-label="Toggle navigation"
         >
           <span class="navbar-toggler-icon" />
         </button>
 
         <div id="mainNav" class="collapse navbar-collapse">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item"><NuxtLink class="nav-link" to="/">Home</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/motorbikes">Motorbikes</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/how-it-works">How It Works</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/about">About Us</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/rental-policy">Rental Policy</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/faq">FAQ</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/contact">Contact</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/">{{ t('nav.home') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/motorbikes">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/how-it-works">{{ t('nav.howItWorks') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/about">{{ t('nav.about') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/rental-policy">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/faq">{{ t('nav.faq') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/contact">{{ t('nav.contact') }}</NuxtLink></li>
+            <li class="nav-item">
+              <LanguageSwitcher />
+            </li>
             <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-              <NuxtLink class="btn btn-amber w-100" to="/motorbikes">Book Now</NuxtLink>
+              <NuxtLink class="btn btn-amber w-100" to="/motorbikes">{{ t('nav.bookNow') }}</NuxtLink>
             </li>
           </ul>
         </div>
@@ -49,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const settings = computed(() => settingsStore.settings)
 

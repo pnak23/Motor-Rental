@@ -2,8 +2,8 @@
   <div class="container py-5">
     <nav aria-label="breadcrumb" class="mb-4">
       <ol class="breadcrumb small">
-        <li class="breadcrumb-item"><NuxtLink to="/">Home</NuxtLink></li>
-        <li class="breadcrumb-item"><NuxtLink to="/motorbikes">Motorbikes</NuxtLink></li>
+        <li class="breadcrumb-item"><NuxtLink to="/">{{ t('motorbikeDetail.home') }}</NuxtLink></li>
+        <li class="breadcrumb-item"><NuxtLink to="/motorbikes">{{ t('motorbikeDetail.motorbikes') }}</NuxtLink></li>
         <li class="breadcrumb-item active">{{ bike.name }}</li>
       </ol>
     </nav>
@@ -29,39 +29,39 @@
         </div>
 
         <div class="d-flex flex-wrap gap-2 my-3">
-          <span v-if="bike.helmetIncluded" class="feature-pill"><i class="bi bi-check-circle me-1" />Helmet included</span>
-          <span v-if="bike.phoneHolder" class="feature-pill"><i class="bi bi-check-circle me-1" />Phone holder</span>
-          <span v-if="bike.usbCharger" class="feature-pill"><i class="bi bi-check-circle me-1" />USB charger</span>
-          <span v-if="bike.goodForLongTrip" class="feature-pill"><i class="bi bi-check-circle me-1" />Great for long trips</span>
+          <span v-if="bike.helmetIncluded" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.helmetIncluded') }}</span>
+          <span v-if="bike.phoneHolder" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.phoneHolder') }}</span>
+          <span v-if="bike.usbCharger" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.usbCharger') }}</span>
+          <span v-if="bike.goodForLongTrip" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.greatForLongTrips') }}</span>
         </div>
 
         <!-- Pricing table -->
         <div class="card p-3 my-4">
-          <h3 class="h6 font-display mb-3">Rental Pricing</h3>
+          <h3 class="h6 font-display mb-3">{{ t('motorbikeDetail.rentalPricing') }}</h3>
           <table class="table table-sm mb-0">
             <tbody>
               <tr>
-                <td>1 day</td>
+                <td>{{ t('motorbikeDetail.oneDay') }}</td>
                 <td class="text-end price-tag">${{ Number(bike.dailyPrice).toFixed(2) }}</td>
               </tr>
               <tr>
-                <td>2–6 days</td>
-                <td class="text-end price-tag">${{ Number(bike.dailyPrice).toFixed(2) }}/day</td>
+                <td>{{ t('motorbikeDetail.days2to6') }}</td>
+                <td class="text-end price-tag">${{ Number(bike.dailyPrice).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
               </tr>
               <tr v-if="bike.weeklyPrice">
-                <td>7–29 days</td>
-                <td class="text-end price-tag">${{ (Number(bike.weeklyPrice) / 7).toFixed(2) }}/day</td>
+                <td>{{ t('motorbikeDetail.days7to29') }}</td>
+                <td class="text-end price-tag">${{ (Number(bike.weeklyPrice) / 7).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
               </tr>
               <tr v-if="bike.monthlyPrice">
-                <td>30+ days</td>
-                <td class="text-end price-tag">${{ (Number(bike.monthlyPrice) / 30).toFixed(2) }}/day</td>
+                <td>{{ t('motorbikeDetail.days30plus') }}</td>
+                <td class="text-end price-tag">${{ (Number(bike.monthlyPrice) / 30).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         <div v-if="related.length" class="mt-5">
-          <h3 class="h5 font-display mb-3">You might also like</h3>
+          <h3 class="h5 font-display mb-3">{{ t('motorbikeDetail.youMightAlsoLike') }}</h3>
           <div class="row g-3">
             <div v-for="r in related" :key="r.id" class="col-6 col-md-3">
               <MotorbikeCard :bike="{ ...r, brand: bike.brand, engineCc: bike.engineCc, transmission: bike.transmission }" />
@@ -108,6 +108,7 @@ interface MotorbikeDetail {
   related: { id: string; name: string; slug: string; dailyPrice: string; image: string | null }[]
 }
 
+const { t } = useI18n()
 const route = useRoute()
 const bike = await useApi<MotorbikeDetail>(`/api/public/motorbikes/${route.params.slug}`)
 
@@ -117,12 +118,12 @@ const images = computed(() =>
 const related = computed(() => bike.related || [])
 
 const specs = computed(() => [
-  { label: 'Engine', value: `${bike.engineCc}cc`, icon: 'bi-speedometer2' },
-  { label: 'Transmission', value: bike.transmission.replace(/_/g, '-'), icon: 'bi-gear' },
-  { label: 'Fuel', value: bike.fuelType === 'ELECTRIC' ? 'Electric' : 'Gasoline', icon: 'bi-fuel-pump' },
-  { label: 'Seats', value: String(bike.seatCapacity || 2), icon: 'bi-person' },
-  { label: 'Year', value: String(bike.year || '—'), icon: 'bi-calendar3' },
-  { label: 'Color', value: bike.color || '—', icon: 'bi-palette' }
+  { label: t('motorbikeDetail.engine'), value: `${bike.engineCc}cc`, icon: 'bi-speedometer2' },
+  { label: t('motorbikeDetail.transmission'), value: bike.transmission.replace(/_/g, '-'), icon: 'bi-gear' },
+  { label: t('motorbikeDetail.fuel'), value: bike.fuelType === 'ELECTRIC' ? t('motorbikeDetail.electric') : t('motorbikeDetail.gasoline'), icon: 'bi-fuel-pump' },
+  { label: t('motorbikeDetail.seats'), value: String(bike.seatCapacity || 2), icon: 'bi-person' },
+  { label: t('motorbikeDetail.year'), value: String(bike.year || '—'), icon: 'bi-calendar3' },
+  { label: t('motorbikeDetail.color'), value: bike.color || '—', icon: 'bi-palette' }
 ])
 
 useHead({

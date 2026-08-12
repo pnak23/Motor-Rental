@@ -14,7 +14,9 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@nuxtjs/i18n": "^10.6.0",
     "@pinia/nuxt": "^0.9.0",
+    "@prisma/client": "^6.19.3",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.13.1",

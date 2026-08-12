@@ -21,6 +21,24 @@
             <input v-model="form.nationality" class="form-control form-control-sm" />
           </div>
           <div class="mb-2">
+            <label class="form-label small">ID Type</label>
+            <select v-model="form.idType" class="form-select form-select-sm">
+              <option :value="null">—</option>
+              <option value="ID_CARD">ID Card</option>
+              <option value="PASSPORT">Passport</option>
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small">ID / Passport #</label>
+            <input v-model="form.passportId" class="form-control form-control-sm" />
+          </div>
+          <div v-if="customer.idDocumentUrl" class="mb-2">
+            <label class="form-label small d-block">ID Document</label>
+            <a :href="customer.idDocumentUrl" target="_blank" rel="noopener">
+              <img :src="customer.idDocumentUrl" alt="ID document" class="id-document-thumb" />
+            </a>
+          </div>
+          <div class="mb-2">
             <label class="form-label small">Notes</label>
             <textarea v-model="form.notes" rows="3" class="form-control form-control-sm" />
           </div>
@@ -72,6 +90,9 @@ interface CustomerDetail {
   phone: string
   email: string | null
   nationality: string | null
+  idType: string | null
+  passportId: string | null
+  idDocumentUrl: string | null
   notes: string | null
   isBlocked: boolean
   bookings: { id: string; bookingNumber: string; motorbikeName: string; pickupDate: string; returnDate: string; total: string; status: string }[]
@@ -88,6 +109,8 @@ const form = reactive({
   phone: customer.phone,
   email: customer.email,
   nationality: customer.nationality,
+  idType: customer.idType,
+  passportId: customer.passportId,
   notes: customer.notes,
   isBlocked: customer.isBlocked
 })
@@ -112,3 +135,13 @@ function formatDate(d: string) {
   return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
 }
 </script>
+
+<style scoped>
+.id-document-thumb {
+  max-width: 220px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+</style>

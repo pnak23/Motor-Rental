@@ -1,6 +1,6 @@
 <template>
   <div>
-    <PageHeader eyebrow="Our Story" :title="settings?.aboutTitle || 'About Us'" />
+    <PageHeader :eyebrow="t('about.ourStory')" :title="settings?.aboutTitle || t('about.titleDefault')" />
 
     <section class="section bg-cream">
       <div class="container">
@@ -21,28 +21,28 @@
           <div class="col-md-4" v-reveal>
             <div class="card p-4 h-100">
               <i class="bi bi-book fs-2 text-amber mb-2" />
-              <h3 class="h6 font-display">Our Story</h3>
+              <h3 class="h6 font-display">{{ t('about.ourStory') }}</h3>
               <p class="text-muted small mb-0">{{ settings?.aboutStory }}</p>
             </div>
           </div>
           <div class="col-md-4" v-reveal>
             <div class="card p-4 h-100">
               <i class="bi bi-bullseye fs-2 text-amber mb-2" />
-              <h3 class="h6 font-display">Our Mission</h3>
+              <h3 class="h6 font-display">{{ t('about.ourMission') }}</h3>
               <p class="text-muted small mb-0">{{ settings?.aboutMission }}</p>
             </div>
           </div>
           <div class="col-md-4" v-reveal>
             <div class="card p-4 h-100">
               <i class="bi bi-award fs-2 text-amber mb-2" />
-              <h3 class="h6 font-display">Why Choose Us</h3>
+              <h3 class="h6 font-display">{{ t('about.whyChooseUs') }}</h3>
               <p class="text-muted small mb-0">{{ settings?.aboutWhyChooseUs }}</p>
             </div>
           </div>
         </div>
 
         <div class="text-center mt-5">
-          <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg">Browse Our Motorbikes</NuxtLink>
+          <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg">{{ t('about.browseOurMotorbikes') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const settingsStore = useSettingsStore()
 await settingsStore.load()
 const settings = computed(() => settingsStore.settings)

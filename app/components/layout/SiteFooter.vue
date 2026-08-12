@@ -18,25 +18,25 @@
         </div>
 
         <div class="col-6 col-lg-2">
-          <h6 class="text-white mb-3">Quick Links</h6>
+          <h6 class="text-white mb-3">{{ t('footer.quickLinks') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2">
-            <li><NuxtLink to="/motorbikes" class="text-white-50">Motorbikes</NuxtLink></li>
-            <li><NuxtLink to="/about" class="text-white-50">About Us</NuxtLink></li>
-            <li><NuxtLink to="/rental-policy" class="text-white-50">Rental Policy</NuxtLink></li>
-            <li><NuxtLink to="/faq" class="text-white-50">FAQ</NuxtLink></li>
+            <li><NuxtLink to="/motorbikes" class="text-white-50">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li><NuxtLink to="/about" class="text-white-50">{{ t('nav.about') }}</NuxtLink></li>
+            <li><NuxtLink to="/rental-policy" class="text-white-50">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
+            <li><NuxtLink to="/faq" class="text-white-50">{{ t('nav.faq') }}</NuxtLink></li>
           </ul>
         </div>
 
         <div class="col-6 col-lg-3">
-          <h6 class="text-white mb-3">Locations</h6>
+          <h6 class="text-white mb-3">{{ t('footer.locations') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2">
-            <li><NuxtLink to="/locations" class="text-white-50">All rental locations</NuxtLink></li>
-            <li><NuxtLink to="/contact" class="text-white-50">Contact us</NuxtLink></li>
+            <li><NuxtLink to="/locations" class="text-white-50">{{ t('footer.allRentalLocations') }}</NuxtLink></li>
+            <li><NuxtLink to="/contact" class="text-white-50">{{ t('footer.contactUs') }}</NuxtLink></li>
           </ul>
         </div>
 
         <div class="col-lg-3">
-          <h6 class="text-white mb-3">Contact</h6>
+          <h6 class="text-white mb-3">{{ t('footer.contact') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2 text-white-50">
             <li v-if="settings?.phone"><i class="bi bi-telephone me-2" />{{ settings.phone }}</li>
             <li v-if="settings?.email"><i class="bi bi-envelope me-2" />{{ settings.email }}</li>
@@ -49,13 +49,14 @@
         <span class="khmer-divider__mark" />
       </div>
       <p class="text-white-50 small mb-0 text-center">
-        &copy; {{ new Date().getFullYear() }} {{ settings?.businessName || 'Angkor Wheels Rental' }}. All rights reserved.
+        &copy; {{ new Date().getFullYear() }} {{ settings?.businessName || 'Angkor Wheels Rental' }}. {{ t('footer.rightsReserved') }}
       </p>
     </div>
   </footer>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const settingsStore = useSettingsStore()
 const settings = computed(() => settingsStore.settings)
 

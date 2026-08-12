@@ -63,3 +63,41 @@ export async function saveMotorbikeImage(
     mimeType: 'image/webp'
   }
 }
+
+/**
+ * Validates and saves a customer's ID card / passport photo, re-encoding it
+ * to WebP like motorbike images. Kept in a separate folder since this is
+ * personal, sensitive data rather than public listing imagery.
+ */
+export async function saveIdDocument(fileBuffer: Buffer, originalMime: string): Promise<SavedImage> {
+  if (!ALLOWED_MIME.has(originalMime)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Only JPG, PNG, and WebP images are allowed for the ID document'
+    })
+  }
+  if (fileBuffer.byteLength > MAX_BYTES) {
+    throw createError({ statusCode: 400, statusMessage: 'ID document image must be smaller than 8MB' })
+  }
+
+  const dir = join(process.cwd(), 'public', 'uploads', 'documents')
+  await mkdir(dir, { recursive: true })
+
+  const id = newId()
+  const filename = `${id}.webp`
+
+  const optimized = await sharp(fileBuffer)
+    .rotate()
+    .resize({ width: 1800, withoutEnlargement: true })
+    .webp({ quality: 85 })
+    .toBuffer()
+
+  await writeFile(join(dir, filename), optimized)
+
+  return {
+    url: `/uploads/documents/${filename}`,
+    filename,
+    size: optimized.byteLength,
+    mimeType: 'image/webp'
+  }
+}

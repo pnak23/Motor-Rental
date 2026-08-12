@@ -5,9 +5,9 @@
         <h5 class="font-display mb-2">{{ title }}</h5>
         <p class="text-muted mb-4">{{ message }}</p>
         <div class="d-flex justify-content-end gap-2">
-          <button class="btn btn-outline-secondary" @click="$emit('update:modelValue', false)">Cancel</button>
+          <button class="btn btn-outline-secondary" @click="$emit('update:modelValue', false)">{{ t('confirmModal.cancel') }}</button>
           <button class="btn" :class="danger ? 'btn-danger' : 'btn-charcoal'" @click="confirm">
-            {{ confirmText }}
+            {{ confirmText || t('confirmModal.confirm') }}
           </button>
         </div>
       </div>
@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const props = withDefaults(
   defineProps<{
     modelValue: boolean
@@ -24,7 +25,7 @@ const props = withDefaults(
     confirmText?: string
     danger?: boolean
   }>(),
-  { confirmText: 'Confirm', danger: false }
+  { confirmText: '', danger: false }
 )
 const emit = defineEmits<{ 'update:modelValue': [boolean]; confirm: [] }>()
 

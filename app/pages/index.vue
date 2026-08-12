@@ -7,16 +7,16 @@
       <div class="container position-relative py-5">
         <div class="row align-items-center min-vh-hero">
           <div class="col-lg-8 text-white">
-            <p class="eyebrow text-gold-light mb-3 hero-fade-in">Siem Reap, Cambodia</p>
+            <p class="eyebrow text-gold-light mb-3 hero-fade-in">{{ t('home.heroLocation') }}</p>
             <h1 class="hero__title font-display mb-4 hero-fade-in">
-              {{ settings?.heroTitle || 'Explore Siem Reap on Two Wheels' }}
+              {{ settings?.heroTitle || t('home.heroTitleDefault') }}
             </h1>
             <p class="fs-5 text-white-75 mb-4 hero-fade-in-delay" style="max-width: 36rem">
-              {{ settings?.heroSubtitle || 'Discover Angkor, countryside roads, temples and hidden places at your own pace.' }}
+              {{ settings?.heroSubtitle || t('home.heroSubtitleDefault') }}
             </p>
             <div class="d-flex flex-wrap gap-3 hero-fade-in-delay">
-              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4">Explore Motorbikes</NuxtLink>
-              <NuxtLink to="/motorbikes" class="btn btn-lg btn-outline-cream px-4">Book Now</NuxtLink>
+              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4">{{ t('home.exploreMotorbikes') }}</NuxtLink>
+              <NuxtLink to="/motorbikes" class="btn btn-lg btn-outline-cream px-4">{{ t('home.bookNow') }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -29,9 +29,9 @@
     <section class="section-tight bg-cream">
       <div class="container">
         <div class="row g-4 text-center">
-          <div v-for="fact in quickFacts" :key="fact.label" class="col-6 col-lg-3" v-reveal>
+          <div v-for="fact in quickFacts" :key="fact.labelKey" class="col-6 col-lg-3" v-reveal>
             <i class="bi fs-2 text-amber" :class="fact.icon" />
-            <p class="fw-600 mb-0 mt-2">{{ fact.label }}</p>
+            <p class="fw-600 mb-0 mt-2">{{ t(fact.labelKey) }}</p>
           </div>
         </div>
       </div>
@@ -50,7 +50,7 @@
           <div class="p-4 text-white">
             <h3 class="font-display h4">{{ banner.title }}</h3>
             <p class="text-white-75 mb-3">{{ banner.subtitle }}</p>
-            <NuxtLink v-if="banner.buttonUrl" :to="banner.buttonUrl" class="btn btn-amber">{{ banner.buttonText || 'Learn more' }}</NuxtLink>
+            <NuxtLink v-if="banner.buttonUrl" :to="banner.buttonUrl" class="btn btn-amber">{{ banner.buttonText || t('common.learnMore') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -61,11 +61,11 @@
       <div class="container">
         <div class="d-flex align-items-end justify-content-between mb-4" v-reveal>
           <div>
-            <p class="eyebrow mb-1">Our Fleet</p>
-            <h2 class="font-display">Featured Motorbikes</h2>
+            <p class="eyebrow mb-1">{{ t('home.ourFleet') }}</p>
+            <h2 class="font-display">{{ t('home.featuredMotorbikes') }}</h2>
           </div>
           <NuxtLink to="/motorbikes" class="d-none d-md-inline-block text-decoration-none fw-600">
-            View all <i class="bi bi-arrow-right ms-1" />
+            {{ t('common.viewAll') }} <i class="bi bi-arrow-right ms-1" />
           </NuxtLink>
         </div>
         <div class="row g-4">
@@ -74,7 +74,7 @@
           </div>
         </div>
         <div class="text-center mt-4 d-md-none">
-          <NuxtLink to="/motorbikes" class="btn btn-outline-charcoal">View all motorbikes</NuxtLink>
+          <NuxtLink to="/motorbikes" class="btn btn-outline-charcoal">{{ t('common.viewAllMotorbikes') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -83,17 +83,17 @@
     <section class="section bg-warm-sand">
       <div class="container">
         <div class="text-center mb-5" v-reveal>
-          <p class="eyebrow mb-1">A Local Siem Reap Business</p>
-          <h2 class="font-display">Why Ride With Us</h2>
+          <p class="eyebrow mb-1">{{ t('home.whyChooseUsEyebrow') }}</p>
+          <h2 class="font-display">{{ t('home.whyRideWithUs') }}</h2>
           <div class="khmer-divider text-brown mt-3">
             <span class="khmer-divider__mark" />
           </div>
         </div>
         <div class="row g-4">
-          <div v-for="item in whyChooseUs" :key="item.title" class="col-6 col-lg-2" v-reveal>
+          <div v-for="item in whyChooseUs" :key="item.titleKey" class="col-6 col-lg-2" v-reveal>
             <div class="why-item text-center">
               <i class="bi fs-3 text-forest" :class="item.icon" />
-              <p class="fw-600 small mb-0 mt-2">{{ item.title }}</p>
+              <p class="fw-600 small mb-0 mt-2">{{ t(item.titleKey) }}</p>
             </div>
           </div>
         </div>
@@ -112,12 +112,12 @@
             />
           </div>
           <div class="col-lg-6" v-reveal>
-            <p class="eyebrow mb-2">Beyond the Temples</p>
-            <h2 class="font-display mb-3">{{ settings?.aboutTitle || 'Explore Beyond the Temples' }}</h2>
+            <p class="eyebrow mb-2">{{ t('home.beyondTemples') }}</p>
+            <h2 class="font-display mb-3">{{ settings?.aboutTitle || t('home.exploreBeyondTemplesDefault') }}</h2>
             <p class="text-muted fs-5 mb-4">
-              {{ settings?.aboutWhyChooseUs || settings?.aboutDescription || 'Ride through Siem Reap, discover local roads, countryside and hidden places at your own pace.' }}
+              {{ settings?.aboutWhyChooseUs || settings?.aboutDescription || t('home.aboutDescDefault') }}
             </p>
-            <NuxtLink to="/about" class="btn btn-charcoal btn-lg">Start Your Journey</NuxtLink>
+            <NuxtLink to="/about" class="btn btn-charcoal btn-lg">{{ t('home.startYourJourney') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -128,8 +128,8 @@
       <div class="container">
         <div class="row justify-content-between align-items-end mb-4" v-reveal>
           <div class="col-lg-6">
-            <p class="eyebrow mb-1">Good to Know</p>
-            <h2 class="font-display">Frequently Asked Questions</h2>
+            <p class="eyebrow mb-1">{{ t('home.goodToKnow') }}</p>
+            <h2 class="font-display">{{ t('home.faqTitle') }}</h2>
           </div>
         </div>
         <div class="row g-3">
@@ -141,7 +141,7 @@
           </div>
         </div>
         <div class="text-center mt-4">
-          <NuxtLink to="/faq" class="btn btn-outline-charcoal">View all FAQs</NuxtLink>
+          <NuxtLink to="/faq" class="btn btn-outline-charcoal">{{ t('home.viewAllFaqs') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -150,16 +150,17 @@
     <section class="cta position-relative overflow-hidden bg-forest text-center">
       <TempleSilhouette class="cta__silhouette" />
       <div class="container position-relative py-5" v-reveal>
-        <p class="eyebrow text-gold-light mb-2">Ready When You Are</p>
-        <h2 class="font-display display-6 mb-3">Ready to Explore Siem Reap?</h2>
-        <p class="fs-5 mb-4" style="opacity: 0.85">Your adventure starts here.</p>
-        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-5">Browse Motorbikes</NuxtLink>
+        <p class="eyebrow text-gold-light mb-2">{{ t('home.readyWhenYouAre') }}</p>
+        <h2 class="font-display display-6 mb-3">{{ t('home.readyToExplore') }}</h2>
+        <p class="fs-5 mb-4" style="opacity: 0.85">{{ t('home.adventureStarts') }}</p>
+        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-5">{{ t('home.browseMotorbikes') }}</NuxtLink>
       </div>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const settingsStore = useSettingsStore()
 await settingsStore.load()
 const settings = computed(() => settingsStore.settings)
@@ -201,19 +202,19 @@ const heroImageStyle = computed(() => {
 })
 
 const quickFacts = [
-  { icon: 'bi-motorcycle', label: 'Available Motorbikes' },
-  { icon: 'bi-tag', label: 'Affordable Prices' },
-  { icon: 'bi-phone', label: 'Easy Booking' },
-  { icon: 'bi-headset', label: 'Local Support' }
+  { icon: 'bi-motorcycle', labelKey: 'home.quickFacts.availableMotorbikes' },
+  { icon: 'bi-tag', labelKey: 'home.quickFacts.affordablePrices' },
+  { icon: 'bi-phone', labelKey: 'home.quickFacts.easyBooking' },
+  { icon: 'bi-headset', labelKey: 'home.quickFacts.localSupport' }
 ]
 
 const whyChooseUs = [
-  { icon: 'bi-shield-check', title: 'Reliable Motorbikes' },
-  { icon: 'bi-cash-coin', title: 'Fair Local Prices' },
-  { icon: 'bi-phone-vibrate', title: 'Easy Booking' },
-  { icon: 'bi-geo-alt', title: 'Local Siem Reap Support' },
-  { icon: 'bi-shield-plus', title: 'Helmet Included' },
-  { icon: 'bi-building', title: 'Hotel Delivery' }
+  { icon: 'bi-shield-check', titleKey: 'home.whyChooseUs.reliableMotorbikes' },
+  { icon: 'bi-cash-coin', titleKey: 'home.whyChooseUs.fairLocalPrices' },
+  { icon: 'bi-phone-vibrate', titleKey: 'home.whyChooseUs.easyBooking' },
+  { icon: 'bi-geo-alt', titleKey: 'home.whyChooseUs.localSupport' },
+  { icon: 'bi-shield-plus', titleKey: 'home.whyChooseUs.helmetIncluded' },
+  { icon: 'bi-building', titleKey: 'home.whyChooseUs.hotelDelivery' }
 ]
 
 useHead({ title: settings.value?.businessName ? `${settings.value.businessName} — Motorbike Rental Siem Reap` : 'Motorbike Rental Siem Reap' })

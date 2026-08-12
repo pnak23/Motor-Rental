@@ -1,9 +1,9 @@
 <template>
   <div>
     <PageHeader
-      eyebrow="Find Us"
-      title="Rental Locations"
-      subtitle="Pick up and return your motorbike at any of these locations around Siem Reap."
+      :eyebrow="t('locations.findUs')"
+      :title="t('locations.title')"
+      :subtitle="t('locations.subtitle')"
     />
 
     <div class="container py-5">
@@ -26,7 +26,7 @@
                 rel="noopener"
                 class="btn btn-sm btn-outline-charcoal"
               >
-                View on Google Maps
+                {{ t('locations.viewOnGoogleMaps') }}
               </a>
             </div>
           </div>
@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 interface Location {
   id: string
   name: string

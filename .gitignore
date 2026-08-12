@@ -7,3 +7,5 @@ dist/
 .DS_Store
 public/uploads/motorbikes/*
 !public/uploads/motorbikes/.gitkeep
+public/uploads/documents/*
+!public/uploads/documents/.gitkeep

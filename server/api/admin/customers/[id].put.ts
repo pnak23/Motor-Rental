@@ -2,12 +2,14 @@ import { z } from 'zod'
 import { query } from '../../../utils/db'
 import { requireAuth } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
+import { customerIdTypeEnum } from '../../../utils/schemas'
 
 const bodySchema = z.object({
   fullName: z.string().min(1).optional(),
   phone: z.string().min(1).optional(),
   email: z.string().optional().nullable(),
   nationality: z.string().optional().nullable(),
+  idType: customerIdTypeEnum.optional().nullable(),
   passportId: z.string().optional().nullable(),
   telegram: z.string().optional().nullable(),
   whatsapp: z.string().optional().nullable(),

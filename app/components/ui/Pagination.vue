@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="totalPages > 1" aria-label="Pagination">
+  <nav v-if="totalPages > 1" :aria-label="t('pagination.label')">
     <ul class="pagination mb-0">
       <li class="page-item" :class="{ disabled: page <= 1 }">
         <button class="page-link" @click="$emit('update:page', page - 1)">
@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 const props = defineProps<{ page: number; totalPages: number }>()
 defineEmits<{ 'update:page': [number] }>()
 

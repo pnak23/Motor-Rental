@@ -11,6 +11,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./prisma/migrations/0001_init/migration.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+      - ./prisma/migrations/0002_add_customer_id_document/migration.sql:/docker-entrypoint-initdb.d/02-add-customer-id-document.sql:ro
     ports:
       - "5432:5432"
     healthcheck:

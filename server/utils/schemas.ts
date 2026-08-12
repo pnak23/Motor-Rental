@@ -48,6 +48,8 @@ export const motorbikeSchema = z.object({
   seoKeywords: z.string().optional().nullable()
 })
 
+export const customerIdTypeEnum = z.enum(['ID_CARD', 'PASSPORT'])
+
 export const bookingCreateSchema = z.object({
   motorbikeId: z.string().min(1),
   pickupDate: z.string().min(1),
@@ -59,6 +61,7 @@ export const bookingCreateSchema = z.object({
     phone: z.string().min(1),
     email: z.string().email().optional().or(z.literal('')).nullable(),
     nationality: z.string().optional().nullable(),
+    idType: customerIdTypeEnum.optional().nullable(),
     passportId: z.string().optional().nullable(),
     telegram: z.string().optional().nullable(),
     whatsapp: z.string().optional().nullable()

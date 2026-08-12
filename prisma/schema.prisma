@@ -23,6 +23,11 @@ enum Transmission {
   SEMI_AUTOMATIC
 }
 
+enum CustomerIdType {
+  ID_CARD
+  PASSPORT
+}
+
 enum FuelType {
   GASOLINE
   ELECTRIC
@@ -239,7 +244,9 @@ model Customer {
   phone       String
   email       String?
   nationality String?
-  passportId  String?
+  idType        CustomerIdType?
+  passportId    String?
+  idDocumentUrl String?
   telegram    String?
   whatsapp    String?
   notes       String?

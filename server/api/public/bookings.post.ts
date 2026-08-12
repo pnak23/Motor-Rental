@@ -1,10 +1,60 @@
+import type { H3Event } from 'h3'
 import { bookingCreateSchema } from '../../utils/schemas'
 import { queryOne, query, newId } from '../../utils/db'
 import { quotePrice } from '../../utils/pricing'
 import { createBookingSafely } from '../../utils/availability'
+import { saveIdDocument } from '../../utils/upload'
+
+/**
+ * The public booking form submits multipart/form-data (not JSON) so it can
+ * carry an optional photo of the customer's ID card / passport alongside
+ * the rest of the booking fields.
+ */
+async function readBookingFormData(event: H3Event) {
+  const parts = await readMultipartFormData(event)
+  if (!parts) {
+    throw createError({ statusCode: 400, statusMessage: 'Please fill in all required booking details' })
+  }
+
+  const fields: Record<string, string> = {}
+  let idDocument: { data: Buffer; type: string } | null = null
+
+  for (const part of parts) {
+    if (!part.name) continue
+    if (part.name === 'idDocument') {
+      if (part.filename && part.type && part.data.byteLength > 0) {
+        idDocument = { data: part.data, type: part.type }
+      }
+      continue
+    }
+    fields[part.name] = part.data.toString('utf-8')
+  }
+
+  const body = {
+    motorbikeId: fields.motorbikeId,
+    pickupDate: fields.pickupDate,
+    returnDate: fields.returnDate,
+    pickupLocationId: fields.pickupLocationId || null,
+    returnLocationId: fields.returnLocationId || null,
+    notes: fields.notes || null,
+    customer: {
+      fullName: fields.customerFullName,
+      phone: fields.customerPhone,
+      email: fields.customerEmail || null,
+      nationality: fields.customerNationality || null,
+      idType: fields.customerIdType || null,
+      passportId: fields.customerPassportId || null,
+      telegram: fields.customerTelegram || null,
+      whatsapp: fields.customerWhatsapp || null
+    }
+  }
+
+  return { body, idDocument }
+}
 
 export default defineEventHandler(async (event) => {
-  const parsed = bookingCreateSchema.safeParse(await readBody(event))
+  const { body, idDocument } = await readBookingFormData(event)
+  const parsed = bookingCreateSchema.safeParse(body)
   if (!parsed.success) {
     throw createError({
       statusCode: 400,
@@ -53,20 +103,25 @@ export default defineEventHandler(async (event) => {
   const subtotal = quote.subtotal
   const total = Math.round((subtotal + deliveryFee) * 100) / 100
 
+  // Only touch disk once we know the rest of the request is valid.
+  const idDocumentUrl = idDocument ? (await saveIdDocument(idDocument.data, idDocument.type)).url : null
+
   // Find or create the customer by phone number.
   let customer = await queryOne<{ id: string }>(`SELECT id FROM customers WHERE phone = $1`, [d.customer.phone])
   if (!customer) {
     const id = newId()
     const rows = await query(
-      `INSERT INTO customers (id, "fullName", phone, email, nationality, "passportId", telegram, whatsapp, "createdAt", "updatedAt")
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8, now(), now()) RETURNING id`,
+      `INSERT INTO customers (id, "fullName", phone, email, nationality, "idType", "passportId", "idDocumentUrl", telegram, whatsapp, "createdAt", "updatedAt")
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, now(), now()) RETURNING id`,
       [
         id,
         d.customer.fullName,
         d.customer.phone,
         d.customer.email || null,
         d.customer.nationality || null,
+        d.customer.idType || null,
         d.customer.passportId || null,
+        idDocumentUrl,
         d.customer.telegram || null,
         d.customer.whatsapp || null
       ]
@@ -75,12 +130,17 @@ export default defineEventHandler(async (event) => {
   } else {
     await query(
       `UPDATE customers SET "fullName" = $1, email = COALESCE($2, email), nationality = COALESCE($3, nationality),
-        telegram = COALESCE($4, telegram), whatsapp = COALESCE($5, whatsapp), "updatedAt" = now()
-       WHERE id = $6`,
+        "idType" = COALESCE($4, "idType"), "passportId" = COALESCE($5, "passportId"),
+        "idDocumentUrl" = COALESCE($6, "idDocumentUrl"),
+        telegram = COALESCE($7, telegram), whatsapp = COALESCE($8, whatsapp), "updatedAt" = now()
+       WHERE id = $9`,
       [
         d.customer.fullName,
         d.customer.email || null,
         d.customer.nationality || null,
+        d.customer.idType || null,
+        d.customer.passportId || null,
+        idDocumentUrl,
         d.customer.telegram || null,
         d.customer.whatsapp || null,
         customer.id

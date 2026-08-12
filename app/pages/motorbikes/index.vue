@@ -1,52 +1,52 @@
 <template>
   <div>
-    <PageHeader eyebrow="Our Fleet" title="Browse Motorbikes" :subtitle="`${total} motorbikes available in Siem Reap`" />
+    <PageHeader :eyebrow="t('motorbikes.ourFleet')" :title="t('motorbikes.browseMotorbikes')" :subtitle="t('motorbikes.availableCount', { count: total })" />
 
     <div class="container py-5">
     <div class="row g-4">
       <!-- Filters -->
       <div class="col-lg-3">
         <div class="card p-3">
-          <label class="form-label small fw-600">Search</label>
-          <input v-model="search" type="text" class="form-control mb-3" placeholder="Name, brand, model..." />
+          <label class="form-label small fw-600">{{ t('motorbikes.search') }}</label>
+          <input v-model="search" type="text" class="form-control mb-3" :placeholder="t('motorbikes.searchPlaceholder')" />
 
-          <label class="form-label small fw-600">Category</label>
+          <label class="form-label small fw-600">{{ t('motorbikes.category') }}</label>
           <select v-model="category" class="form-select mb-3">
-            <option value="">All categories</option>
+            <option value="">{{ t('motorbikes.allCategories') }}</option>
             <option v-for="c in filters?.categories" :key="c.id" :value="c.slug">{{ c.name }}</option>
           </select>
 
-          <label class="form-label small fw-600">Brand</label>
+          <label class="form-label small fw-600">{{ t('motorbikes.brand') }}</label>
           <select v-model="brand" class="form-select mb-3">
-            <option value="">All brands</option>
+            <option value="">{{ t('motorbikes.allBrands') }}</option>
             <option v-for="b in filters?.brands" :key="b" :value="b">{{ b }}</option>
           </select>
 
-          <label class="form-label small fw-600">Transmission</label>
+          <label class="form-label small fw-600">{{ t('motorbikes.transmission') }}</label>
           <select v-model="transmission" class="form-select mb-3">
-            <option value="">Any</option>
-            <option value="AUTOMATIC">Automatic</option>
-            <option value="MANUAL">Manual</option>
-            <option value="SEMI_AUTOMATIC">Semi-Automatic</option>
+            <option value="">{{ t('motorbikes.any') }}</option>
+            <option value="AUTOMATIC">{{ t('motorbikes.automatic') }}</option>
+            <option value="MANUAL">{{ t('motorbikes.manual') }}</option>
+            <option value="SEMI_AUTOMATIC">{{ t('motorbikes.semiAutomatic') }}</option>
           </select>
 
-          <label class="form-label small fw-600">Max daily price</label>
+          <label class="form-label small fw-600">{{ t('motorbikes.maxDailyPrice') }}</label>
           <input v-model.number="maxPrice" type="range" min="5" max="50" step="1" class="form-range mb-1" />
-          <p class="small text-muted">Up to ${{ maxPrice }}/day</p>
+          <p class="small text-muted">{{ t('motorbikes.upTo', { price: maxPrice }) }}</p>
 
-          <button class="btn btn-outline-charcoal btn-sm mt-2" @click="resetFilters">Reset filters</button>
+          <button class="btn btn-outline-charcoal btn-sm mt-2" @click="resetFilters">{{ t('motorbikes.resetFilters') }}</button>
         </div>
       </div>
 
       <!-- Results -->
       <div class="col-lg-9">
         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center mb-3">
-          <span class="text-muted small">Showing {{ items.length }} of {{ total }}</span>
+          <span class="text-muted small">{{ t('motorbikes.showing', { shown: items.length, total }) }}</span>
           <select v-model="sort" class="form-select form-select-sm w-auto">
-            <option value="popular">Most popular</option>
-            <option value="price_asc">Price: Low to High</option>
-            <option value="price_desc">Price: High to Low</option>
-            <option value="newest">Newest</option>
+            <option value="popular">{{ t('motorbikes.mostPopular') }}</option>
+            <option value="price_asc">{{ t('motorbikes.priceLowHigh') }}</option>
+            <option value="price_desc">{{ t('motorbikes.priceHighLow') }}</option>
+            <option value="newest">{{ t('motorbikes.newest') }}</option>
           </select>
         </div>
 
@@ -58,7 +58,7 @@
 
         <div v-else-if="items.length === 0" class="text-center py-5">
           <i class="bi bi-emoji-frown fs-1 text-muted d-block mb-2" />
-          <p class="text-muted">No motorbikes match your filters. Try adjusting your search.</p>
+          <p class="text-muted">{{ t('motorbikes.noMatch') }}</p>
         </div>
 
         <div v-else class="row g-4">
@@ -77,6 +77,7 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
 interface Bike {
   id: string
   name: string

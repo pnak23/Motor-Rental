@@ -18,6 +18,16 @@
           <div class="col-6"><strong>Nationality:</strong> {{ booking.customer.nationality || '—' }}</div>
           <div class="col-6"><strong>Telegram:</strong> {{ booking.customer.telegram || '—' }}</div>
           <div class="col-6"><strong>WhatsApp:</strong> {{ booking.customer.whatsapp || '—' }}</div>
+          <div class="col-6">
+            <strong>ID Type:</strong> {{ booking.customer.idType ? booking.customer.idType.replace('_', ' ') : '—' }}
+          </div>
+          <div class="col-6"><strong>ID / Passport #:</strong> {{ booking.customer.passportId || '—' }}</div>
+          <div v-if="booking.customer.idDocumentUrl" class="col-12 mt-2">
+            <strong class="d-block mb-1">ID Document:</strong>
+            <a :href="booking.customer.idDocumentUrl" target="_blank" rel="noopener">
+              <img :src="booking.customer.idDocumentUrl" alt="ID document" class="id-document-thumb" />
+            </a>
+          </div>
         </div>
 
         <h3 class="h6 font-display mb-2">Rental</h3>
@@ -117,6 +127,9 @@ interface BookingDetail {
     nationality: string | null
     telegram: string | null
     whatsapp: string | null
+    idType: string | null
+    passportId: string | null
+    idDocumentUrl: string | null
   }
   motorbike: { name: string; dailyPrice: string }
   timeline: { id: string; status: string; note: string | null; createdAt: string; changedByName: string | null }[]
@@ -179,5 +192,12 @@ function formatDateTime(d: string) {
 .timeline li {
   border-left: 2px solid var(--color-border);
   padding-left: 0.75rem;
+}
+.id-document-thumb {
+  max-width: 220px;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
 }
 </style>
