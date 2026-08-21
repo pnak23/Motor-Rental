@@ -17,10 +17,10 @@ export const useAuthStore = defineStore('auth', {
       this.loaded = true
       return user
     },
-    async login(email: string, password: string) {
+    async login(email: string, password: string, remember = false) {
       const user = await useApi<AdminUser>('/api/auth/login', {
         method: 'POST',
-        body: { email, password }
+        body: { email, password, remember }
       })
       this.user = user
       this.loaded = true

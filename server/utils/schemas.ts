@@ -2,6 +2,7 @@ import { z } from 'zod'
 
 export const transmissionEnum = z.enum(['AUTOMATIC', 'MANUAL', 'SEMI_AUTOMATIC'])
 export const fuelTypeEnum = z.enum(['GASOLINE', 'ELECTRIC'])
+export const keyTypeEnum = z.enum(['NORMAL_KEY', 'SMART_KEY'])
 export const motorbikeStatusEnum = z.enum(['AVAILABLE', 'RENTED', 'MAINTENANCE', 'INACTIVE'])
 export const bookingStatusEnum = z.enum([
   'PENDING',
@@ -11,6 +12,11 @@ export const bookingStatusEnum = z.enum([
   'CANCELLED',
   'REJECTED'
 ])
+export const paymentStatusEnum = z.enum(['UNPAID', 'PARTIAL', 'PAID', 'REFUNDED'])
+/** Payment methods available in Cambodia. CASH is walk-in/admin only. */
+export const paymentMethodEnum = z.enum(['KHQR', 'ABA', 'ACLEDA', 'WING', 'CARD', 'CASH'])
+/** Public bookings require at least this fraction of the total upfront. */
+export const REQUIRED_DEPOSIT_RATIO = 0.5
 
 export const motorbikeSchema = z.object({
   name: z.string().min(1),
@@ -21,6 +27,7 @@ export const motorbikeSchema = z.object({
   engineCc: z.coerce.number().int().positive(),
   plateNumber: z.string().optional().nullable(),
   color: z.string().optional().nullable(),
+  keyType: keyTypeEnum.default('NORMAL_KEY'),
   categoryId: z.string().optional().nullable(),
   transmission: transmissionEnum.default('AUTOMATIC'),
   fuelType: fuelTypeEnum.default('GASOLINE'),
@@ -56,6 +63,9 @@ export const bookingCreateSchema = z.object({
   returnDate: z.string().min(1),
   pickupLocationId: z.string().optional().nullable(),
   returnLocationId: z.string().optional().nullable(),
+  paymentMethod: paymentMethodEnum,
+  paymentReference: z.string().optional().nullable(),
+  paidAmount: z.coerce.number().min(0),
   customer: z.object({
     fullName: z.string().min(1),
     phone: z.string().min(1),
@@ -68,6 +78,42 @@ export const bookingCreateSchema = z.object({
   }),
   notes: z.string().optional().nullable()
 })
+
+/** Used when an admin creates a walk-in booking on behalf of a customer. */
+export const adminBookingCreateSchema = z
+  .object({
+    motorbikeId: z.string().min(1),
+    pickupDate: z.string().min(1),
+    returnDate: z.string().min(1),
+    pickupLocationId: z.string().optional().nullable(),
+    returnLocationId: z.string().optional().nullable(),
+    status: bookingStatusEnum.optional(),
+    paymentStatus: paymentStatusEnum.optional(),
+    paymentMethod: paymentMethodEnum.optional(),
+    paymentReference: z.string().optional().nullable(),
+    paidAmount: z.coerce.number().min(0).optional(),
+    discount: z.coerce.number().min(0).optional(),
+    additionalCharges: z.coerce.number().min(0).optional(),
+    deposit: z.coerce.number().min(0).optional(),
+    notes: z.string().optional().nullable(),
+    customerId: z.string().optional(),
+    customer: z
+      .object({
+        fullName: z.string().min(1),
+        phone: z.string().min(1),
+        email: z.string().email().optional().or(z.literal('')).nullable(),
+        nationality: z.string().optional().nullable(),
+        idType: customerIdTypeEnum.optional().nullable(),
+        passportId: z.string().optional().nullable(),
+        telegram: z.string().optional().nullable(),
+        whatsapp: z.string().optional().nullable()
+      })
+      .optional()
+  })
+  .refine((d) => d.customerId || d.customer, {
+    message: 'Select an existing customer or enter new customer details',
+    path: ['customer']
+  })
 
 export const locationSchema = z.object({
   name: z.string().min(1),
@@ -164,5 +210,14 @@ export const settingsSchema = z.object({
   trafficViolationPolicy: z.string().optional().nullable(),
   helmetPolicy: z.string().optional().nullable(),
   minimumAge: z.coerce.number().int().optional().nullable(),
-  requiredDocuments: z.string().optional().nullable()
+  requiredDocuments: z.string().optional().nullable(),
+  khqrAccountId: z.string().optional().nullable(),
+  khqrMerchantName: z.string().optional().nullable(),
+  khqrMerchantCity: z.string().optional().nullable(),
+  khqrImageUrl: z.string().optional().nullable(),
+  khqrInstructions: z.string().optional().nullable(),
+  abaInstructions: z.string().optional().nullable(),
+  acledaInstructions: z.string().optional().nullable(),
+  wingInstructions: z.string().optional().nullable(),
+  cardInstructions: z.string().optional().nullable()
 })

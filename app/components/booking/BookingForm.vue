@@ -3,16 +3,27 @@
     <div v-if="!confirmation">
       <h3 class="h5 font-display mb-3">{{ t('bookingForm.rentThisMotorbike') }}</h3>
 
-      <div class="row g-2 mb-3">
+      <div class="row g-2 mb-2">
         <div class="col-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupDate') }}</label>
           <input v-model="pickupDate" type="date" class="form-control" :min="today" @change="checkAvailability" />
         </div>
         <div class="col-6">
+          <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupTime') }}</label>
+          <input v-model="pickupTime" type="time" class="form-control" @change="checkAvailability" />
+        </div>
+      </div>
+      <div class="row g-2 mb-3">
+        <div class="col-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnDate') }}</label>
           <input v-model="returnDate" type="date" class="form-control" :min="pickupDate || today" @change="checkAvailability" />
         </div>
+        <div class="col-6">
+          <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnTime') }}</label>
+          <input v-model="returnTime" type="time" class="form-control" @change="checkAvailability" />
+        </div>
       </div>
+      <p class="small text-muted mb-3"><i class="bi bi-info-circle me-1" />{{ t('bookingForm.halfDayHint') }}</p>
 
       <div class="row g-2 mb-3">
         <div class="col-6">
@@ -34,7 +45,8 @@
       <div v-if="quote" class="quote-box p-3 mb-3" :class="quote.available ? 'quote-box--ok' : 'quote-box--warn'">
         <template v-if="quote.available">
           <div class="d-flex justify-content-between small mb-1">
-            <span>{{ quote.days }} day(s) &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
+            <span v-if="quote.isHalfDay">{{ t('bookingForm.halfDayRate') }}</span>
+            <span v-else>{{ quote.days }} day(s) &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
             <span>${{ quote.subtotal.toFixed(2) }}</span>
           </div>
           <div v-if="Number(bike.deliveryFee) > 0" class="d-flex justify-content-between small mb-1">
@@ -44,14 +56,22 @@
           <hr class="my-2" />
           <div class="d-flex justify-content-between fw-600">
             <span>{{ t('bookingForm.total') }}</span>
-            <span class="price-tag">${{ total.toFixed(2) }}</span>
+            <span class="price-tag">${{ quote.total.toFixed(2) }}</span>
           </div>
           <div v-if="Number(bike.deposit) > 0" class="small text-muted mt-1">
             {{ t('bookingForm.refundableDeposit', { amount: Number(bike.deposit).toFixed(2) }) }}
           </div>
+          <div class="deposit-callout mt-2 p-2">
+            <i class="bi bi-shield-check me-1" />
+            {{ t('bookingForm.depositRequired', { amount: quote.requiredDeposit.toFixed(2) }) }}
+          </div>
         </template>
         <template v-else>
-          <i class="bi bi-exclamation-triangle me-1" />{{ quote.reason }}
+          <p class="fw-600 mb-1"><i class="bi bi-exclamation-triangle me-1" />{{ t('bookingForm.unavailableTitle') }}</p>
+          <p class="small mb-0">{{ quote.reason }}</p>
+          <p v-if="quote.conflict" class="small mb-0 mt-1">
+            {{ t('bookingForm.reservedUntil', { date: formatDateTime(quote.conflict.returnDate) }) }}
+          </p>
         </template>
       </div>
 
@@ -94,8 +114,81 @@
             </div>
             <p v-if="fileError" class="text-danger small mb-2">{{ fileError }}</p>
           </div>
+        </div>
 
+        <h4 class="h6 mt-4 mb-3">{{ t('bookingForm.paymentTitle') }}</h4>
+        <div class="row g-2">
           <div class="col-12">
+            <div class="payment-method-grid">
+              <button
+                v-for="m in paymentMethods"
+                :key="m.value"
+                type="button"
+                class="payment-method-btn"
+                :class="{ active: paymentMethod === m.value }"
+                @click="paymentMethod = m.value"
+              >
+                <i class="bi" :class="m.icon" />
+                <span>{{ m.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <div v-if="paymentMethod === 'CARD'" class="col-12">
+            <div class="payment-instructions p-3 mt-2">
+              <p class="small mb-0">{{ settings?.cardInstructions || t('bookingForm.noInstructionsYet') }}</p>
+            </div>
+          </div>
+
+          <div v-else-if="isBankMethod" class="col-12">
+            <div class="payment-instructions p-3 mt-2">
+              <!-- Mobile + ABA: try to jump straight into the ABA app -->
+              <a
+                v-if="isMobile && paymentMethod === 'ABA' && khqr.available && khqr.abaDeepLink"
+                :href="khqr.abaDeepLink"
+                class="btn btn-charcoal w-100 mb-3"
+              >
+                <i class="bi bi-box-arrow-up-right me-2" />{{ t('bookingForm.openAbaApp') }}
+              </a>
+
+              <template v-if="khqrLoading">
+                <p class="small text-muted mb-0"><span class="spinner-border spinner-border-sm me-1" />{{ t('bookingForm.generatingQr') }}</p>
+              </template>
+              <template v-else-if="khqr.available">
+                <img :src="khqr.qrImage" alt="KHQR" class="khqr-image mb-2" />
+                <p class="small mb-0">
+                  {{ isMobile ? t('bookingForm.scanWithAppMobile') : t('bookingForm.scanWithAppDesktop') }}
+                </p>
+              </template>
+              <template v-else>
+                <img v-if="paymentMethod === 'KHQR' && settings?.khqrImageUrl" :src="settings.khqrImageUrl" alt="KHQR" class="khqr-image mb-2" />
+                <p class="small mb-0">{{ currentInstructions || t('bookingForm.noInstructionsYet') }}</p>
+              </template>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.amountPaid') }}</label>
+            <input v-model.number="paidAmount" type="number" step="0.01" min="0" class="form-control" />
+          </div>
+          <div class="col-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.transactionRef') }}</label>
+            <input v-model="paymentReference" type="text" class="form-control" :placeholder="t('bookingForm.transactionRefPlaceholder')" />
+          </div>
+          <div class="col-12">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.uploadPaymentProof') }}</label>
+            <input ref="proofInputEl" type="file" accept="image/jpeg,image/jpg,image/png,image/webp" class="form-control mb-1" @change="onProofChange" />
+            <div v-if="paymentProofPreview" class="id-preview mb-1">
+              <img :src="paymentProofPreview" alt="" class="id-preview__img" />
+              <button type="button" class="btn btn-sm btn-outline-secondary" @click="removeProof">{{ t('bookingForm.removeFile') }}</button>
+            </div>
+            <p v-if="proofError" class="text-danger small mb-0">{{ proofError }}</p>
+          </div>
+          <div v-if="quote?.available && paidAmount < quote.requiredDeposit - 0.01" class="col-12">
+            <p class="text-danger small mb-0">{{ t('bookingForm.depositTooLow', { amount: quote.requiredDeposit.toFixed(2) }) }}</p>
+          </div>
+
+          <div class="col-12 mt-2">
             <textarea v-model="notes" class="form-control mb-2" rows="2" :placeholder="t('bookingForm.notesOptional')" />
           </div>
         </div>
@@ -103,7 +196,7 @@
         <button
           type="submit"
           class="btn btn-amber w-100 mt-2"
-          :disabled="submitting || !pickupDate || !returnDate || (quote ? !quote.available : false)"
+          :disabled="submitting || !canSubmit"
         >
           <span v-if="submitting" class="spinner-border spinner-border-sm me-2" />
           {{ t('bookingForm.submitRentalRequest') }}
@@ -130,7 +223,8 @@
         <p class="small mb-1"><strong>{{ t('bookingForm.return') }}</strong> {{ formatDate(confirmation.returnDate) }}<span v-if="returnLocationName"> &middot; {{ returnLocationName }}</span></p>
         <hr class="my-2" />
         <div v-if="quote?.available" class="d-flex justify-content-between small mb-1">
-          <span>{{ quote.days }} {{ t('common.day') }} &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
+          <span v-if="quote.isHalfDay">{{ t('bookingForm.halfDayRate') }}</span>
+          <span v-else>{{ quote.days }} {{ t('common.day') }} &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
           <span>${{ quote.subtotal.toFixed(2) }}</span>
         </div>
         <div v-if="Number(bike.deliveryFee) > 0" class="d-flex justify-content-between small mb-1">
@@ -141,10 +235,18 @@
           <span>{{ t('bookingForm.total2') }}</span>
           <span class="price-tag">${{ confirmation.total.toFixed(2) }}</span>
         </div>
+        <div class="d-flex justify-content-between small mt-1">
+          <span>{{ t('bookingForm.amountPaid') }}</span>
+          <span>${{ confirmation.paidAmount.toFixed(2) }}</span>
+        </div>
+        <div class="d-flex justify-content-between small">
+          <span>{{ t('bookingForm.remaining') }}</span>
+          <span>${{ Math.max(0, confirmation.total - confirmation.paidAmount).toFixed(2) }}</span>
+        </div>
         <p v-if="Number(bike.deposit) > 0" class="small text-muted mt-1 mb-0">
           {{ t('bookingForm.refundableDeposit', { amount: Number(bike.deposit).toFixed(2) }) }}
         </p>
-        <p class="small text-muted mt-3 mb-0">{{ t('bookingForm.printedOn') }} {{ formatDateTime(printedAt) }}</p>
+        <p class="small text-muted mt-3 mb-0">{{ t('bookingForm.printedOn') }} {{ formatDateTime2(printedAt) }}</p>
       </div>
 
       <div class="d-flex flex-column gap-2">
@@ -185,6 +287,10 @@ interface Quote {
   days: number
   ratePerDay: number
   subtotal: number
+  isHalfDay: boolean
+  total: number
+  requiredDeposit: number
+  conflict: { pickupDate: string; returnDate: string } | null
 }
 interface Confirmation {
   bookingNumber: string
@@ -192,6 +298,8 @@ interface Confirmation {
   pickupDate: string
   returnDate: string
   total: number
+  paidAmount: number
+  paymentStatus: string
 }
 
 const { t, locale } = useI18n()
@@ -201,7 +309,9 @@ const settings = computed(() => settingsStore.settings)
 
 const today = new Date().toISOString().slice(0, 10)
 const pickupDate = ref('')
+const pickupTime = ref('09:00')
 const returnDate = ref('')
+const returnTime = ref('17:00')
 const pickupLocationId = ref('')
 const returnLocationId = ref('')
 const notes = ref('')
@@ -217,8 +327,8 @@ const printedAt = ref<Date | null>(null)
 const pickupLocationName = computed(() => locations.value.find((l) => l.id === pickupLocationId.value)?.name || '')
 const returnLocationName = computed(() => locations.value.find((l) => l.id === returnLocationId.value)?.name || '')
 
-const MAX_ID_DOCUMENT_BYTES = 8 * 1024 * 1024
-const ALLOWED_ID_DOCUMENT_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
+const MAX_FILE_BYTES = 8 * 1024 * 1024
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
 const fileInputEl = ref<HTMLInputElement | null>(null)
 const idDocumentFile = ref<File | null>(null)
 const idDocumentPreview = ref('')
@@ -228,12 +338,12 @@ function onFileChange(e: Event) {
   fileError.value = ''
   const file = (e.target as HTMLInputElement).files?.[0] || null
   if (!file) return
-  if (!ALLOWED_ID_DOCUMENT_TYPES.has(file.type)) {
+  if (!ALLOWED_TYPES.has(file.type)) {
     fileError.value = t('bookingForm.invalidFileType')
     removeFile()
     return
   }
-  if (file.size > MAX_ID_DOCUMENT_BYTES) {
+  if (file.size > MAX_FILE_BYTES) {
     fileError.value = t('bookingForm.fileTooLarge')
     removeFile()
     return
@@ -241,13 +351,110 @@ function onFileChange(e: Event) {
   idDocumentFile.value = file
   idDocumentPreview.value = URL.createObjectURL(file)
 }
-
 function removeFile() {
   idDocumentFile.value = null
   if (idDocumentPreview.value) URL.revokeObjectURL(idDocumentPreview.value)
   idDocumentPreview.value = ''
   if (fileInputEl.value) fileInputEl.value.value = ''
 }
+
+// ── Payment ──
+const paymentMethods = [
+  { value: 'KHQR', label: 'KHQR', icon: 'bi-qr-code' },
+  { value: 'ABA', label: 'ABA', icon: 'bi-bank' },
+  { value: 'ACLEDA', label: 'ACLEDA', icon: 'bi-bank2' },
+  { value: 'WING', label: 'Wing', icon: 'bi-phone' },
+  { value: 'CARD', label: 'Card', icon: 'bi-credit-card' }
+]
+const paymentMethod = ref('')
+const paymentReference = ref('')
+const paidAmount = ref(0)
+const proofInputEl = ref<HTMLInputElement | null>(null)
+const paymentProofFile = ref<File | null>(null)
+const paymentProofPreview = ref('')
+const proofError = ref('')
+
+function onProofChange(e: Event) {
+  proofError.value = ''
+  const file = (e.target as HTMLInputElement).files?.[0] || null
+  if (!file) return
+  if (!ALLOWED_TYPES.has(file.type)) {
+    proofError.value = t('bookingForm.invalidFileType')
+    removeProof()
+    return
+  }
+  if (file.size > MAX_FILE_BYTES) {
+    proofError.value = t('bookingForm.fileTooLarge')
+    removeProof()
+    return
+  }
+  paymentProofFile.value = file
+  paymentProofPreview.value = URL.createObjectURL(file)
+}
+function removeProof() {
+  paymentProofFile.value = null
+  if (paymentProofPreview.value) URL.revokeObjectURL(paymentProofPreview.value)
+  paymentProofPreview.value = ''
+  if (proofInputEl.value) proofInputEl.value.value = ''
+}
+
+const isBankMethod = computed(() => ['KHQR', 'ABA', 'ACLEDA', 'WING'].includes(paymentMethod.value))
+
+// KHQR/ABA/ACLEDA/Wing can all be paid by scanning the same universal KHQR
+// code; only ABA additionally has a documented app-open deep link, so that's
+// the only method that gets a mobile "jump into the app" shortcut.
+const isMobile = ref(false)
+onMounted(() => {
+  isMobile.value = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+})
+
+interface KhqrResult {
+  available: boolean
+  qrImage?: string
+  abaDeepLink?: string
+}
+const khqr = ref<KhqrResult>({ available: false })
+const khqrLoading = ref(false)
+
+let khqrDebounce: ReturnType<typeof setTimeout> | null = null
+async function refreshKhqr() {
+  khqr.value = { available: false }
+  if (!isBankMethod.value || !paidAmount.value || paidAmount.value <= 0) return
+  if (khqrDebounce) clearTimeout(khqrDebounce)
+  khqrDebounce = setTimeout(async () => {
+    khqrLoading.value = true
+    try {
+      khqr.value = await useApi<KhqrResult>('/api/public/payments/khqr', {
+        method: 'POST',
+        body: { amount: paidAmount.value, reference: customer.phone || undefined }
+      })
+    } catch {
+      khqr.value = { available: false }
+    } finally {
+      khqrLoading.value = false
+    }
+  }, 500)
+}
+watch([paymentMethod, paidAmount], refreshKhqr)
+
+const currentInstructions = computed(() => {
+  const s = settings.value
+  if (!s) return ''
+  switch (paymentMethod.value) {
+    case 'KHQR':
+      return s.khqrInstructions
+    case 'ABA':
+      return s.abaInstructions
+    case 'ACLEDA':
+      return s.acledaInstructions
+    case 'WING':
+      return s.wingInstructions
+    case 'CARD':
+      return s.cardInstructions
+    default:
+      return ''
+  }
+})
 
 onMounted(async () => {
   try {
@@ -257,9 +464,17 @@ onMounted(async () => {
   }
 })
 
-const total = computed(() => {
-  if (!quote.value) return 0
-  return quote.value.subtotal + Number(props.bike.deliveryFee || 0)
+// Whenever the quote updates, default the amount to the required 50%
+// deposit so customers don't have to do the math themselves.
+watch(quote, (q) => {
+  if (q?.available) paidAmount.value = q.requiredDeposit
+})
+
+const canSubmit = computed(() => {
+  if (!pickupDate.value || !returnDate.value || !paymentMethod.value) return false
+  if (quote.value && !quote.value.available) return false
+  if (quote.value && paidAmount.value < quote.value.requiredDeposit - 0.01) return false
+  return true
 })
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -271,7 +486,11 @@ async function checkAvailability() {
     try {
       quote.value = await useApi<Quote>('/api/public/motorbikes/availability', {
         method: 'POST',
-        body: { motorbikeId: props.bike.id, pickupDate: pickupDate.value, returnDate: returnDate.value }
+        body: {
+          motorbikeId: props.bike.id,
+          pickupDate: `${pickupDate.value}T${pickupTime.value}:00`,
+          returnDate: `${returnDate.value}T${returnTime.value}:00`
+        }
       })
     } catch (e) {
       error.value = e instanceof Error ? e.message : t('bookingForm.couldNotCheckAvailability')
@@ -279,7 +498,7 @@ async function checkAvailability() {
   }, 300)
 }
 
-watch([pickupDate, returnDate], checkAvailability)
+watch([pickupDate, pickupTime, returnDate, returnTime], checkAvailability)
 
 async function submitBooking() {
   error.value = ''
@@ -288,8 +507,8 @@ async function submitBooking() {
   try {
     const formData = new FormData()
     formData.append('motorbikeId', props.bike.id)
-    formData.append('pickupDate', pickupDate.value)
-    formData.append('returnDate', returnDate.value)
+    formData.append('pickupDate', `${pickupDate.value}T${pickupTime.value}:00`)
+    formData.append('returnDate', `${returnDate.value}T${returnTime.value}:00`)
     if (pickupLocationId.value) formData.append('pickupLocationId', pickupLocationId.value)
     if (returnLocationId.value) formData.append('returnLocationId', returnLocationId.value)
     formData.append('customerFullName', customer.fullName)
@@ -301,6 +520,11 @@ async function submitBooking() {
     if (customer.telegram) formData.append('customerTelegram', customer.telegram)
     if (notes.value) formData.append('notes', notes.value)
     if (idDocumentFile.value) formData.append('idDocument', idDocumentFile.value)
+
+    formData.append('paymentMethod', paymentMethod.value)
+    formData.append('paidAmount', String(paidAmount.value || 0))
+    if (paymentReference.value) formData.append('paymentReference', paymentReference.value)
+    if (paymentProofFile.value) formData.append('paymentProof', paymentProofFile.value)
 
     confirmation.value = await useApi<Confirmation>('/api/public/bookings', {
       method: 'POST',
@@ -318,7 +542,10 @@ async function submitBooking() {
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString(locale.value, { year: 'numeric', month: 'short', day: 'numeric' })
 }
-function formatDateTime(d: Date | null) {
+function formatDateTime(d: string) {
+  return new Date(d).toLocaleString(locale.value, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+function formatDateTime2(d: Date | null) {
   if (!d) return ''
   return d.toLocaleString(locale.value, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
 }
@@ -349,6 +576,13 @@ const whatsappLink = computed(() => {
   background: #fbe9e5;
   color: #a3341c;
 }
+.deposit-callout {
+  border-radius: var(--radius-sm);
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--color-brown, #5a4a2e);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
 .id-preview {
   display: flex;
   align-items: center;
@@ -360,6 +594,56 @@ const whatsappLink = computed(() => {
   object-fit: cover;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
+}
+.payment-method-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+.payment-method-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.6rem 0.25rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+.payment-method-btn i {
+  font-size: 1.1rem;
+}
+.payment-method-btn:hover {
+  border-color: var(--color-amber);
+}
+.payment-method-btn.active {
+  border-color: var(--color-amber-deep);
+  background: rgba(231, 160, 60, 0.14);
+  color: var(--color-amber-deep);
+}
+.payment-instructions {
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-light);
+}
+.khqr-image {
+  max-width: 220px;
+  width: 100%;
+  display: block;
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+@media (max-width: 480px) {
+  .payment-method-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 </style>
 

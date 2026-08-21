@@ -22,6 +22,9 @@
               <th>Image</th>
               <th>Name</th>
               <th>Brand / Model</th>
+              <th>Plate</th>
+              <th>Color</th>
+              <th>Key</th>
               <th>CC</th>
               <th>Transmission</th>
               <th>Daily Price</th>
@@ -31,12 +34,20 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-if="pending"><td colspan="9" class="text-center py-4"><span class="spinner-border spinner-border-sm" /></td></tr>
-            <tr v-else-if="items.length === 0"><td colspan="9" class="text-center py-4 text-muted">No motorbikes found</td></tr>
+            <tr v-if="pending"><td colspan="12" class="text-center py-4"><span class="spinner-border spinner-border-sm" /></td></tr>
+            <tr v-else-if="items.length === 0"><td colspan="12" class="text-center py-4 text-muted">No motorbikes found</td></tr>
             <tr v-for="m in items" :key="m.id">
               <td><img :src="m.primaryImage || placeholder" class="table-thumb" :alt="m.name" /></td>
               <td class="fw-600">{{ m.name }}</td>
               <td>{{ m.brand }} / {{ m.model }}</td>
+              <td class="font-mono small">{{ m.plateNumber || '—' }}</td>
+              <td>{{ m.color || '—' }}</td>
+              <td>
+                <span class="key-badge" :class="m.keyType === 'SMART_KEY' ? 'key-badge--smart' : 'key-badge--normal'">
+                  <i class="bi" :class="m.keyType === 'SMART_KEY' ? 'bi-key-fill' : 'bi-key'" />
+                  {{ m.keyType === 'SMART_KEY' ? 'Smart' : 'Normal' }}
+                </span>
+              </td>
               <td>{{ m.engineCc }}cc</td>
               <td>{{ m.transmission.replace('_', '-') }}</td>
               <td class="price-tag">${{ Number(m.dailyPrice).toFixed(2) }}</td>
@@ -82,6 +93,9 @@ interface MotorbikeRow {
   slug: string
   brand: string
   model: string
+  plateNumber: string | null
+  color: string | null
+  keyType: string
   engineCc: number
   transmission: string
   dailyPrice: string
@@ -164,5 +178,22 @@ async function confirmDelete() {
   height: 42px;
   object-fit: cover;
   border-radius: 6px;
+}
+.key-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+.key-badge--smart {
+  background: rgba(231, 160, 60, 0.15);
+  color: var(--color-amber-deep);
+}
+.key-badge--normal {
+  background: var(--color-gray-light);
+  color: var(--color-gray-mid);
 }
 </style>

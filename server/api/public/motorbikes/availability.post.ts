@@ -1,12 +1,14 @@
 import { z } from 'zod'
 import { queryOne, getPool } from '../../../utils/db'
-import { isMotorbikeAvailable } from '../../../utils/availability'
+import { getBookingConflict } from '../../../utils/availability'
 import { quotePrice } from '../../../utils/pricing'
+import { REQUIRED_DEPOSIT_RATIO } from '../../../utils/schemas'
 
 const bodySchema = z.object({
   motorbikeId: z.string().min(1),
   pickupDate: z.string().min(1),
-  returnDate: z.string().min(1)
+  returnDate: z.string().min(1),
+  excludeBookingId: z.string().optional()
 })
 
 export default defineEventHandler(async (event) => {
@@ -14,7 +16,7 @@ export default defineEventHandler(async (event) => {
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Pickup and return dates are required' })
   }
-  const { motorbikeId, pickupDate, returnDate } = parsed.data
+  const { motorbikeId, pickupDate, returnDate, excludeBookingId } = parsed.data
   const pickup = new Date(pickupDate)
   const ret = new Date(returnDate)
 
@@ -27,47 +29,61 @@ export default defineEventHandler(async (event) => {
     dailyPrice: string
     weeklyPrice: string | null
     monthlyPrice: string | null
+    deliveryFee: string
     minRentalDays: number
     maxRentalDays: number
     status: string
-  }>(`SELECT id, "dailyPrice", "weeklyPrice", "monthlyPrice", "minRentalDays", "maxRentalDays", status FROM motorbikes WHERE id = $1`, [
-    motorbikeId
-  ])
+  }>(
+    `SELECT id, "dailyPrice", "weeklyPrice", "monthlyPrice", "deliveryFee", "minRentalDays", "maxRentalDays", status FROM motorbikes WHERE id = $1`,
+    [motorbikeId]
+  )
   if (!motorbike) {
     throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
   }
 
   const quote = await quotePrice(motorbike, pickup, ret)
+  const deliveryFee = Number(motorbike.deliveryFee) || 0
+  const total = Math.round((quote.subtotal + deliveryFee) * 100) / 100
+  const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
 
-  if (quote.days < motorbike.minRentalDays) {
+  // Half-day rentals are an explicit shorter option and bypass the
+  // motorbike's normal min/max rental-day window.
+  if (!quote.isHalfDay && quote.days < motorbike.minRentalDays) {
     return {
       success: true,
-      data: { available: false, reason: `Minimum rental is ${motorbike.minRentalDays} day(s)`, ...quote }
+      data: { available: false, reason: `Minimum rental is ${motorbike.minRentalDays} day(s)`, conflict: null, total, requiredDeposit, ...quote }
     }
   }
-  if (quote.days > motorbike.maxRentalDays) {
+  if (!quote.isHalfDay && quote.days > motorbike.maxRentalDays) {
     return {
       success: true,
-      data: { available: false, reason: `Maximum rental is ${motorbike.maxRentalDays} day(s)`, ...quote }
+      data: { available: false, reason: `Maximum rental is ${motorbike.maxRentalDays} day(s)`, conflict: null, total, requiredDeposit, ...quote }
     }
   }
-  if (motorbike.status !== 'AVAILABLE') {
-    return { success: true, data: { available: false, reason: 'This motorbike is currently unavailable', ...quote } }
+  if (motorbike.status === 'MAINTENANCE' || motorbike.status === 'INACTIVE') {
+    return {
+      success: true,
+      data: {
+        available: false,
+        reason: `This motorbike is currently in ${motorbike.status.toLowerCase()}`,
+        conflict: null,
+        total,
+        requiredDeposit,
+        ...quote
+      }
+    }
   }
 
-  const client = await getPool().connect()
-  let available = false
-  try {
-    available = await isMotorbikeAvailable(client, motorbikeId, pickup, ret)
-  } finally {
-    client.release()
-  }
+  const conflict = await getBookingConflict(getPool(), motorbikeId, pickup, ret, excludeBookingId)
 
   return {
     success: true,
     data: {
-      available,
-      reason: available ? null : 'This motorbike is already booked for part of that date range',
+      available: conflict === null,
+      reason: conflict ? 'This motorbike is already reserved for part of that date range' : null,
+      conflict,
+      total,
+      requiredDeposit,
       ...quote
     }
   }

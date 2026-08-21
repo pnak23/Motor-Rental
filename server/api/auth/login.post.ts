@@ -5,7 +5,8 @@ import { logAudit } from '../../utils/audit'
 
 const bodySchema = z.object({
   email: z.string().email(),
-  password: z.string().min(1)
+  password: z.string().min(1),
+  remember: z.boolean().optional()
 })
 
 interface UserRow {
@@ -22,7 +23,7 @@ export default defineEventHandler(async (event) => {
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Please provide a valid email and password' })
   }
-  const { email, password } = parsed.data
+  const { email, password, remember } = parsed.data
 
   const user = await queryOne<UserRow>(`SELECT * FROM users WHERE email = $1`, [email.toLowerCase()])
   if (!user || !user.isActive) {
@@ -34,13 +35,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid email or password' })
   }
 
-  const token = signAuthToken(user.id)
+  // "Remember me" extends the session to 30 days with a persistent cookie;
+  // otherwise the token lives 1 day and the cookie is a browser-session
+  // cookie (no maxAge), so it disappears when the browser closes.
+  const token = signAuthToken(user.id, remember ? '30d' : '1d')
   setCookie(event, AUTH_COOKIE, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7
+    ...(remember ? { maxAge: 60 * 60 * 24 * 30 } : {})
   })
 
   await logAudit(event, user.id, 'LOGIN', 'User', user.id, `${user.email} logged in`)

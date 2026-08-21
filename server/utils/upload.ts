@@ -101,3 +101,42 @@ export async function saveIdDocument(fileBuffer: Buffer, originalMime: string): 
     mimeType: 'image/webp'
   }
 }
+
+/**
+ * Validates and saves a KHQR/ABA/ACLEDA/Wing payment screenshot a customer
+ * or admin attaches as proof of the upfront deposit. Since there is no live
+ * payment gateway, this is the evidence staff check against their own bank
+ * or KHQR dashboard before confirming a booking.
+ */
+export async function savePaymentProof(fileBuffer: Buffer, originalMime: string): Promise<SavedImage> {
+  if (!ALLOWED_MIME.has(originalMime)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Only JPG, PNG, and WebP images are allowed for the payment proof'
+    })
+  }
+  if (fileBuffer.byteLength > MAX_BYTES) {
+    throw createError({ statusCode: 400, statusMessage: 'Payment proof image must be smaller than 8MB' })
+  }
+
+  const dir = join(process.cwd(), 'public', 'uploads', 'payments')
+  await mkdir(dir, { recursive: true })
+
+  const id = newId()
+  const filename = `${id}.webp`
+
+  const optimized = await sharp(fileBuffer)
+    .rotate()
+    .resize({ width: 1400, withoutEnlargement: true })
+    .webp({ quality: 85 })
+    .toBuffer()
+
+  await writeFile(join(dir, filename), optimized)
+
+  return {
+    url: `/uploads/payments/${filename}`,
+    filename,
+    size: optimized.byteLength,
+    mimeType: 'image/webp'
+  }
+}

@@ -1,14 +1,14 @@
 import type { H3Event } from 'h3'
-import { bookingCreateSchema } from '../../utils/schemas'
+import { bookingCreateSchema, REQUIRED_DEPOSIT_RATIO } from '../../utils/schemas'
 import { queryOne, query, newId } from '../../utils/db'
 import { quotePrice } from '../../utils/pricing'
 import { createBookingSafely } from '../../utils/availability'
-import { saveIdDocument } from '../../utils/upload'
+import { saveIdDocument, savePaymentProof } from '../../utils/upload'
 
 /**
  * The public booking form submits multipart/form-data (not JSON) so it can
- * carry an optional photo of the customer's ID card / passport alongside
- * the rest of the booking fields.
+ * carry an optional photo of the customer's ID card / passport, and a
+ * payment screenshot, alongside the rest of the booking fields.
  */
 async function readBookingFormData(event: H3Event) {
   const parts = await readMultipartFormData(event)
@@ -18,12 +18,15 @@ async function readBookingFormData(event: H3Event) {
 
   const fields: Record<string, string> = {}
   let idDocument: { data: Buffer; type: string } | null = null
+  let paymentProof: { data: Buffer; type: string } | null = null
 
   for (const part of parts) {
     if (!part.name) continue
-    if (part.name === 'idDocument') {
+    if (part.name === 'idDocument' || part.name === 'paymentProof') {
       if (part.filename && part.type && part.data.byteLength > 0) {
-        idDocument = { data: part.data, type: part.type }
+        const file = { data: part.data, type: part.type }
+        if (part.name === 'idDocument') idDocument = file
+        else paymentProof = file
       }
       continue
     }
@@ -36,6 +39,9 @@ async function readBookingFormData(event: H3Event) {
     returnDate: fields.returnDate,
     pickupLocationId: fields.pickupLocationId || null,
     returnLocationId: fields.returnLocationId || null,
+    paymentMethod: fields.paymentMethod,
+    paymentReference: fields.paymentReference || null,
+    paidAmount: fields.paidAmount,
     notes: fields.notes || null,
     customer: {
       fullName: fields.customerFullName,
@@ -49,11 +55,11 @@ async function readBookingFormData(event: H3Event) {
     }
   }
 
-  return { body, idDocument }
+  return { body, idDocument, paymentProof }
 }
 
 export default defineEventHandler(async (event) => {
-  const { body, idDocument } = await readBookingFormData(event)
+  const { body, idDocument, paymentProof } = await readBookingFormData(event)
   const parsed = bookingCreateSchema.safeParse(body)
   if (!parsed.success) {
     throw createError({
@@ -91,10 +97,12 @@ export default defineEventHandler(async (event) => {
   }
 
   const quote = await quotePrice(motorbike, pickupDate, returnDate)
-  if (quote.days < motorbike.minRentalDays || quote.days > motorbike.maxRentalDays) {
+  // Half-day rentals are an explicit shorter option and bypass the normal
+  // min/max rental-day window.
+  if (!quote.isHalfDay && (quote.days < motorbike.minRentalDays || quote.days > motorbike.maxRentalDays)) {
     throw createError({
       statusCode: 400,
-      statusMessage: `This motorbike can be rented for between ${motorbike.minRentalDays} and ${motorbike.maxRentalDays} days`
+      statusMessage: `This motorbike can be rented for between ${motorbike.minRentalDays} and ${motorbike.maxRentalDays} days (or a half-day)`
     })
   }
 
@@ -103,8 +111,21 @@ export default defineEventHandler(async (event) => {
   const subtotal = quote.subtotal
   const total = Math.round((subtotal + deliveryFee) * 100) / 100
 
+  // Customers must pay at least 50% of the total upfront. We can't verify
+  // the payment programmatically (no live gateway), but we do enforce the
+  // declared amount meets the threshold before the booking is created.
+  const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
+  if (d.paidAmount < requiredDeposit - 0.01) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `A minimum deposit of $${requiredDeposit.toFixed(2)} (50% of the total) is required to submit this booking`
+    })
+  }
+  const paymentStatus = d.paidAmount >= total - 0.01 ? 'PAID' : 'PARTIAL'
+
   // Only touch disk once we know the rest of the request is valid.
   const idDocumentUrl = idDocument ? (await saveIdDocument(idDocument.data, idDocument.type)).url : null
+  const paymentProofUrl = paymentProof ? (await savePaymentProof(paymentProof.data, paymentProof.type)).url : null
 
   // Find or create the customer by phone number.
   let customer = await queryOne<{ id: string }>(`SELECT id FROM customers WHERE phone = $1`, [d.customer.phone])
@@ -161,7 +182,12 @@ export default defineEventHandler(async (event) => {
     additionalCharges: 0,
     deposit,
     total,
-    notes: d.notes || null
+    notes: d.notes || null,
+    paymentStatus,
+    paymentMethod: d.paymentMethod,
+    paymentReference: d.paymentReference || null,
+    paidAmount: d.paidAmount,
+    paymentProofUrl
   })
 
   return {
@@ -173,6 +199,8 @@ export default defineEventHandler(async (event) => {
       returnDate: booking.returnDate,
       total: Number(booking.total),
       deposit: Number(booking.deposit),
+      paidAmount: Number(booking.paidAmount),
+      paymentStatus: booking.paymentStatus,
       customerName: d.customer.fullName
     }
   }

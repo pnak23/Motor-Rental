@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { queryOne, query, newId, withTransaction } from '../../../../utils/db'
 import { requireAuth } from '../../../../utils/auth'
 import { logAudit } from '../../../../utils/audit'
-import { bookingStatusEnum } from '../../../../utils/schemas'
+import { bookingStatusEnum, REQUIRED_DEPOSIT_RATIO } from '../../../../utils/schemas'
 
 const bodySchema = z.object({
   status: bookingStatusEnum,
@@ -18,12 +18,24 @@ export default defineEventHandler(async (event) => {
   }
   const { status, note } = parsed.data
 
-  const booking = await queryOne<{ id: string; motorbikeId: string; status: string }>(
-    `SELECT id, "motorbikeId", status FROM bookings WHERE id = $1`,
+  const booking = await queryOne<{ id: string; motorbikeId: string; status: string; total: string; paidAmount: string }>(
+    `SELECT id, "motorbikeId", status, total, "paidAmount" FROM bookings WHERE id = $1`,
     [id]
   )
   if (!booking) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
+  }
+
+  // At least 50% must be paid before a booking can move into a confirmed /
+  // active state — applies to every path that can change status.
+  if (['CONFIRMED', 'PICKED_UP'].includes(status)) {
+    const requiredDeposit = Math.round(Number(booking.total) * REQUIRED_DEPOSIT_RATIO * 100) / 100
+    if (Number(booking.paidAmount) < requiredDeposit - 0.01) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: `At least $${requiredDeposit.toFixed(2)} (50% of the total) must be paid before this booking can be ${status === 'PICKED_UP' ? 'picked up' : 'confirmed'}. Currently paid: $${Number(booking.paidAmount).toFixed(2)}.`
+      })
+    }
   }
 
   await withTransaction(async (client) => {

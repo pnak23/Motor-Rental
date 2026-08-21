@@ -41,6 +41,7 @@ const form = reactive<Record<string, unknown>>({
   fuelType: 'GASOLINE',
   plateNumber: '',
   color: '',
+  keyType: 'NORMAL_KEY',
   seatCapacity: 2,
   fuelConsumption: '',
   description: '',

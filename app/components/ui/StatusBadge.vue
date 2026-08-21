@@ -53,4 +53,20 @@ const label = computed(() => props.status.replace(/_/g, ' '))
   background: #e6e6e6;
   color: #4a4a4a;
 }
+.status-badge--unpaid {
+  background: #fbdcd6;
+  color: #a3341c;
+}
+.status-badge--partial {
+  background: #fde8c8;
+  color: #8a5a12;
+}
+.status-badge--paid {
+  background: #dbeee0;
+  color: #256b3f;
+}
+.status-badge--refunded {
+  background: #e6e6e6;
+  color: #4a4a4a;
+}
 </style>

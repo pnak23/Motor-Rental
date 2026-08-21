@@ -1,5 +1,5 @@
 <template>
-  <header class="admin-topbar d-flex align-items-center justify-content-between px-4 py-3 bg-white border-bottom">
+  <header class="admin-topbar d-flex align-items-center justify-content-between px-3 px-lg-4 py-3">
     <div>
       <nav aria-label="breadcrumb">
         <ol class="breadcrumb mb-0 small">
@@ -12,25 +12,22 @@
 
     <div class="dropdown">
       <button
-        class="btn btn-light d-flex align-items-center gap-2 border"
+        class="btn admin-user-btn d-flex align-items-center gap-2"
         type="button"
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <span
-          class="rounded-circle bg-charcoal text-white d-flex align-items-center justify-content-center"
-          style="width: 32px; height: 32px; font-size: 0.85rem"
-        >
+        <span class="admin-avatar d-flex align-items-center justify-content-center">
           {{ initials }}
         </span>
-        <span class="d-none d-sm-inline">{{ auth.user?.name }}</span>
-        <i class="bi bi-chevron-down small" />
+        <span class="d-none d-sm-inline fw-600">{{ auth.user?.name }}</span>
+        <i class="bi bi-chevron-down small admin-user-btn__chevron" />
       </button>
-      <ul class="dropdown-menu dropdown-menu-end">
-        <li><span class="dropdown-item-text text-muted small">{{ auth.user?.role }}</span></li>
+      <ul class="dropdown-menu dropdown-menu-end admin-user-menu">
+        <li><span class="dropdown-item-text text-muted small text-uppercase">{{ auth.user?.role }}</span></li>
         <li><hr class="dropdown-divider" /></li>
         <li>
-          <button class="dropdown-item" @click="handleLogout">
+          <button class="dropdown-item text-danger" @click="handleLogout">
             <i class="bi bi-box-arrow-right me-2" />Log out
           </button>
         </li>
@@ -59,3 +56,57 @@ const initials = computed(() =>
     .toUpperCase()
 )
 </script>
+
+<style scoped>
+.admin-topbar {
+  background: var(--color-white, #fff);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.breadcrumb-item a {
+  color: var(--color-gray-mid);
+  text-decoration: none;
+}
+.breadcrumb-item.active {
+  color: var(--color-amber-deep);
+}
+.admin-user-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.admin-user-btn:hover {
+  border-color: var(--color-amber);
+  box-shadow: 0 4px 12px rgba(231, 160, 60, 0.16);
+}
+.admin-user-btn__chevron {
+  opacity: 0.5;
+}
+.admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-charcoal), var(--color-charcoal-2));
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.admin-user-menu {
+  min-width: 190px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 16px 32px rgba(33, 38, 43, 0.14);
+  padding: 0.4rem;
+}
+.admin-user-menu .dropdown-item {
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.65rem;
+}
+</style>

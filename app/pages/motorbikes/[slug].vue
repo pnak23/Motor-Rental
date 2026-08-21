@@ -89,6 +89,7 @@ interface MotorbikeDetail {
   transmission: string
   fuelType: string
   color: string | null
+  keyType: string
   seatCapacity: number | null
   fuelConsumption: string | null
   description: string | null
@@ -123,7 +124,12 @@ const specs = computed(() => [
   { label: t('motorbikeDetail.fuel'), value: bike.fuelType === 'ELECTRIC' ? t('motorbikeDetail.electric') : t('motorbikeDetail.gasoline'), icon: 'bi-fuel-pump' },
   { label: t('motorbikeDetail.seats'), value: String(bike.seatCapacity || 2), icon: 'bi-person' },
   { label: t('motorbikeDetail.year'), value: String(bike.year || '—'), icon: 'bi-calendar3' },
-  { label: t('motorbikeDetail.color'), value: bike.color || '—', icon: 'bi-palette' }
+  { label: t('motorbikeDetail.color'), value: bike.color || '—', icon: 'bi-palette' },
+  {
+    label: t('motorbikeDetail.keyType'),
+    value: bike.keyType === 'SMART_KEY' ? t('motorbikeDetail.smartKey') : t('motorbikeDetail.normalKey'),
+    icon: 'bi-key'
+  }
 ])
 
 useHead({

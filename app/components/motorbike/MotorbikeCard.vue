@@ -14,17 +14,17 @@
       <p class="eyebrow mb-1">{{ bike.brand }}</p>
       <h3 class="h5 font-display mb-2">{{ bike.name }}</h3>
 
-      <ul class="list-unstyled d-flex flex-wrap gap-3 small text-muted my-1">
+      <ul class="list-unstyled d-flex flex-wrap gap-2 gap-sm-3 small text-muted my-1 bike-card__specs">
         <li><i class="bi bi-gear me-1" />{{ formatTransmission(bike.transmission) }}</li>
         <li><i class="bi bi-speedometer2 me-1" />{{ bike.engineCc }}cc</li>
       </ul>
 
-      <div class="mt-auto d-flex align-items-center justify-content-between pt-3">
+      <div class="mt-auto d-flex flex-wrap align-items-center justify-content-between gap-2 pt-3">
         <div>
           <span class="small text-muted d-block">{{ t('motorbikeCard.from') }}</span>
           <span class="price-tag fs-5">${{ Number(bike.dailyPrice).toFixed(0) }}<span class="fs-6 fw-normal">{{ t('motorbikeCard.perDay') }}</span></span>
         </div>
-        <NuxtLink :to="`/motorbikes/${bike.slug}`" class="btn btn-sm btn-outline-charcoal">{{ t('motorbikeCard.viewDetails') }}</NuxtLink>
+        <NuxtLink :to="`/motorbikes/${bike.slug}`" class="btn btn-sm btn-outline-charcoal bike-card__cta">{{ t('motorbikeCard.viewDetails') }}</NuxtLink>
       </div>
     </div>
   </div>
@@ -52,3 +52,13 @@ function formatTransmission(t: string) {
   return t.replace(/_/g, '-').replace(/\b\w/g, (c) => c.toUpperCase())
 }
 </script>
+
+<style scoped>
+.bike-card__specs li {
+  white-space: nowrap;
+}
+.bike-card__cta {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+</style>

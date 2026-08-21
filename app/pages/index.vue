@@ -2,24 +2,28 @@
   <div>
     <!-- Hero -->
     <section class="hero position-relative overflow-hidden">
-      <div class="hero__bg" :style="heroImageStyle" />
+      <div class="hero__bg hero__bg--pan" :style="heroImageStyle" />
       <div class="hero__overlay" />
+      <div class="hero__glow" />
       <div class="container position-relative py-5">
         <div class="row align-items-center min-vh-hero">
           <div class="col-lg-8 text-white">
             <p class="eyebrow text-gold-light mb-3 hero-fade-in">{{ t('home.heroLocation') }}</p>
-            <h1 class="hero__title font-display mb-4 hero-fade-in">
+            <h1 class="hero__title font-display mb-4 hero-fade-in-1">
               {{ settings?.heroTitle || t('home.heroTitleDefault') }}
             </h1>
-            <p class="fs-5 text-white-75 mb-4 hero-fade-in-delay" style="max-width: 36rem">
+            <p class="fs-5 text-white-75 mb-4 hero-fade-in-2" style="max-width: 36rem">
               {{ settings?.heroSubtitle || t('home.heroSubtitleDefault') }}
             </p>
-            <div class="d-flex flex-wrap gap-3 hero-fade-in-delay">
-              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4">{{ t('home.exploreMotorbikes') }}</NuxtLink>
+            <div class="d-flex flex-wrap gap-3 hero-fade-in-3">
+              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4 btn-shine">{{ t('home.exploreMotorbikes') }}</NuxtLink>
               <NuxtLink to="/motorbikes" class="btn btn-lg btn-outline-cream px-4">{{ t('home.bookNow') }}</NuxtLink>
             </div>
           </div>
         </div>
+      </div>
+      <div class="hero__scroll-cue d-none d-md-flex hero-fade-in-3">
+        <span />
       </div>
       <RouteMotif class="hero__motif d-none d-md-block" />
       <TempleSilhouette class="hero__silhouette" />
@@ -28,10 +32,18 @@
     <!-- Quick facts -->
     <section class="section-tight bg-cream">
       <div class="container">
-        <div class="row g-4 text-center">
-          <div v-for="fact in quickFacts" :key="fact.labelKey" class="col-6 col-lg-3" v-reveal>
-            <i class="bi fs-2 text-amber" :class="fact.icon" />
-            <p class="fw-600 mb-0 mt-2">{{ t(fact.labelKey) }}</p>
+        <div class="row g-3 g-md-4 text-center">
+          <div
+            v-for="(fact, i) in quickFacts"
+            :key="fact.labelKey"
+            class="col-6 col-md-3"
+            v-reveal
+            :class="`reveal-delay-${i % 4}`"
+          >
+            <div class="fact-card h-100">
+              <span class="fact-card__icon"><i class="bi" :class="fact.icon" /></span>
+              <p class="fw-600 mb-0 mt-2">{{ t(fact.labelKey) }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -64,12 +76,18 @@
             <p class="eyebrow mb-1">{{ t('home.ourFleet') }}</p>
             <h2 class="font-display">{{ t('home.featuredMotorbikes') }}</h2>
           </div>
-          <NuxtLink to="/motorbikes" class="d-none d-md-inline-block text-decoration-none fw-600">
+          <NuxtLink to="/motorbikes" class="d-none d-md-inline-block text-decoration-none fw-600 link-underline-grow">
             {{ t('common.viewAll') }} <i class="bi bi-arrow-right ms-1" />
           </NuxtLink>
         </div>
-        <div class="row g-4">
-          <div v-for="bike in featured" :key="bike.id" class="col-6 col-lg-3">
+        <div class="row g-3 g-md-4">
+          <div
+            v-for="(bike, i) in featured"
+            :key="bike.id"
+            class="col-12 col-sm-6 col-md-4 col-lg-3"
+            v-reveal
+            :class="`reveal-delay-${i % 4}`"
+          >
             <MotorbikeCard :bike="bike" />
           </div>
         </div>
@@ -80,8 +98,9 @@
     </section>
 
     <!-- Why choose us -->
-    <section class="section bg-warm-sand">
-      <div class="container">
+    <section class="section bg-warm-sand position-relative overflow-hidden">
+      <div class="why-choose__decor" />
+      <div class="container position-relative">
         <div class="text-center mb-5" v-reveal>
           <p class="eyebrow mb-1">{{ t('home.whyChooseUsEyebrow') }}</p>
           <h2 class="font-display">{{ t('home.whyRideWithUs') }}</h2>
@@ -89,10 +108,16 @@
             <span class="khmer-divider__mark" />
           </div>
         </div>
-        <div class="row g-4">
-          <div v-for="item in whyChooseUs" :key="item.titleKey" class="col-6 col-lg-2" v-reveal>
-            <div class="why-item text-center">
-              <i class="bi fs-3 text-forest" :class="item.icon" />
+        <div class="row g-3 g-md-4">
+          <div
+            v-for="(item, i) in whyChooseUs"
+            :key="item.titleKey"
+            class="col-6 col-md-4 col-lg-2"
+            v-reveal
+            :class="`reveal-delay-${i % 4}`"
+          >
+            <div class="why-item text-center h-100">
+              <span class="why-item__icon"><i class="bi" :class="item.icon" /></span>
               <p class="fw-600 small mb-0 mt-2">{{ t(item.titleKey) }}</p>
             </div>
           </div>
@@ -103,13 +128,15 @@
     <!-- Travel story -->
     <section class="section bg-cream">
       <div class="container">
-        <div class="row align-items-center g-5">
+        <div class="row align-items-center g-4 g-lg-5">
           <div class="col-lg-6" v-reveal>
-            <img
-              :src="settings?.aboutImage || 'https://images.unsplash.com/photo-1596178060810-72660ee8d859?w=1000'"
-              alt="Riding through Siem Reap countryside"
-              class="img-fluid rounded-4 travel-story__img"
-            />
+            <div class="travel-story__frame">
+              <img
+                :src="settings?.aboutImage || 'https://images.unsplash.com/photo-1596178060810-72660ee8d859?w=1000'"
+                alt="Riding through Siem Reap countryside"
+                class="img-fluid rounded-4 travel-story__img"
+              />
+            </div>
           </div>
           <div class="col-lg-6" v-reveal>
             <p class="eyebrow mb-2">{{ t('home.beyondTemples') }}</p>
@@ -117,7 +144,7 @@
             <p class="text-muted fs-5 mb-4">
               {{ settings?.aboutWhyChooseUs || settings?.aboutDescription || t('home.aboutDescDefault') }}
             </p>
-            <NuxtLink to="/about" class="btn btn-charcoal btn-lg">{{ t('home.startYourJourney') }}</NuxtLink>
+            <NuxtLink to="/about" class="btn btn-charcoal btn-lg btn-shine">{{ t('home.startYourJourney') }}</NuxtLink>
           </div>
         </div>
       </div>
@@ -133,8 +160,14 @@
           </div>
         </div>
         <div class="row g-3">
-          <div v-for="faq in faqs.slice(0, 4)" :key="faq.id" class="col-md-6" v-reveal>
-            <div class="card p-3 h-100">
+          <div
+            v-for="(faq, i) in faqs.slice(0, 4)"
+            :key="faq.id"
+            class="col-md-6"
+            v-reveal
+            :class="`reveal-delay-${i % 4}`"
+          >
+            <div class="card faq-card p-3 p-md-4 h-100">
               <p class="fw-600 mb-1">{{ faq.question }}</p>
               <p class="text-muted small mb-0">{{ faq.answer }}</p>
             </div>
@@ -148,12 +181,13 @@
 
     <!-- Booking CTA -->
     <section class="cta position-relative overflow-hidden bg-forest text-center">
+      <div class="cta__glow" />
       <TempleSilhouette class="cta__silhouette" />
       <div class="container position-relative py-5" v-reveal>
         <p class="eyebrow text-gold-light mb-2">{{ t('home.readyWhenYouAre') }}</p>
         <h2 class="font-display display-6 mb-3">{{ t('home.readyToExplore') }}</h2>
         <p class="fs-5 mb-4" style="opacity: 0.85">{{ t('home.adventureStarts') }}</p>
-        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-5">{{ t('home.browseMotorbikes') }}</NuxtLink>
+        <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-5 btn-shine">{{ t('home.browseMotorbikes') }}</NuxtLink>
       </div>
     </section>
   </div>
@@ -227,7 +261,7 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   align-items: stretch;
 }
 .min-vh-hero {
-  min-height: 78vh;
+  min-height: 70vh;
 }
 .hero__bg {
   position: absolute;
@@ -236,13 +270,31 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   background-position: center;
   transform: scale(1.02);
 }
+.hero__bg--pan {
+  animation: heroPan 18s ease-in-out infinite alternate;
+}
+@keyframes heroPan {
+  from {
+    transform: scale(1.06) translate(0, 0);
+  }
+  to {
+    transform: scale(1.14) translate(-1.5%, -1%);
+  }
+}
 .hero__overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, rgba(38, 30, 20, 0.35) 0%, rgba(33, 26, 18, 0.55) 55%, rgba(24, 19, 13, 0.82) 100%);
 }
+.hero__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 50% at 30% 20%, rgba(212, 175, 55, 0.22), transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
 .hero__title {
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(2.1rem, 6vw, 4rem);
   line-height: 1.08;
 }
 .text-white-75 {
@@ -269,9 +321,117 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   opacity: 0.9;
   z-index: 1;
 }
+.hero__scroll-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 26px;
+  height: 42px;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 6px;
+}
+.hero__scroll-cue span {
+  width: 4px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-gold, #d4af37);
+  animation: scrollCue 1.8s ease-in-out infinite;
+}
+@keyframes scrollCue {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateY(14px);
+    opacity: 0;
+  }
+}
+
+/* ── Staggered hero fade-in ── */
+.hero-fade-in,
+.hero-fade-in-1,
+.hero-fade-in-2,
+.hero-fade-in-3 {
+  animation: heroFadeUp 0.9s ease both;
+}
+.hero-fade-in-1 {
+  animation-delay: 0.1s;
+}
+.hero-fade-in-2 {
+  animation-delay: 0.22s;
+}
+.hero-fade-in-3 {
+  animation-delay: 0.34s;
+}
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ── Shine sweep on primary buttons ── */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 40%;
+  background: linear-gradient(115deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+}
+.btn-shine:hover::after {
+  left: 120%;
+}
+
+/* ── Underline-grow link ── */
+.link-underline-grow {
+  position: relative;
+}
+.link-underline-grow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.25s ease;
+}
+.link-underline-grow:hover::after {
+  width: 100%;
+}
+
 .banner-card {
   border-radius: var(--radius-lg);
   background: var(--color-forest, var(--color-charcoal));
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.banner-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 32px rgba(38, 58, 46, 0.18);
 }
 .banner-card__img {
   width: 100%;
@@ -279,14 +439,113 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   height: 180px;
   object-fit: cover;
 }
+
+/* ── Quick fact cards ── */
+.fact-card {
+  padding: 1.25rem 0.75rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-white, #fff);
+  border: 1px solid var(--color-border);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+.fact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(38, 58, 46, 0.1);
+}
+.fact-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(212, 175, 55, 0.14);
+  color: var(--color-amber-deep, var(--color-gold-deep));
+  font-size: 1.35rem;
+  transition: transform 0.25s ease;
+}
+.fact-card:hover .fact-card__icon {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+/* ── Why choose us ── */
+.why-choose__decor {
+  position: absolute;
+  inset: -10% -5%;
+  background: radial-gradient(45% 45% at 85% 15%, rgba(212, 175, 55, 0.16), transparent 70%);
+  pointer-events: none;
+}
 .why-item {
-  padding: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  border-radius: var(--radius-md);
+  transition: transform 0.25s ease;
+}
+.why-item:hover {
+  transform: translateY(-3px);
+}
+.why-item__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: rgba(64, 90, 61, 0.12);
+  color: var(--color-forest);
+  font-size: 1.25rem;
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+.why-item:hover .why-item__icon {
+  transform: scale(1.1);
+  background: rgba(64, 90, 61, 0.2);
+}
+
+/* ── Travel story image frame ── */
+.travel-story__frame {
+  position: relative;
+}
+.travel-story__frame::before {
+  content: '';
+  position: absolute;
+  inset: 14px -14px -14px 14px;
+  border: 2px solid var(--color-gold, #d4af37);
+  border-radius: var(--radius-lg);
+  opacity: 0.45;
+  z-index: -1;
 }
 .travel-story__img {
   box-shadow: 0 20px 40px rgba(51, 40, 31, 0.18);
+  transition: transform 0.4s ease;
 }
+.travel-story__frame:hover .travel-story__img {
+  transform: translateY(-4px);
+}
+
+/* ── FAQ cards ── */
+.faq-card {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+.faq-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(51, 40, 31, 0.08);
+  border-color: var(--color-gold, #d4af37);
+}
+
 .cta {
-  padding: 5rem 0;
+  padding: 4rem 0;
+}
+.cta__glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 60% at 50% 0%, rgba(212, 175, 55, 0.18), transparent 70%);
+  pointer-events: none;
 }
 .cta__silhouette {
   position: absolute;
@@ -297,5 +556,36 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   color: var(--color-cream, #f7f2e8);
   opacity: 0.06;
   transform: scaleY(-1);
+}
+
+/* ── Responsive tuning ── */
+@media (max-width: 767.98px) {
+  .min-vh-hero {
+    min-height: 62vh;
+  }
+  .hero {
+    min-height: 88vh;
+  }
+  .cta {
+    padding: 3rem 0;
+  }
+  .section {
+    padding: 3rem 0;
+  }
+}
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .hero__title {
+    font-size: clamp(2.4rem, 5.5vw, 3.4rem);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__bg--pan,
+  .hero__scroll-cue span,
+  .hero-fade-in,
+  .hero-fade-in-1,
+  .hero-fade-in-2,
+  .hero-fade-in-3 {
+    animation: none !important;
+  }
 }
 </style>

@@ -8,7 +8,9 @@ export default defineEventHandler(async (event) => {
   const booking = await queryOne(
     `SELECT b.*,
        row_to_json(c.*) as customer,
-       row_to_json(m.*) as motorbike,
+       (row_to_json(m.*)::jsonb || jsonb_build_object('image',
+         (SELECT url FROM motorbike_images WHERE "motorbikeId" = m.id ORDER BY "isPrimary" DESC, "sortOrder" ASC LIMIT 1)
+       )) as motorbike,
        pl.name as "pickupLocationName",
        rl.name as "returnLocationName"
      FROM bookings b

@@ -19,6 +19,12 @@ export function daysBetween(pickupDate: Date, returnDate: Date): number {
   return Math.max(1, Math.ceil(ms / (1000 * 60 * 60 * 24)))
 }
 
+/** A rental of 12 hours or less is booked (and charged) as a half-day. */
+export function isHalfDay(pickupDate: Date, returnDate: Date): boolean {
+  const hours = (returnDate.getTime() - pickupDate.getTime()) / (1000 * 60 * 60)
+  return hours > 0 && hours <= 12
+}
+
 /**
  * Determines the per-day rate for a given rental length.
  * Priority: an active, admin-configured pricing rule for this specific
@@ -49,6 +55,7 @@ export interface PriceQuote {
   days: number
   ratePerDay: number
   subtotal: number
+  isHalfDay: boolean
 }
 
 export async function quotePrice(
@@ -56,8 +63,13 @@ export async function quotePrice(
   pickupDate: Date,
   returnDate: Date
 ): Promise<PriceQuote> {
+  if (isHalfDay(pickupDate, returnDate)) {
+    const daily = Number(motorbike.dailyPrice)
+    const ratePerDay = Math.round((daily / 2) * 100) / 100
+    return { days: 0.5, ratePerDay, subtotal: ratePerDay, isHalfDay: true }
+  }
   const days = daysBetween(pickupDate, returnDate)
   const ratePerDay = await getRatePerDay(motorbike, days)
   const subtotal = Math.round(ratePerDay * days * 100) / 100
-  return { days, ratePerDay, subtotal }
+  return { days, ratePerDay, subtotal, isHalfDay: false }
 }

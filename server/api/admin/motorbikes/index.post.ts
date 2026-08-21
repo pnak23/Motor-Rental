@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const id = newId()
   const rows = await query(
     `INSERT INTO motorbikes (
-      id, name, slug, brand, model, year, "engineCc", "plateNumber", color,
+      id, name, slug, brand, model, year, "engineCc", "plateNumber", color, "keyType",
       "categoryId", transmission, "fuelType", "seatCapacity", "fuelConsumption",
       description, status, featured, "helmetIncluded", "phoneHolder", "usbCharger",
       "goodForCity", "goodForLongTrip", "isNewBike", popular,
@@ -35,10 +35,10 @@ export default defineEventHandler(async (event) => {
       "createdAt", "updatedAt"
     ) VALUES (
       $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,
-      $21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34, now(), now()
+      $21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35, now(), now()
     ) RETURNING *`,
     [
-      id, d.name, slug, d.brand, d.model, d.year ?? null, d.engineCc, d.plateNumber ?? null, d.color ?? null,
+      id, d.name, slug, d.brand, d.model, d.year ?? null, d.engineCc, d.plateNumber ?? null, d.color ?? null, d.keyType,
       d.categoryId ?? null, d.transmission, d.fuelType, d.seatCapacity ?? null, d.fuelConsumption ?? null,
       d.description ?? null, d.status, d.featured, d.helmetIncluded, d.phoneHolder, d.usbCharger,
       d.goodForCity, d.goodForLongTrip, d.isNewBike, d.popular,

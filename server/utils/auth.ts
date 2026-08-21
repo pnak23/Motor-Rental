@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { createHash, randomBytes } from 'node:crypto'
 import type { H3Event } from 'h3'
 import { queryOne } from './db'
 
@@ -32,8 +33,18 @@ function getSecret(): string {
   return config.jwtSecret as string
 }
 
-export function signAuthToken(userId: string): string {
-  return jwt.sign({ sub: userId } satisfies JwtPayload, getSecret(), { expiresIn: '7d' })
+export function signAuthToken(userId: string, expiresIn: string = '1d'): string {
+  return jwt.sign({ sub: userId } satisfies JwtPayload, getSecret(), { expiresIn })
+}
+
+/** Generates a raw, URL-safe password-reset token plus its SHA-256 hash for storage. */
+export function generateResetToken(): { token: string; hash: string } {
+  const token = randomBytes(32).toString('hex')
+  return { token, hash: hashResetToken(token) }
+}
+
+export function hashResetToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex')
 }
 
 export function verifyAuthToken(token: string): JwtPayload | null {

@@ -35,6 +35,15 @@ export interface BusinessSettings {
   helmetPolicy: string | null
   minimumAge: number | null
   requiredDocuments: string | null
+  khqrAccountId: string | null
+  khqrMerchantName: string | null
+  khqrMerchantCity: string | null
+  khqrImageUrl: string | null
+  khqrInstructions: string | null
+  abaInstructions: string | null
+  acledaInstructions: string | null
+  wingInstructions: string | null
+  cardInstructions: string | null
 }
 
 export const useSettingsStore = defineStore('settings', {

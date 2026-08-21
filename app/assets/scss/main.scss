@@ -184,6 +184,20 @@ a:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* ── Admin tables: never wrap cell text, scroll horizontally instead ── */
+.admin-main .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.admin-main .table-responsive .table {
+  width: auto;
+  min-width: 100%;
+}
+.admin-main .table-responsive .table th,
+.admin-main .table-responsive .table td {
+  white-space: nowrap;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

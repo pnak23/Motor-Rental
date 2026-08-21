@@ -49,15 +49,22 @@
           <label class="form-label small">Plate Number</label>
           <input v-model="form.plateNumber" class="form-control" placeholder="1A-2345" />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label small">Color</label>
           <input v-model="form.color" class="form-control" />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+          <label class="form-label small">Key Type</label>
+          <select v-model="form.keyType" class="form-select">
+            <option value="NORMAL_KEY">Normal Key</option>
+            <option value="SMART_KEY">Smart Key</option>
+          </select>
+        </div>
+        <div class="col-md-3">
           <label class="form-label small">Seat Capacity</label>
           <input v-model.number="form.seatCapacity" type="number" class="form-control" />
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label small">Fuel Consumption</label>
           <input v-model="form.fuelConsumption" class="form-control" placeholder="~2L/100km" />
         </div>

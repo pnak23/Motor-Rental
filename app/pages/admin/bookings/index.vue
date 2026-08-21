@@ -1,11 +1,14 @@
 <template>
   <div>
-    <div class="d-flex gap-2 mb-3">
-      <input v-model="search" class="form-control" placeholder="Search by name, phone, booking #..." style="width: 280px" />
-      <select v-model="status" class="form-select" style="width: 180px">
-        <option value="">All statuses</option>
-        <option v-for="s in statuses" :key="s" :value="s">{{ s.replace('_', ' ') }}</option>
-      </select>
+    <div class="d-flex gap-2 justify-content-between mb-3">
+      <div class="d-flex gap-2">
+        <input v-model="search" class="form-control" placeholder="Search by name, phone, booking #..." style="width: 280px" />
+        <select v-model="status" class="form-select" style="width: 180px">
+          <option value="">All statuses</option>
+          <option v-for="s in statuses" :key="s" :value="s">{{ s.replace('_', ' ') }}</option>
+        </select>
+      </div>
+      <NuxtLink to="/admin/bookings/create" class="btn btn-amber"><i class="bi bi-plus-lg me-1" />New Booking</NuxtLink>
     </div>
 
     <div class="card">
@@ -35,7 +38,10 @@
               <td class="price-tag">${{ Number(b.total).toFixed(2) }}</td>
               <td><StatusBadge :status="b.status" /></td>
               <td class="text-end">
-                <NuxtLink :to="`/admin/bookings/${b.id}`" class="btn btn-sm btn-outline-charcoal">View</NuxtLink>
+                <div class="btn-group btn-group-sm">
+                  <NuxtLink :to="`/admin/bookings/${b.id}`" class="btn btn-outline-charcoal">View</NuxtLink>
+                  <button class="btn btn-outline-danger" title="Delete" @click="askDelete(b)"><i class="bi bi-trash" /></button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -46,6 +52,15 @@
         <Pagination :page="page" :total-pages="totalPages" @update:page="page = $event" />
       </div>
     </div>
+
+    <ConfirmModal
+      v-model="showDelete"
+      title="Delete booking?"
+      :message="`This will permanently delete booking ${toDelete?.bookingNumber}. This cannot be undone.`"
+      confirm-text="Delete"
+      danger
+      @confirm="confirmDelete"
+    />
   </div>
 </template>
 
@@ -66,6 +81,8 @@ interface BookingRow {
 
 const statuses = ['PENDING', 'CONFIRMED', 'PICKED_UP', 'RETURNED', 'CANCELLED', 'REJECTED']
 
+const toast = useToast()
+
 const search = ref('')
 const status = ref('')
 const page = ref(1)
@@ -73,6 +90,9 @@ const items = ref<BookingRow[]>([])
 const total = ref(0)
 const totalPages = ref(1)
 const pending = ref(true)
+
+const showDelete = ref(false)
+const toDelete = ref<BookingRow | null>(null)
 
 async function fetchList() {
   pending.value = true
@@ -103,5 +123,20 @@ await fetchList()
 
 function formatDate(d: string) {
   return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
+function askDelete(b: BookingRow) {
+  toDelete.value = b
+  showDelete.value = true
+}
+async function confirmDelete() {
+  if (!toDelete.value) return
+  try {
+    await useApi(`/api/admin/bookings/${toDelete.value.id}`, { method: 'DELETE' })
+    toast.success('Booking deleted')
+    fetchList()
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : 'Could not delete booking')
+  }
 }
 </script>

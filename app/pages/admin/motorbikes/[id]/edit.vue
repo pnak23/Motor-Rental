@@ -49,6 +49,7 @@ interface MotorbikeDetail {
   fuelType: string
   plateNumber: string | null
   color: string | null
+  keyType: string
   seatCapacity: number | null
   fuelConsumption: string | null
   description: string | null
@@ -99,6 +100,7 @@ const form = reactive<Record<string, unknown>>({
   fuelType: bike.fuelType,
   plateNumber: bike.plateNumber,
   color: bike.color,
+  keyType: bike.keyType,
   seatCapacity: bike.seatCapacity,
   fuelConsumption: bike.fuelConsumption,
   description: bike.description,

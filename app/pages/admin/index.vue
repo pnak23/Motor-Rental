@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="admin-dashboard">
     <div class="row g-3 mb-4">
       <div class="col-6 col-lg-3"><StatCard label="Total Motorbikes" :value="stats.motorbikes.total" icon="bi-motorcycle" color="charcoal" /></div>
       <div class="col-6 col-lg-3"><StatCard label="Available" :value="stats.motorbikes.available" icon="bi-check-circle" color="success" /></div>
@@ -16,14 +16,14 @@
 
     <div class="row g-3">
       <div class="col-lg-6">
-        <div class="card p-3 h-100">
-          <h3 class="h6 font-display mb-3">Revenue by Month</h3>
+        <div class="card dash-card p-3 p-lg-4 h-100">
+          <h3 class="h6 font-display dash-card__title mb-3">Revenue by Month</h3>
           <MiniBarChart :points="revenuePoints" />
         </div>
       </div>
       <div class="col-lg-6">
-        <div class="card p-3 h-100">
-          <h3 class="h6 font-display mb-3">Bookings by Month</h3>
+        <div class="card dash-card p-3 p-lg-4 h-100">
+          <h3 class="h6 font-display dash-card__title mb-3">Bookings by Month</h3>
           <MiniBarChart :points="bookingPoints" />
         </div>
       </div>
@@ -31,22 +31,33 @@
 
     <div class="row g-3 mt-1">
       <div class="col-lg-6">
-        <div class="card p-3 h-100">
-          <h3 class="h6 font-display mb-3">Rental Status</h3>
-          <ul class="list-unstyled mb-0">
-            <li class="d-flex justify-content-between border-bottom py-2"><span>Active rentals</span><strong>{{ stats.rentals.active }}</strong></li>
-            <li class="d-flex justify-content-between border-bottom py-2"><span>Completed</span><strong>{{ stats.rentals.completed }}</strong></li>
-            <li class="d-flex justify-content-between py-2"><span>Cancelled / Rejected</span><strong>{{ stats.rentals.cancelled }}</strong></li>
+        <div class="card dash-card p-3 p-lg-4 h-100">
+          <h3 class="h6 font-display dash-card__title mb-3">Rental Status</h3>
+          <ul class="list-unstyled mb-0 dash-list">
+            <li class="d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-circle-fill dash-dot dash-dot--amber me-2" />Active rentals</span>
+              <strong class="font-mono">{{ stats.rentals.active }}</strong>
+            </li>
+            <li class="d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-circle-fill dash-dot dash-dot--success me-2" />Completed</span>
+              <strong class="font-mono">{{ stats.rentals.completed }}</strong>
+            </li>
+            <li class="d-flex align-items-center justify-content-between">
+              <span><i class="bi bi-circle-fill dash-dot dash-dot--danger me-2" />Cancelled / Rejected</span>
+              <strong class="font-mono">{{ stats.rentals.cancelled }}</strong>
+            </li>
           </ul>
         </div>
       </div>
       <div class="col-lg-6">
-        <div class="card p-3 h-100">
-          <h3 class="h6 font-display mb-3">Top Performing Motorbikes</h3>
-          <ul class="list-unstyled mb-0">
-            <li v-for="m in stats.topMotorbikes" :key="m.id" class="d-flex justify-content-between border-bottom py-2">
-              <span>{{ m.name }}</span>
-              <span class="font-mono">${{ m.revenue.toFixed(0) }} &middot; {{ m.rentals }} rentals</span>
+        <div class="card dash-card p-3 p-lg-4 h-100">
+          <h3 class="h6 font-display dash-card__title mb-3">Top Performing Motorbikes</h3>
+          <ul class="list-unstyled mb-0 dash-list">
+            <li v-for="(m, i) in stats.topMotorbikes" :key="m.id" class="d-flex align-items-center justify-content-between">
+              <span class="d-flex align-items-center gap-2">
+                <span class="dash-rank">{{ i + 1 }}</span>{{ m.name }}
+              </span>
+              <span class="font-mono small text-muted">${{ m.revenue.toFixed(0) }} &middot; {{ m.rentals }} rentals</span>
             </li>
           </ul>
         </div>
@@ -76,3 +87,47 @@ const stats = await useApi<Stats>('/api/admin/dashboard/stats')
 const revenuePoints = computed(() => stats.charts.revenueByMonth.map((r) => ({ label: r.month.slice(5), value: r.total })))
 const bookingPoints = computed(() => stats.charts.bookingsByMonth.map((r) => ({ label: r.month.slice(5), value: r.count })))
 </script>
+
+<style scoped>
+.dash-card {
+  border-radius: var(--radius-lg, 14px);
+}
+.dash-card__title {
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+.dash-list li {
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.92rem;
+}
+.dash-list li:last-child {
+  border-bottom: none;
+}
+.dash-dot {
+  font-size: 0.45rem;
+  vertical-align: 0.1em;
+}
+.dash-dot--amber {
+  color: var(--color-amber-deep);
+}
+.dash-dot--success {
+  color: var(--color-success);
+}
+.dash-dot--danger {
+  color: var(--color-danger);
+}
+.dash-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-gray-light);
+  color: var(--color-gray-mid);
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+</style>
