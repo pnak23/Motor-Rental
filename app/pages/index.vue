@@ -25,8 +25,6 @@
       <div class="hero__scroll-cue d-none d-md-flex hero-fade-in-3">
         <span />
       </div>
-      <RouteMotif class="hero__motif d-none d-md-block" />
-      <TempleSilhouette class="hero__silhouette" />
     </section>
 
     <!-- Quick facts -->
@@ -302,24 +300,6 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
 }
 .text-gold-light {
   color: var(--color-gold, #d4af37);
-}
-.hero__motif {
-  position: absolute;
-  right: -40px;
-  bottom: 60px;
-  width: 320px;
-  opacity: 0.35;
-  z-index: 1;
-}
-.hero__silhouette {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 70px;
-  color: var(--color-cream, #f7f2e8);
-  opacity: 0.9;
-  z-index: 1;
 }
 .hero__scroll-cue {
   position: absolute;

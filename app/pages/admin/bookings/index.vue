@@ -1,14 +1,18 @@
 <template>
   <div>
-    <div class="d-flex gap-2 justify-content-between mb-3">
-      <div class="d-flex gap-2">
-        <input v-model="search" class="form-control" placeholder="Search by name, phone, booking #..." style="width: 280px" />
+    <div class="admin-page-header">
+      <div>
+        <h1 class="h4 font-display mb-0">Bookings</h1>
+        <p class="admin-page-header__subtitle">{{ total }} bookings on record.</p>
+      </div>
+      <div class="admin-page-header__actions">
+        <input v-model="search" class="form-control" placeholder="Search by name, phone, booking #..." style="width: 260px" />
         <select v-model="status" class="form-select" style="width: 180px">
           <option value="">All statuses</option>
           <option v-for="s in statuses" :key="s" :value="s">{{ s.replace('_', ' ') }}</option>
         </select>
+        <button class="btn btn-amber" @click="showCreateModal = true"><i class="bi bi-plus-lg me-1" />New Booking</button>
       </div>
-      <NuxtLink to="/admin/bookings/create" class="btn btn-amber"><i class="bi bi-plus-lg me-1" />New Booking</NuxtLink>
     </div>
 
     <div class="card">
@@ -61,6 +65,16 @@
       danger
       @confirm="confirmDelete"
     />
+
+    <AdminModal v-model="showCreateModal" title="New Booking" size="xl">
+      <BookingFormFields ref="bookingFormRef" :initial-date="prefillDate" @created="onCreated" @submitting="creating = $event" />
+      <template #footer>
+        <button type="button" class="btn btn-outline-secondary" @click="showCreateModal = false">Cancel</button>
+        <button type="button" class="btn btn-amber" :disabled="creating" @click="bookingFormRef?.submit()">
+          <span v-if="creating" class="spinner-border spinner-border-sm me-2" />Create Booking
+        </button>
+      </template>
+    </AdminModal>
   </div>
 </template>
 
@@ -82,6 +96,23 @@ interface BookingRow {
 const statuses = ['PENDING', 'CONFIRMED', 'PICKED_UP', 'RETURNED', 'CANCELLED', 'REJECTED']
 
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
+
+const showCreateModal = ref(false)
+const creating = ref(false)
+const bookingFormRef = ref<{ submit: () => void } | null>(null)
+const prefillDate = (route.query.date as string) || ''
+
+if (route.query.new) {
+  showCreateModal.value = true
+  router.replace({ query: { ...route.query, new: undefined } })
+}
+
+function onCreated() {
+  showCreateModal.value = false
+  fetchList()
+}
 
 const search = ref('')
 const status = ref('')

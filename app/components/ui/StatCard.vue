@@ -46,7 +46,7 @@ defineProps<{
   background: var(--color-amber-deep);
 }
 .stat-card--charcoal::before {
-  background: var(--color-charcoal);
+  background: var(--btn-charcoal-bg);
 }
 .stat-card--success::before {
   background: var(--color-success);

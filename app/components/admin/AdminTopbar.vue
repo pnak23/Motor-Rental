@@ -10,7 +10,17 @@
       <h1 class="h4 font-display mb-0 mt-1">{{ title }}</h1>
     </div>
 
-    <div class="dropdown">
+    <div class="d-flex align-items-center gap-2">
+      <button
+        type="button"
+        class="btn theme-toggle-btn d-flex align-items-center justify-content-center"
+        :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+        :title="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'"
+        @click="toggle"
+      >
+        <i class="bi" :class="theme === 'dark' ? 'bi-sun' : 'bi-moon-stars'" />
+      </button>
+      <div class="dropdown">
       <button
         class="btn admin-user-btn d-flex align-items-center gap-2"
         type="button"
@@ -32,6 +42,7 @@
           </button>
         </li>
       </ul>
+      </div>
     </div>
   </header>
 </template>
@@ -41,6 +52,7 @@ const props = defineProps<{ title?: string }>()
 void props
 const auth = useAuthStore()
 const router = useRouter()
+const { theme, toggle } = useAdminTheme()
 
 async function handleLogout() {
   await auth.logout()
@@ -81,6 +93,23 @@ const initials = computed(() =>
     border-color 0.15s ease,
     box-shadow 0.15s ease;
 }
+.theme-toggle-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-charcoal);
+  font-size: 1.05rem;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease;
+}
+.theme-toggle-btn:hover {
+  border-color: var(--color-amber);
+  color: var(--color-amber-deep);
+  box-shadow: 0 4px 12px rgba(231, 160, 60, 0.16);
+}
 .admin-user-btn:hover {
   border-color: var(--color-amber);
   box-shadow: 0 4px 12px rgba(231, 160, 60, 0.16);
@@ -92,7 +121,7 @@ const initials = computed(() =>
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-charcoal), var(--color-charcoal-2));
+  background: linear-gradient(135deg, var(--btn-charcoal-bg), var(--color-charcoal-2));
   color: #fff;
   font-size: 0.8rem;
   font-weight: 600;

@@ -1,8 +1,7 @@
 import { z } from 'zod'
 import { queryOne, getPool } from '../../../utils/db'
 import { getBookingConflict } from '../../../utils/availability'
-import { quotePrice } from '../../../utils/pricing'
-import { REQUIRED_DEPOSIT_RATIO } from '../../../utils/schemas'
+import { quotePrice, requiredDeposit as computeRequiredDeposit } from '../../../utils/pricing'
 
 const bodySchema = z.object({
   motorbikeId: z.string().min(1),
@@ -44,7 +43,7 @@ export default defineEventHandler(async (event) => {
   const quote = await quotePrice(motorbike, pickup, ret)
   const deliveryFee = Number(motorbike.deliveryFee) || 0
   const total = Math.round((quote.subtotal + deliveryFee) * 100) / 100
-  const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
+  const requiredDeposit = computeRequiredDeposit(total)
 
   // Half-day rentals are an explicit shorter option and bypass the
   // motorbike's normal min/max rental-day window.

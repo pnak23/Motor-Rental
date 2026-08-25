@@ -1,9 +1,10 @@
 import type { H3Event } from 'h3'
-import { bookingCreateSchema, REQUIRED_DEPOSIT_RATIO } from '../../utils/schemas'
+import { bookingCreateSchema } from '../../utils/schemas'
 import { queryOne, query, newId } from '../../utils/db'
-import { quotePrice } from '../../utils/pricing'
+import { quotePrice, requiredDeposit, meetsDepositRequirement } from '../../utils/pricing'
 import { createBookingSafely } from '../../utils/availability'
 import { saveIdDocument, savePaymentProof } from '../../utils/upload'
+import { notifyBookingCreated } from '../../utils/notify'
 
 /**
  * The public booking form submits multipart/form-data (not JSON) so it can
@@ -114,11 +115,10 @@ export default defineEventHandler(async (event) => {
   // Customers must pay at least 50% of the total upfront. We can't verify
   // the payment programmatically (no live gateway), but we do enforce the
   // declared amount meets the threshold before the booking is created.
-  const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
-  if (d.paidAmount < requiredDeposit - 0.01) {
+  if (!meetsDepositRequirement(total, d.paidAmount)) {
     throw createError({
       statusCode: 400,
-      statusMessage: `A minimum deposit of $${requiredDeposit.toFixed(2)} (50% of the total) is required to submit this booking`
+      statusMessage: `A minimum deposit of $${requiredDeposit(total).toFixed(2)} (50% of the total) is required to submit this booking`
     })
   }
   const paymentStatus = d.paidAmount >= total - 0.01 ? 'PAID' : 'PARTIAL'
@@ -188,6 +188,17 @@ export default defineEventHandler(async (event) => {
     paymentReference: d.paymentReference || null,
     paidAmount: d.paidAmount,
     paymentProofUrl
+  })
+
+  await notifyBookingCreated(d.customer.email, {
+    bookingNumber: booking.bookingNumber,
+    motorbikeName: motorbike.name,
+    pickupDate: booking.pickupDate,
+    returnDate: booking.returnDate,
+    total: Number(booking.total),
+    paidAmount: Number(booking.paidAmount),
+    status: booking.status,
+    customerName: d.customer.fullName
   })
 
   return {

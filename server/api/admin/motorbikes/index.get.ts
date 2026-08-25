@@ -18,7 +18,8 @@ export default defineEventHandler(async (event) => {
   if (search) {
     params.push(`%${search.toLowerCase()}%`)
     where.push(
-      `(LOWER(m.name) LIKE $${params.length} OR LOWER(m.brand) LIKE $${params.length} OR LOWER(m.model) LIKE $${params.length})`
+      `(LOWER(m.name) LIKE $${params.length} OR LOWER(m.brand) LIKE $${params.length} OR LOWER(m.model) LIKE $${params.length}
+        OR LOWER(m."plateNumber") LIKE $${params.length} OR LOWER(m."plateProvince") LIKE $${params.length})`
     )
   }
   if (status) {

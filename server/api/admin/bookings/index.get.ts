@@ -70,7 +70,7 @@ export default defineEventHandler(async (event) => {
 
   const rows = await query(
     `SELECT b.*, c."fullName" as "customerName", c.phone as "customerPhone",
-       m.name as "motorbikeName", m.slug as "motorbikeSlug", m."plateNumber" as "motorbikePlate",
+       m.name as "motorbikeName", m.slug as "motorbikeSlug", NULLIF(TRIM(CONCAT(m."plateProvince", ' ', m."plateNumber")), '') as "motorbikePlate",
        (SELECT url FROM motorbike_images WHERE "motorbikeId" = m.id ORDER BY "isPrimary" DESC, "sortOrder" ASC LIMIT 1) as "motorbikeImage"
      FROM bookings b
      JOIN customers c ON c.id = b."customerId"

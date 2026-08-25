@@ -142,7 +142,8 @@ model Motorbike {
   model       String
   year        Int?
   engineCc    Int
-  plateNumber String?
+  plateNumber   String?
+  plateProvince String?
   color       String?
   keyType     KeyType @default(NORMAL_KEY)
 
@@ -319,6 +320,14 @@ model Booking {
   paidAt           DateTime?
   paymentProofUrl  String?
 
+  actualReturnAt        DateTime?
+  lateFeeAmount         Decimal   @default(0) @db.Decimal(10, 2)
+  depositRefundedAmount Decimal   @default(0) @db.Decimal(10, 2)
+  depositRefundedAt     DateTime?
+
+  pickupReminderSentAt DateTime?
+  returnReminderSentAt DateTime?
+
   notes String?
 
   createdAt DateTime @default(now())
@@ -456,6 +465,9 @@ model BusinessSetting {
   acledaInstructions String?
   wingInstructions   String?
   cardInstructions   String?
+
+  emailNotificationsEnabled Boolean @default(true)
+  lateFeePerHour            Decimal @default(0) @db.Decimal(10, 2)
 
   minRentalDays Int @default(1)
   maxRentalDays Int @default(60)

@@ -97,7 +97,7 @@ const formattedDate = computed(() => {
   if (!props.date) return ''
   return new Date(props.date).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 })
-const newReservationLink = computed(() => (props.date ? `/admin/bookings/create?date=${props.date}` : '/admin/bookings/create'))
+const newReservationLink = computed(() => (props.date ? `/admin/bookings?new=1&date=${props.date}` : '/admin/bookings?new=1'))
 
 async function load() {
   if (!props.date) return

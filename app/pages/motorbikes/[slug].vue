@@ -10,57 +10,48 @@
 
     <div class="row g-5">
       <div class="col-lg-7">
-        <ImageGallery :images="images" :alt="bike.name" />
+        <div v-reveal>
+          <ImageGallery :images="images" :alt="bike.name" />
+        </div>
 
-        <div class="mt-4">
+        <div class="mt-4" v-reveal>
           <p class="eyebrow mb-1">{{ bike.brand }} &middot; {{ bike.categoryName }}</p>
           <h1 class="font-display mb-2">{{ bike.name }}</h1>
           <p class="text-muted">{{ bike.description }}</p>
         </div>
 
-        <div class="row g-3 my-3">
+        <div class="row g-3 my-3" v-reveal>
           <div class="col-4 col-md-2" v-for="spec in specs" :key="spec.label">
-            <div class="spec-box text-center p-2">
-              <i class="bi fs-4 text-amber" :class="spec.icon" />
-              <p class="small mb-0 mt-1">{{ spec.value }}</p>
+            <div class="spec-box text-center p-3">
+              <div class="spec-box__icon mx-auto mb-2"><i class="bi" :class="spec.icon" /></div>
+              <p class="small fw-600 mb-0">{{ spec.value }}</p>
               <p class="small text-muted mb-0">{{ spec.label }}</p>
             </div>
           </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 my-3">
+        <div class="d-flex flex-wrap gap-2 my-3" v-reveal>
           <span v-if="bike.helmetIncluded" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.helmetIncluded') }}</span>
           <span v-if="bike.phoneHolder" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.phoneHolder') }}</span>
           <span v-if="bike.usbCharger" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.usbCharger') }}</span>
           <span v-if="bike.goodForLongTrip" class="feature-pill"><i class="bi bi-check-circle me-1" />{{ t('motorbikeDetail.greatForLongTrips') }}</span>
         </div>
 
-        <!-- Pricing table -->
-        <div class="card p-3 my-4">
+        <!-- Pricing tiers -->
+        <div class="my-4" v-reveal>
           <h3 class="h6 font-display mb-3">{{ t('motorbikeDetail.rentalPricing') }}</h3>
-          <table class="table table-sm mb-0">
-            <tbody>
-              <tr>
-                <td>{{ t('motorbikeDetail.oneDay') }}</td>
-                <td class="text-end price-tag">${{ Number(bike.dailyPrice).toFixed(2) }}</td>
-              </tr>
-              <tr>
-                <td>{{ t('motorbikeDetail.days2to6') }}</td>
-                <td class="text-end price-tag">${{ Number(bike.dailyPrice).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
-              </tr>
-              <tr v-if="bike.weeklyPrice">
-                <td>{{ t('motorbikeDetail.days7to29') }}</td>
-                <td class="text-end price-tag">${{ (Number(bike.weeklyPrice) / 7).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
-              </tr>
-              <tr v-if="bike.monthlyPrice">
-                <td>{{ t('motorbikeDetail.days30plus') }}</td>
-                <td class="text-end price-tag">${{ (Number(bike.monthlyPrice) / 30).toFixed(2) }}{{ t('motorbikeDetail.perDay') }}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row g-2">
+            <div class="col-6 col-md-3" v-for="tier in priceTiers" :key="tier.label">
+              <div class="price-tier text-center p-3" :class="{ 'price-tier--active': tier.active }">
+                <p class="small text-muted mb-1">{{ tier.label }}</p>
+                <p class="price-tag fs-5 mb-0">${{ tier.value }}</p>
+                <p class="small text-muted mb-0">{{ t('motorbikeDetail.perDay') }}</p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div v-if="related.length" class="mt-5">
+        <div v-if="related.length" class="mt-5" v-reveal>
           <h3 class="h5 font-display mb-3">{{ t('motorbikeDetail.youMightAlsoLike') }}</h3>
           <div class="row g-3">
             <div v-for="r in related" :key="r.id" class="col-6 col-md-3">
@@ -71,7 +62,9 @@
       </div>
 
       <div class="col-lg-5">
-        <BookingForm :bike="bike" />
+        <div class="booking-sticky">
+          <BookingForm :bike="bike" />
+        </div>
       </div>
     </div>
   </div>
@@ -118,6 +111,16 @@ const images = computed(() =>
 )
 const related = computed(() => bike.related || [])
 
+const priceTiers = computed(() => {
+  const tiers = [
+    { label: t('motorbikeDetail.oneDay'), value: Number(bike.dailyPrice).toFixed(0), active: true },
+    { label: t('motorbikeDetail.days2to6'), value: Number(bike.dailyPrice).toFixed(0), active: false }
+  ]
+  if (bike.weeklyPrice) tiers.push({ label: t('motorbikeDetail.days7to29'), value: (Number(bike.weeklyPrice) / 7).toFixed(0), active: false })
+  if (bike.monthlyPrice) tiers.push({ label: t('motorbikeDetail.days30plus'), value: (Number(bike.monthlyPrice) / 30).toFixed(0), active: false })
+  return tiers
+})
+
 const specs = computed(() => [
   { label: t('motorbikeDetail.engine'), value: `${bike.engineCc}cc`, icon: 'bi-speedometer2' },
   { label: t('motorbikeDetail.transmission'), value: bike.transmission.replace(/_/g, '-'), icon: 'bi-gear' },
@@ -142,11 +145,51 @@ useHead({
 .spec-box {
   background: var(--color-gray-light);
   border-radius: var(--radius-md);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.spec-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(38, 58, 46, 0.08);
+}
+.spec-box__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-offwhite, #fff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-amber-deep);
+  font-size: 1.1rem;
 }
 .feature-pill {
   background: var(--color-gray-light);
   border-radius: 999px;
   padding: 0.35rem 0.85rem;
   font-size: 0.85rem;
+}
+.price-tier {
+  background: var(--color-gray-light);
+  border-radius: var(--radius-md);
+  border: 1.5px solid transparent;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.price-tier--active {
+  background: var(--color-offwhite, #fff);
+  border-color: var(--color-amber-deep);
+  box-shadow: 0 8px 20px rgba(38, 58, 46, 0.1);
+}
+.price-tier:hover {
+  transform: translateY(-2px);
+}
+@media (min-width: 992px) {
+  .booking-sticky {
+    position: sticky;
+    top: 1.5rem;
+  }
 }
 </style>

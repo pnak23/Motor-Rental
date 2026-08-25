@@ -15,7 +15,6 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      htmlAttrs: { lang: 'en' },
       title: 'Angkor Wheels Rental — Motorbike Rental in Siem Reap',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -29,8 +28,8 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: 'en',
     locales: [
-      { code: 'en', name: 'English', file: 'en.json' },
-      { code: 'km', name: 'ខ្មែរ', file: 'km.json' }
+      { code: 'en', name: 'English', file: 'en.json', language: 'en-US' },
+      { code: 'km', name: 'ខ្មែរ', file: 'km.json', language: 'km-KH' }
     ],
     strategy: 'no_prefix',
     detectBrowserLanguage: {

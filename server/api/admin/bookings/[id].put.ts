@@ -3,7 +3,8 @@ import { queryOne, query, withTransaction } from '../../../utils/db'
 import { requireAuth } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { getBookingConflict } from '../../../utils/availability'
-import { paymentStatusEnum, paymentMethodEnum, REQUIRED_DEPOSIT_RATIO } from '../../../utils/schemas'
+import { paymentStatusEnum, paymentMethodEnum } from '../../../utils/schemas'
+import { requiredDeposit, meetsDepositRequirement } from '../../../utils/pricing'
 
 const bodySchema = z.object({
   motorbikeId: z.string().optional(),
@@ -18,7 +19,11 @@ const bodySchema = z.object({
   discount: z.coerce.number().min(0).optional(),
   additionalCharges: z.coerce.number().min(0).optional(),
   deposit: z.coerce.number().min(0).optional(),
-  notes: z.string().optional().nullable()
+  notes: z.string().optional().nullable(),
+  actualReturnAt: z.string().optional().nullable(),
+  lateFeeAmount: z.coerce.number().min(0).optional(),
+  depositRefundedAmount: z.coerce.number().min(0).optional(),
+  depositRefundedAt: z.string().optional().nullable()
 })
 
 export default defineEventHandler(async (event) => {
@@ -43,6 +48,10 @@ export default defineEventHandler(async (event) => {
     paymentStatus: string
     paidAmount: string
     paidAt: string | null
+    actualReturnAt: string | null
+    lateFeeAmount: string
+    depositRefundedAmount: string
+    depositRefundedAt: string | null
   }>(`SELECT * FROM bookings WHERE id = $1`, [id])
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
@@ -79,15 +88,24 @@ export default defineEventHandler(async (event) => {
 
   // Don't let a financial edit drop an already-confirmed/active booking
   // below the required 50% deposit.
-  if (['CONFIRMED', 'PICKED_UP'].includes(existing.status)) {
-    const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
-    if (paidAmount < requiredDeposit - 0.01) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: `This booking is ${existing.status === 'PICKED_UP' ? 'picked up' : 'confirmed'} and requires at least $${requiredDeposit.toFixed(2)} (50% of the total) paid. Reduce the total or increase the paid amount first.`
-      })
-    }
+  if (['CONFIRMED', 'PICKED_UP'].includes(existing.status) && !meetsDepositRequirement(total, paidAmount)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `This booking is ${existing.status === 'PICKED_UP' ? 'picked up' : 'confirmed'} and requires at least $${requiredDeposit(total).toFixed(2)} (50% of the total) paid. Reduce the total or increase the paid amount first.`
+    })
   }
+
+  const actualReturnAt = d.actualReturnAt !== undefined ? (d.actualReturnAt ? new Date(d.actualReturnAt) : null) : existing.actualReturnAt
+  const lateFeeAmount = d.lateFeeAmount ?? Number(existing.lateFeeAmount)
+  const depositRefundedAmount = d.depositRefundedAmount ?? Number(existing.depositRefundedAmount)
+  // Stamp the moment a refund is first recorded; once set, an explicit
+  // depositRefundedAt in the request can still override it.
+  const depositRefundedAt =
+    d.depositRefundedAt !== undefined
+      ? d.depositRefundedAt
+        ? new Date(d.depositRefundedAt)
+        : null
+      : (existing.depositRefundedAt ?? (depositRefundedAmount > 0 ? new Date() : null))
 
   const rows = await query(
     `UPDATE bookings SET
@@ -96,8 +114,10 @@ export default defineEventHandler(async (event) => {
       discount = $6, "additionalCharges" = $7, deposit = $8, total = $9,
       "paymentStatus" = $10, "paidAmount" = $11, "paidAt" = $12,
       "paymentMethod" = COALESCE($13, "paymentMethod"), "paymentReference" = COALESCE($14, "paymentReference"),
-      notes = COALESCE($15, notes), "updatedAt" = now()
-     WHERE id = $16 RETURNING *`,
+      notes = COALESCE($15, notes),
+      "actualReturnAt" = $16, "lateFeeAmount" = $17, "depositRefundedAmount" = $18, "depositRefundedAt" = $19,
+      "updatedAt" = now()
+     WHERE id = $20 RETURNING *`,
     [
       motorbikeId,
       pickupDate,
@@ -114,6 +134,10 @@ export default defineEventHandler(async (event) => {
       d.paymentMethod ?? null,
       d.paymentReference ?? null,
       d.notes ?? null,
+      actualReturnAt,
+      lateFeeAmount,
+      depositRefundedAmount,
+      depositRefundedAt,
       id
     ]
   )

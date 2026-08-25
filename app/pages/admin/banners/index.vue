@@ -1,48 +1,58 @@
 <template>
-  <div class="row g-4">
-    <div class="col-lg-5">
-      <div class="card p-3">
-        <h3 class="h6 font-display mb-3">{{ editingId ? 'Edit Banner' : 'Add Banner' }}</h3>
-        <form @submit.prevent="save">
-          <input v-model="form.title" required placeholder="Title *" class="form-control mb-2" />
-          <input v-model="form.subtitle" placeholder="Subtitle" class="form-control mb-2" />
-          <input v-model="form.imageUrl" required placeholder="Image URL *" class="form-control mb-2" />
-          <input v-model="form.buttonText" placeholder="Button text" class="form-control mb-2" />
-          <input v-model="form.buttonUrl" placeholder="Button URL (e.g. /motorbikes)" class="form-control mb-2" />
-          <div class="row g-2 mb-2">
-            <div class="col-6"><input v-model="form.startDate" type="date" class="form-control" /></div>
-            <div class="col-6"><input v-model="form.endDate" type="date" class="form-control" /></div>
-          </div>
-          <input v-model.number="form.sortOrder" type="number" placeholder="Sort order" class="form-control mb-2" />
-          <div class="form-check mb-3">
-            <input id="bannerActive" v-model="form.isActive" type="checkbox" class="form-check-input" />
-            <label for="bannerActive" class="form-check-label small">Active</label>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-amber">{{ editingId ? 'Update' : 'Add' }} Banner</button>
-            <button v-if="editingId" type="button" class="btn btn-outline-secondary" @click="resetForm">Cancel</button>
-          </div>
-        </form>
+  <div>
+    <div class="admin-page-header">
+      <div>
+        <h1 class="h4 font-display mb-0">Banners</h1>
+        <p class="admin-page-header__subtitle">Promotional banners shown on the public homepage.</p>
+      </div>
+      <div class="admin-page-header__actions">
+        <button class="btn btn-amber" @click="openCreate"><i class="bi bi-plus-lg me-1" />Add Banner</button>
       </div>
     </div>
 
-    <div class="col-lg-7">
-      <div class="row g-3">
-        <div v-for="b in banners" :key="b.id" class="col-md-6">
-          <div class="card overflow-hidden h-100">
-            <img :src="b.imageUrl" class="banner-thumb" :alt="b.title" />
-            <div class="p-3">
-              <p class="fw-600 mb-0">{{ b.title }} <span v-if="!b.isActive" class="badge status-badge status-badge--inactive ms-1">Inactive</span></p>
-              <p class="small text-muted mb-2">{{ b.subtitle }}</p>
-              <div class="btn-group btn-group-sm">
-                <button class="btn btn-outline-secondary" @click="edit(b)"><i class="bi bi-pencil" /></button>
-                <button class="btn btn-outline-danger" @click="remove(b.id)"><i class="bi bi-trash" /></button>
-              </div>
+    <div v-if="!banners.length" class="card admin-empty-state">
+      <i class="bi bi-images" />
+      <p>No banners yet</p>
+      <p class="small mb-0">Add a promotional banner for the homepage.</p>
+    </div>
+    <div v-else class="row g-3">
+      <div v-for="b in banners" :key="b.id" class="col-md-6 col-xl-4">
+        <div class="card card-hover overflow-hidden h-100">
+          <img :src="b.imageUrl" class="banner-thumb" :alt="b.title" />
+          <div class="p-3">
+            <p class="fw-600 mb-0">{{ b.title }} <span v-if="!b.isActive" class="badge status-badge status-badge--inactive ms-1">Inactive</span></p>
+            <p class="small text-muted mb-2">{{ b.subtitle }}</p>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary" @click="edit(b)"><i class="bi bi-pencil" /></button>
+              <button class="btn btn-outline-danger" @click="remove(b.id)"><i class="bi bi-trash" /></button>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <AdminModal v-model="showModal" :title="editingId ? 'Edit Banner' : 'Add Banner'">
+      <form id="banner-form" @submit.prevent="save">
+        <input v-model="form.title" required placeholder="Title *" class="form-control mb-2" />
+        <input v-model="form.subtitle" placeholder="Subtitle" class="form-control mb-2" />
+        <input v-model="form.imageUrl" required placeholder="Image URL *" class="form-control mb-2" />
+        <input v-model="form.buttonText" placeholder="Button text" class="form-control mb-2" />
+        <input v-model="form.buttonUrl" placeholder="Button URL (e.g. /motorbikes)" class="form-control mb-2" />
+        <div class="row g-2 mb-2">
+          <div class="col-6"><input v-model="form.startDate" type="date" class="form-control" /></div>
+          <div class="col-6"><input v-model="form.endDate" type="date" class="form-control" /></div>
+        </div>
+        <input v-model.number="form.sortOrder" type="number" placeholder="Sort order" class="form-control mb-2" />
+        <div class="form-check mb-1">
+          <input id="bannerActive" v-model="form.isActive" type="checkbox" class="form-check-input" />
+          <label for="bannerActive" class="form-check-label small">Active</label>
+        </div>
+      </form>
+      <template #footer>
+        <button type="button" class="btn btn-outline-secondary" @click="showModal = false">Cancel</button>
+        <button type="submit" form="banner-form" class="btn btn-amber">{{ editingId ? 'Update' : 'Add' }} Banner</button>
+      </template>
+    </AdminModal>
   </div>
 </template>
 
@@ -65,6 +75,7 @@ interface Banner {
 const toast = useToast()
 const banners = ref<Banner[]>(await useApi<Banner[]>('/api/admin/banners'))
 const editingId = ref<string | null>(null)
+const showModal = ref(false)
 
 function emptyForm() {
   return {
@@ -85,8 +96,13 @@ function resetForm() {
   Object.assign(form, emptyForm())
   editingId.value = null
 }
+function openCreate() {
+  resetForm()
+  showModal.value = true
+}
 function edit(b: Banner) {
   editingId.value = b.id
+  showModal.value = true
   Object.assign(form, {
     title: b.title,
     subtitle: b.subtitle || '',
@@ -111,6 +127,7 @@ async function save() {
       banners.value.push(created)
       toast.success('Banner added')
     }
+    showModal.value = false
     resetForm()
   } catch (e) {
     toast.error(e instanceof Error ? e.message : 'Could not save banner')

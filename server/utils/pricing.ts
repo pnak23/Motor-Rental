@@ -1,4 +1,5 @@
 import { query } from './db'
+import { REQUIRED_DEPOSIT_RATIO } from './schemas'
 
 export interface MotorbikeForPricing {
   id: string
@@ -72,4 +73,26 @@ export async function quotePrice(
   const ratePerDay = await getRatePerDay(motorbike, days)
   const subtotal = Math.round(ratePerDay * days * 100) / 100
   return { days, ratePerDay, subtotal, isHalfDay: false }
+}
+
+/** The minimum upfront payment required for a booking of this total. */
+export function requiredDeposit(total: number): number {
+  return Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
+}
+
+/** Whether the amount paid so far satisfies the required deposit (with a
+ *  small epsilon to tolerate floating-point rounding). */
+export function meetsDepositRequirement(total: number, paidAmount: number): boolean {
+  return paidAmount >= requiredDeposit(total) - 0.01
+}
+
+/**
+ * Suggests a late fee when a motorbike is returned after its scheduled
+ * return time, billed per hour (or part-hour) late. Returns 0 if returned
+ * on time, no rate is configured, or actualReturnAt isn't after returnDate.
+ */
+export function calculateLateFee(returnDate: Date, actualReturnAt: Date, lateFeePerHour: number): number {
+  if (!lateFeePerHour || actualReturnAt <= returnDate) return 0
+  const hoursLate = Math.ceil((actualReturnAt.getTime() - returnDate.getTime()) / (1000 * 60 * 60))
+  return Math.round(hoursLate * lateFeePerHour * 100) / 100
 }

@@ -1,11 +1,12 @@
 import type { H3Event } from 'h3'
-import { adminBookingCreateSchema, REQUIRED_DEPOSIT_RATIO } from '../../../utils/schemas'
+import { adminBookingCreateSchema } from '../../../utils/schemas'
 import { queryOne, query, newId } from '../../../utils/db'
-import { quotePrice } from '../../../utils/pricing'
+import { quotePrice, requiredDeposit, meetsDepositRequirement } from '../../../utils/pricing'
 import { createBookingSafely } from '../../../utils/availability'
 import { requireAuth } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { saveIdDocument, savePaymentProof } from '../../../utils/upload'
+import { notifyBookingCreated } from '../../../utils/notify'
 
 interface MotorbikeRow {
   id: string
@@ -174,14 +175,11 @@ export default defineEventHandler(async (event) => {
   // At least 50% must be paid before a booking can be anything other than
   // Pending/Cancelled/Rejected — applies to staff-created bookings too.
   const requiresDeposit = !['PENDING', 'CANCELLED', 'REJECTED'].includes(status)
-  if (requiresDeposit) {
-    const requiredDeposit = Math.round(total * REQUIRED_DEPOSIT_RATIO * 100) / 100
-    if (paidAmount < requiredDeposit - 0.01) {
-      throw createError({
-        statusCode: 400,
-        statusMessage: `At least $${requiredDeposit.toFixed(2)} (50% of the total) must be paid before this booking can be ${status.toLowerCase().replace('_', ' ')}`
-      })
-    }
+  if (requiresDeposit && !meetsDepositRequirement(total, paidAmount)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `At least $${requiredDeposit(total).toFixed(2)} (50% of the total) must be paid before this booking can be ${status.toLowerCase().replace('_', ' ')}`
+    })
   }
 
   const booking = await createBookingSafely({
@@ -214,6 +212,21 @@ export default defineEventHandler(async (event) => {
   }
 
   await logAudit(event, user.id, 'CREATE_BOOKING', 'Booking', booking.id, `Created booking ${booking.bookingNumber}`)
+
+  const customerRow = await queryOne<{ fullName: string; email: string | null }>(
+    `SELECT "fullName", email FROM customers WHERE id = $1`,
+    [customerId]
+  )
+  await notifyBookingCreated(customerRow?.email, {
+    bookingNumber: booking.bookingNumber,
+    motorbikeName: motorbike.name,
+    pickupDate: booking.pickupDate,
+    returnDate: booking.returnDate,
+    total: Number(booking.total),
+    paidAmount: Number(booking.paidAmount),
+    status: booking.status,
+    customerName: customerRow?.fullName || 'Customer'
+  })
 
   return { success: true, data: booking }
 })

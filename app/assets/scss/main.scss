@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+Khmer:wght@500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap');
 
 /* ── Base palette (admin dashboard + shared chrome) ──────────────────
    These stay exactly as originally shipped. The premium Siem Reap /
@@ -18,6 +18,15 @@
   --color-border: #e2ded4;
   --color-success: #3f8c5f;
   --color-danger: #c1462f;
+  /* Fixed "always-dark" navy for buttons/badges/accents that use charcoal as a
+     BACKGROUND (not text). --color-charcoal itself gets reskinned per-surface
+     (site-public's forest green, admin's dark-mode light text) — this one
+     stays pinned so those components don't get swept up in a text reskin. */
+  --btn-charcoal-bg: var(--color-charcoal);
+  /* Same story as --btn-charcoal-bg: pinned literal white for TEXT sitting on
+     a dark button/chip, decoupled from --color-white's surface/background
+     role (which admin dark mode reskins to a dark card color). */
+  --text-on-dark: #fff;
 
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -60,24 +69,24 @@ a:hover {
 .btn-amber {
   background-color: var(--color-amber);
   border-color: var(--color-amber);
-  color: var(--color-charcoal);
+  color: var(--btn-charcoal-bg);
   font-weight: 600;
 }
 .btn-amber:hover {
   background-color: var(--color-amber-deep);
   border-color: var(--color-amber-deep);
-  color: var(--color-white);
+  color: var(--text-on-dark);
 }
 .btn-charcoal {
-  background-color: var(--color-charcoal);
-  border-color: var(--color-charcoal);
-  color: var(--color-white);
+  background-color: var(--btn-charcoal-bg);
+  border-color: var(--btn-charcoal-bg);
+  color: var(--text-on-dark);
   font-weight: 600;
 }
 .btn-charcoal:hover {
   background-color: #14181b;
   border-color: #14181b;
-  color: var(--color-white);
+  color: var(--text-on-dark);
 }
 .btn-outline-charcoal {
   border-color: var(--color-charcoal);
@@ -85,8 +94,8 @@ a:hover {
   font-weight: 600;
 }
 .btn-outline-charcoal:hover {
-  background-color: var(--color-charcoal);
-  color: var(--color-white);
+  background-color: var(--btn-charcoal-bg);
+  color: var(--text-on-dark);
 }
 
 .btn,
@@ -124,8 +133,8 @@ a:hover {
 }
 
 .bg-charcoal {
-  background-color: var(--color-charcoal) !important;
-  color: var(--color-white);
+  background-color: var(--btn-charcoal-bg) !important;
+  color: var(--text-on-dark);
 }
 .bg-cream {
   background-color: var(--color-cream) !important;
@@ -171,8 +180,8 @@ a:hover {
 
 /* ── Admin shell ────────────────────────────────────*/
 .admin-sidebar {
-  background: var(--color-charcoal);
-  color: var(--color-white);
+  background: var(--btn-charcoal-bg);
+  color: var(--text-on-dark);
   min-height: 100vh;
 }
 .admin-sidebar a {
@@ -180,7 +189,7 @@ a:hover {
 }
 .admin-sidebar a.active,
 .admin-sidebar a:hover {
-  color: var(--color-white);
+  color: var(--text-on-dark);
   background: rgba(255, 255, 255, 0.08);
 }
 
@@ -196,6 +205,104 @@ a:hover {
 .admin-main .table-responsive .table th,
 .admin-main .table-responsive .table td {
   white-space: nowrap;
+}
+
+/* ── Admin: page header ─────────────────────────────*/
+.admin-page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+.admin-page-header h1,
+.admin-page-header h2 {
+  margin-bottom: 0.15rem;
+  letter-spacing: -0.01em;
+}
+.admin-page-header__subtitle {
+  color: var(--color-gray-mid);
+  font-size: 0.92rem;
+  margin-bottom: 0;
+}
+.admin-page-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Admin: card polish ──────────────────────────────*/
+.admin-main .card {
+  box-shadow: 0 1px 2px rgba(33, 38, 43, 0.04);
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+.admin-main .card.card-hover:hover {
+  box-shadow: 0 10px 26px rgba(33, 38, 43, 0.1);
+  transform: translateY(-2px);
+}
+.admin-main .card-header {
+  background: transparent;
+  border-bottom: 1px solid var(--color-border);
+  font-weight: 600;
+}
+
+/* ── Admin: table polish ─────────────────────────────*/
+.admin-main .table-responsive .table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--color-white);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gray-mid);
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border);
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+.admin-main .table-responsive .table tbody tr {
+  transition: background 0.12s ease;
+}
+.admin-main .table-responsive .table tbody tr:hover {
+  background: var(--color-gray-light);
+}
+.admin-main .table-responsive .table td {
+  vertical-align: middle;
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+}
+
+/* ── Admin: empty state ──────────────────────────────*/
+.admin-empty-state {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  color: var(--color-gray-mid);
+}
+.admin-empty-state i {
+  font-size: 2.25rem;
+  display: block;
+  margin-bottom: 0.75rem;
+  opacity: 0.5;
+}
+.admin-empty-state p:first-of-type {
+  font-weight: 600;
+  color: var(--color-charcoal);
+  margin-bottom: 0.15rem;
+}
+
+/* ── Admin: form focus polish ────────────────────────*/
+.admin-main .form-control:focus,
+.admin-main .form-select:focus {
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 0.2rem rgba(231, 160, 60, 0.18);
+}
+.admin-main .btn i {
+  vertical-align: -1px;
 }
 
 ::-webkit-scrollbar {
@@ -462,4 +569,76 @@ a:hover {
 }
 .site-public .btn-outline-charcoal.btn-sm {
   border-width: 1.5px;
+}
+
+/* ── Khmer typography ────────────────────────────────
+   Latin-first fonts like Playfair Display/Inter have no Khmer
+   glyphs, so km falls back to the browser's default system font,
+   which looks rough. Swap in fonts designed for Khmer script when
+   the page is rendered in that locale (nuxt-i18n sets html[lang]). */
+html[lang|='km'] {
+  --font-body: 'Kantumruy Pro', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+html[lang|='km'] .site-public {
+  --font-display: 'Noto Serif Khmer', 'Playfair Display', Georgia, serif;
+}
+html[lang|='km'] h1,
+html[lang|='km'] h2,
+html[lang|='km'] h3,
+html[lang|='km'] h4,
+html[lang|='km'] .font-display,
+html[lang|='km'] .eyebrow {
+  /* Negative/wide Latin tracking crowds Khmer stacked consonants/diacritics */
+  letter-spacing: normal;
+}
+html[lang|='km'] .eyebrow {
+  font-family: var(--font-body);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   ADMIN DARK MODE
+   Scoped to `.admin-shell[data-theme="dark"]` (the admin layout's root
+   wrapper) so the public site is completely unaffected. Redefines the
+   same shared tokens every admin component already consumes (.card,
+   tables, StatCard, dash-card, etc. all read var(--color-white) /
+   var(--color-border) / var(--color-charcoal)), so most of the panel
+   re-themes for free. `data-bs-theme="dark"` is set alongside it so
+   Bootstrap's own built-in dark mode (forms, dropdowns, modals,
+   breadcrumbs) covers everything our custom CSS doesn't touch.
+   ════════════════════════════════════════════════════════════════ */
+.admin-shell[data-theme='dark'] {
+  --color-white: #23262b;
+  --color-border: #383d44;
+  --color-gray-light: #2b2f35;
+  --color-gray-mid: #9aa0a6;
+  --color-charcoal: #e7e5e0;
+  /* --btn-charcoal-bg stays pinned dark so buttons/badges/accents that use
+     charcoal as a background don't flip along with the text reskin above. */
+  --btn-charcoal-bg: #21262b;
+  --admin-bg: #16181b;
+
+  color: var(--color-charcoal);
+}
+.admin-shell[data-theme='dark'] .admin-main {
+  background: var(--admin-bg);
+}
+.admin-shell[data-theme='dark'] .stat-icon--charcoal {
+  background: rgba(255, 255, 255, 0.08);
+  color: #c9ccd1;
+}
+.admin-shell[data-theme='dark'] .stat-icon--amber {
+  background: rgba(231, 160, 60, 0.22);
+}
+.admin-shell[data-theme='dark'] .stat-icon--success {
+  background: rgba(63, 140, 95, 0.22);
+}
+.admin-shell[data-theme='dark'] .stat-icon--danger {
+  background: rgba(193, 70, 47, 0.22);
+}
+.admin-shell[data-theme='dark'] .skeleton {
+  background: linear-gradient(90deg, var(--color-gray-light) 25%, #34383f 37%, var(--color-gray-light) 63%);
+  background-size: 400% 100%;
+}
+.admin-shell[data-theme='dark'] ::-webkit-scrollbar-thumb {
+  background: var(--color-border);
 }

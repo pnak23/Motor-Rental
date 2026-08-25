@@ -20,7 +20,7 @@
       <p v-if="!collapsed" class="sidebar-heading">Rental Management</p>
       <div v-else class="sidebar-divider" />
       <NuxtLink to="/admin/motorbikes" class="sidebar-link" active-class="active" :title="collapsed ? 'Motorbikes' : undefined">
-        <i class="bi bi-motorcycle" /> <span v-if="!collapsed">Motorbikes</span>
+        <i class="bi bi-scooter" /> <span v-if="!collapsed">Motorbikes</span>
       </NuxtLink>
       <NuxtLink to="/admin/reservations" class="sidebar-link" active-class="active" :title="collapsed ? 'Reservations' : undefined">
         <i class="bi bi-calendar3-week" /> <span v-if="!collapsed">Reservations</span>
@@ -94,7 +94,7 @@ const collapsed = ref(false)
   height: 34px;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--color-amber), var(--color-amber-deep));
-  color: var(--color-charcoal);
+  color: var(--btn-charcoal-bg);
   font-size: 1.05rem;
   flex-shrink: 0;
 }

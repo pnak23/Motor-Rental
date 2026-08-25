@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+  :root {
+    --charcoal: #21262b;
+    --amber: #c97f2a;
+    --amber-light: #e7a03c;
+    --border: #e2ded4;
+    --gray: #6b7075;
+    --cream: #faf8f4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    color: var(--charcoal);
+    font-size: 11.5pt;
+    line-height: 1.6;
+    margin: 0;
+  }
+  h1, h2, h3, .font-display { font-family: 'Playfair Display', Georgia, serif; }
+  a { color: var(--amber); text-decoration: none; }
+
+  /* ---- Cover page ---- */
+  .cover {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 70px;
+    background: linear-gradient(160deg, #21262b 0%, #2c333a 55%, #3a3226 100%);
+    color: #fff;
+    page-break-after: always;
+  }
+  .cover__eyebrow {
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    font-size: 11pt;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .cover__app { font-size: 42pt; font-weight: 800; margin: 0 0 6px 0; }
+  .cover__doc { font-size: 26pt; font-weight: 600; color: var(--amber-light); margin: 0 0 40px 0; }
+  .cover__meta { font-size: 12pt; color: rgba(255,255,255,0.75); line-height: 2; }
+  .cover__meta b { color: #fff; }
+  .cover__bar { width: 90px; height: 5px; background: var(--amber-light); margin-bottom: 26px; border-radius: 3px; }
+
+  /* ---- TOC ---- */
+  .toc-page { page-break-after: always; padding-top: 40px; }
+  .toc-page h1 { font-size: 22pt; border-bottom: 3px solid var(--amber-light); padding-bottom: 12px; margin-bottom: 24px; }
+  .toc ul { list-style: none; margin: 0; padding: 0; }
+  .toc li a {
+    display: flex;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px dotted var(--border);
+    color: var(--charcoal);
+    font-size: 12pt;
+  }
+  .toc__num {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--amber);
+    font-weight: 600;
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  /* ---- Sections ---- */
+  .doc-section { page-break-before: always; padding-top: 10px; }
+  .doc-section h2 {
+    font-size: 19pt;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 3px solid var(--amber-light);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  .sec-num {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--charcoal);
+    color: #fff;
+    font-size: 13pt;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .doc-section h3 { font-size: 13.5pt; margin-top: 22px; color: var(--amber); }
+  .doc-section p { margin: 0 0 10px 0; text-align: justify; }
+  .doc-section ul, .doc-section ol { margin: 0 0 12px 0; padding-left: 22px; }
+  .doc-section li { margin-bottom: 5px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 18px 0; font-size: 10pt; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--charcoal); color: #fff; font-weight: 600; }
+  tr:nth-child(even) td { background: #f7f5f0; }
+
+  figure.shot { margin: 16px 0; page-break-inside: avoid; }
+  figure.shot img {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(33,38,43,0.12);
+  }
+  figure.shot figcaption {
+    font-size: 9.5pt;
+    color: var(--gray);
+    text-align: center;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .callout {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 10.5pt;
+    page-break-inside: avoid;
+  }
+  .callout--note { background: #eef5f0; border-left: 4px solid #3f8c5f; }
+  .callout--warn { background: #fdf1e8; border-left: 4px solid var(--amber); }
+  .callout__icon { font-size: 14pt; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover__eyebrow">Software Documentation</div>
+  <div class="cover__bar"></div>
+  <div class="cover__app">Angkor Wheels Rental</div>
+  <div class="cover__doc">User Guide</div>
+  <div class="cover__meta">
+    <div><b>English Version</b></div>
+    <div>Version 1.0</div>
+    <div>August 2026</div>
+  </div>
+</div>
+
+<div class="toc-page">
+  <h1>Table of Contents</h1>
+  <div class="toc"><ul><li><a href="#sec-intro"><span class="toc__num">1</span><span class="toc__title">Introduction</span></a></li><li><a href="#sec-requirements"><span class="toc__num">2</span><span class="toc__title">System Requirements</span></a></li><li><a href="#sec-login"><span class="toc__num">3</span><span class="toc__title">Login</span></a></li><li><a href="#sec-dashboard"><span class="toc__num">4</span><span class="toc__title">Dashboard</span></a></li><li><a href="#sec-navigation"><span class="toc__num">5</span><span class="toc__title">Navigation</span></a></li><li><a href="#sec-motorbikes"><span class="toc__num">6</span><span class="toc__title">Managing Motorbikes</span></a></li><li><a href="#sec-reservations"><span class="toc__num">7</span><span class="toc__title">Reservations &amp; Bookings</span></a></li><li><a href="#sec-customers"><span class="toc__num">8</span><span class="toc__title">Customers</span></a></li><li><a href="#sec-maintenance"><span class="toc__num">9</span><span class="toc__title">Maintenance</span></a></li><li><a href="#sec-search-filter"><span class="toc__num">10</span><span class="toc__title">Search and Filter</span></a></li><li><a href="#sec-reports"><span class="toc__num">11</span><span class="toc__title">Reports &amp; Export</span></a></li><li><a href="#sec-settings"><span class="toc__num">12</span><span class="toc__title">Settings (Content &amp; Policies)</span></a></li><li><a href="#sec-website-content"><span class="toc__num">13</span><span class="toc__title">Website Content: Banners, FAQ, Locations, Messages</span></a></li><li><a href="#sec-roles"><span class="toc__num">14</span><span class="toc__title">User Roles &amp; Permissions</span></a></li><li><a href="#sec-account"><span class="toc__num">15</span><span class="toc__title">Profile / Account</span></a></li><li><a href="#sec-troubleshooting"><span class="toc__num">16</span><span class="toc__title">Common Errors &amp; Troubleshooting</span></a></li><li><a href="#sec-faq"><span class="toc__num">17</span><span class="toc__title">Frequently Asked Questions</span></a></li><li><a href="#sec-support"><span class="toc__num">18</span><span class="toc__title">Support</span></a></li></ul></div>
+</div>
+
+
+      <section class="doc-section" id="sec-intro">
+        <h2><span class="sec-num">1</span>Introduction</h2>
+        <p>Angkor Wheels Rental is the management system behind a motorbike rental business based in Siem Reap, Cambodia. It has two connected parts:</p>
+<ul><li>A public website where customers browse the available motorbikes, check pricing, and submit a rental request online.</li><li>An admin panel where staff manage the fleet, review and confirm bookings, track customers, record payments, and monitor the business.</li></ul>
+<p>This guide documents the admin panel in detail, since that is where staff spend most of their time, and also covers the customer-facing website so admins understand what customers see.</p>
+<h3>Who should use this guide</h3>
+<ul><li>Business owners and managers who need the full picture of what the system can do.</li><li>Front-desk / rental staff who create walk-in bookings, confirm payments, and hand out motorbikes.</li><li>Anyone new to the team who needs to learn the system quickly.</li></ul>
+<h3>Main benefits</h3>
+<ul><li>One place to see every booking, whether it came from the website or a walk-in customer.</li><li>Automatic conflict checking, so the same motorbike can never be double-booked for overlapping dates.</li><li>A 50% deposit rule enforced consistently for every booking, online or in person.</li><li>Support for Cambodia-specific payment methods — KHQR, ABA, ACLEDA, Wing, and card — alongside cash for walk-ins.</li><li>Built-in reporting on revenue, bookings, fleet utilization, and customers.</li><li>A bilingual public website (English and Khmer) so both local and international customers can book comfortably.</li></ul>
+      </section>
+
+      <section class="doc-section" id="sec-requirements">
+        <h2><span class="sec-num">2</span>System Requirements</h2>
+        <p>Angkor Wheels Rental is a web application — there is nothing to install. It runs in a standard internet browser on a computer, tablet, or phone.</p>
+<table><thead><tr><th>Requirement</th><th>Details</th></tr></thead><tbody><tr><td>Supported browsers</td><td>Google Chrome, Microsoft Edge, Mozilla Firefox, or Safari (recent versions of any of these).</td></tr><tr><td>Screen size</td><td>The admin panel is designed for a laptop or desktop screen (1280px wide or larger) for the most comfortable experience. It remains usable on a tablet.</td></tr><tr><td>Internet connection</td><td>A working internet connection is required at all times — the system stores all data on a central server, not on your device.</td></tr><tr><td>Account</td><td>An admin account (email + password) created by a Super Admin. See Section 13 for the roles available.</td></tr></tbody></table>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>The public booking website is fully responsive and works well on customers’ phones, which is how most rental inquiries happen in practice.</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-login">
+        <h2><span class="sec-num">3</span>Login</h2>
+        <p>All staff access the system through the admin login page.</p>
+<ol><li>Open the admin login page in your browser.</li><li>Enter your email address.</li><li>Enter your password.</li><li>Click Log In.</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/login/01-login-page.png" /><figcaption>The admin login screen</figcaption></figure>
+<h3>Forgot your password?</h3>
+<p>Click "Forgot password?" on the login screen and enter your email address. If an account exists for that address, a password reset link is sent to it, valid for one hour.</p>
+<h3>Incorrect login</h3>
+<p>If the email or password is wrong, the system shows an error message and does not log you in. Contact a Super Admin if you keep being rejected — they can check whether your account is still active from the Users page (Section 13).</p>
+      </section>
+
+      <section class="doc-section" id="sec-dashboard">
+        <h2><span class="sec-num">4</span>Dashboard</h2>
+        <p>The Dashboard is the first page you see after logging in. It gives a quick, at-a-glance summary of how the business is doing today.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/dashboard/01-dashboard-overview.png" /><figcaption>The admin dashboard</figcaption></figure>
+<h3>What is on the dashboard</h3>
+<ul><li>A personalized greeting with today’s date and two shortcut buttons: New Booking and Add Motorbike.</li><li>Fleet Overview cards — Total Motorbikes, Available, Currently Rented, and In Maintenance.</li><li>Bookings &amp; Revenue cards — Pending Bookings, Today’s Revenue, This Week, and This Month.</li><li>A Revenue by Month chart and a Bookings by Month chart, both covering the last 12 months.</li><li>A Booking Status Breakdown chart showing the proportion of bookings that are pending, confirmed, active, completed, or cancelled.</li><li>A Top Performing Motorbikes list, ranked by revenue, with the two top spots marked with gold/silver rank badges.</li></ul>
+<p>Every number on the dashboard is live — it reflects the current state of the database, not a cached snapshot.</p>
+      </section>
+
+      <section class="doc-section" id="sec-navigation">
+        <h2><span class="sec-num">5</span>Navigation</h2>
+        <p>The left-hand sidebar is how you move between every part of the admin panel. It is organized into three groups.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/01-sidebar-and-topbar.png" /><figcaption>The admin sidebar, grouped by section</figcaption></figure>
+<table><thead><tr><th>Group</th><th>Menu items</th><th>Purpose</th></tr></thead><tbody><tr><td>Rental Management</td><td>Motorbikes, Reservations, Bookings (List), Customers, Maintenance, Reports</td><td>Everything to do with running day-to-day rentals.</td></tr><tr><td>Website</td><td>Content &amp; Policies, Banners, FAQ, Locations, Messages</td><td>Content shown on the public website.</td></tr><tr><td>Settings</td><td>Users, Audit Logs</td><td>Account management and a history of changes made in the system.</td></tr></tbody></table>
+<p>The sidebar can be collapsed to a narrow icon-only strip using the arrow button at the top, to give more room to the page content.</p>
+<h3>The top bar</h3>
+<p>Every admin page has a top bar showing a breadcrumb trail (e.g. "Admin / Bookings"), the page title, a light/dark mode toggle, and your account menu on the right.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/02-user-menu.png" /><figcaption>The account menu, showing your role and the Log out option</figcaption></figure>
+      </section>
+
+      <section class="doc-section" id="sec-motorbikes">
+        <h2><span class="sec-num">6</span>Managing Motorbikes</h2>
+        <p>Purpose: The Motorbikes section is where the entire rental fleet is recorded — one entry per physical motorbike, with its specifications, pricing, photos, and current status.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/01-motorbike-list.png" /><figcaption>The motorbike list, with search, status filter, and quick actions</figcaption></figure>
+<h3>Fields on a motorbike</h3>
+<table><thead><tr><th>Field</th><th>Description</th><th>Required</th></tr></thead><tbody><tr><td>Name</td><td>The display name shown to customers, e.g. "Honda Click".</td><td>Yes</td></tr><tr><td>Brand / Model</td><td>The manufacturer and model, e.g. Honda / Click 125i.</td><td>Yes</td></tr><tr><td>Engine CC</td><td>Engine size in cubic centimeters.</td><td>Yes</td></tr><tr><td>Transmission / Fuel Type</td><td>Automatic, Manual, or Semi-Automatic; Gasoline or Electric.</td><td>No (has a default)</td></tr><tr><td>Plate Province / Plate Code</td><td>The Cambodian province printed on the plate (selected from a list of all 25 provinces, or the national plate) and the plate code, e.g. ភ្នំពេញ 1AC-2345.</td><td>No</td></tr><tr><td>Key Type</td><td>Normal Key or Smart Key.</td><td>No</td></tr><tr><td>Daily / Weekly / Monthly Price</td><td>Rental rates. Weekly and monthly rates are optional discounted tiers.</td><td>Daily price is required</td></tr><tr><td>Deposit / Delivery Fee</td><td>The refundable security deposit and any hotel-delivery fee.</td><td>No</td></tr><tr><td>Min / Max Rental Days</td><td>The shortest and longest booking length allowed for this bike (a half-day booking of 12 hours or less always bypasses this).</td><td>No</td></tr><tr><td>Status</td><td>Available, Rented, Maintenance, or Inactive.</td><td>Yes</td></tr></tbody></table>
+<h3>Adding a motorbike</h3>
+<ol><li>Click Add Motorbike from the Motorbikes list (or the dashboard shortcut).</li><li>Fill in the Basic Information, Rental Information, and Features sections.</li><li>Click Create Motorbike.</li><li>On the next screen, upload photos — the first photo, or the one marked as primary, is what customers see first.</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/02-add-motorbike-form.png" /><figcaption>The Add Motorbike form</figcaption></figure>
+<h3>Editing a motorbike</h3>
+<p>Open the motorbike from the list and click the pencil (Edit) icon, or click into any row. All fields can be changed, including photos, on the same screen.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/04-edit-motorbike-form.png" /><figcaption>Editing an existing motorbike</figcaption></figure>
+<h3>Deleting / deactivating a motorbike</h3>
+<p>Use the trash icon to permanently delete a motorbike, or the toggle icon to mark it Inactive without deleting it (useful for a bike that is temporarily out of service, e.g. sold or being repaired long-term — see also Section 9, Maintenance, for shorter repairs).</p>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>Deleting a motorbike is permanent and requires the Admin or Super Admin role. Staff accounts cannot delete motorbikes or bookings.</div></div>
+<h3>Searching and filtering</h3>
+<p>Use the search box to find a motorbike by name, brand, model, or plate number/province, and the status dropdown to show only Available, Rented, Maintenance, or Inactive bikes.</p>
+      </section>
+
+      <section class="doc-section" id="sec-reservations">
+        <h2><span class="sec-num">7</span>Reservations &amp; Bookings</h2>
+        <p>Purpose: this is the heart of the system — every rental, whether submitted by a customer on the website or created by staff for a walk-in, is a booking.</p>
+<h3>The Reservations calendar</h3>
+<p>The Reservations page opens in Calendar view by default, with KPI cards at the top (Today’s Reservations, Active Rentals, Returning Today, Available Motors, Upcoming This Week, Pending Approval, and Unpaid/Partial).</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reservations/01-calendar-view.png" /><figcaption>The reservations calendar, with a colored dot per booking status</figcaption></figure>
+<p>Each day on the calendar shows how many bookings fall on it, with a colored dot for each status (pending, confirmed, active rental, returned, cancelled). Click any day to see the full list of bookings for that day.</p>
+<p>Switch to Table view using the toggle in the top-right for a traditional sortable, filterable list instead of a calendar.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reservations/02-table-view.png" /><figcaption>The reservations table view</figcaption></figure>
+<h3>Creating a new booking (walk-in / staff-created)</h3>
+<ol><li>Click New Booking from the Reservations page, the Bookings list, or the dashboard shortcut.</li><li>Choose the motorbike and the pickup/return date and time — the estimated total and required 50% deposit are calculated automatically.</li><li>Choose an existing customer by searching their name or phone, or switch to "New" and enter a new customer’s details.</li><li>Set the Booking Status (Pending, Confirmed, Active, or Completed) and the payment details — Payment Status, Paid Amount, and Payment Method.</li><li>Click Create Booking.</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/02-create-booking-form.png" /><figcaption>The New Booking form</figcaption></figure>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>Walk-in customers are usually recorded as Confirmed right away, since they are physically present. Bookings from the public website start as Pending until a staff member reviews and confirms them.</div></div>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>Any booking status other than Pending or Cancelled requires at least 50% of the total to be marked as paid. The form shows a warning and blocks saving if the amount is not enough.</div></div>
+<h3>The Bookings list</h3>
+<p>Bookings (List) shows every booking as a sortable table with search and status filtering.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/01-booking-list.png" /><figcaption>The bookings list</figcaption></figure>
+<h3>Booking detail page</h3>
+<p>Opening a booking shows the full customer, rental, and financial details, an editable "Adjust Booking" form, a "Return &amp; Deposit" section, a status-update panel, and a timeline of every status change.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/04-booking-detail.png" /><figcaption>A booking’s detail page</figcaption></figure>
+<h3>Updating a booking’s status</h3>
+<p>Use the Update Status panel on the right side of the booking detail page: choose the new status, optionally add a note, and click Update Status.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/05-update-status.png" /><figcaption>Updating a booking’s status</figcaption></figure>
+<p>When a booking is marked Returned, the system automatically records the return time and suggests a late fee if it is configured (see Section 12, Settings) and the bike came back after its scheduled return time. The late fee and any deposit refund amount remain editable in the "Return &amp; Deposit" section.</p>
+<h3>Deleting a booking</h3>
+<p>Open the booking and click Delete Booking at the bottom of the Adjust Booking form. A confirmation dialog appears before anything is removed.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/06-delete-confirmation.png" /><figcaption>The delete confirmation dialog</figcaption></figure>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>Deleting a booking is permanent and requires the Admin or Super Admin role.</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-customers">
+        <h2><span class="sec-num">8</span>Customers</h2>
+        <p>Purpose: every person who has ever booked a motorbike — through the website or as a walk-in — has a customer record, automatically created the first time they book (matched by phone number) and reused for every later booking.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/customers/01-customer-list.png" /><figcaption>The customer list</figcaption></figure>
+<h3>Customer information</h3>
+<table><thead><tr><th>Field</th><th>Description</th><th>Required</th></tr></thead><tbody><tr><td>Full Name</td><td>The customer’s name.</td><td>Yes</td></tr><tr><td>Phone</td><td>Used to match repeat customers automatically.</td><td>Yes</td></tr><tr><td>Email, Nationality, Telegram, WhatsApp</td><td>Optional contact details.</td><td>No</td></tr><tr><td>ID Type / ID or Passport Number</td><td>ID Card or Passport.</td><td>No</td></tr><tr><td>ID Document Photo</td><td>An uploaded photo of the ID/passport, if provided at booking time.</td><td>No</td></tr></tbody></table>
+<p>Opening a customer shows their profile plus their full booking history in one place.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/customers/02-customer-detail.png" /><figcaption>A customer’s profile and booking history</figcaption></figure>
+<p>Customer details can be edited directly from their profile page. Staff, Admin, and Super Admin accounts can all edit customer information.</p>
+      </section>
+
+      <section class="doc-section" id="sec-maintenance">
+        <h2><span class="sec-num">9</span>Maintenance</h2>
+        <p>Purpose: track service history for each motorbike — oil changes, tires, brakes, engine work, battery, general service, and accident repairs.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/maintenance/01-maintenance-list.png" /><figcaption>The maintenance records list</figcaption></figure>
+<p>Each maintenance record captures the motorbike, the type of work, a date, optional odometer reading, cost, garage name, and a status of Scheduled, In Progress, or Completed.</p>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>Maintenance records are separate from a motorbike’s overall Status field. Setting a motorbike’s status to "Maintenance" hides it from customer bookings while it is being worked on; the Maintenance section keeps the detailed repair history regardless of that status.</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-search-filter">
+        <h2><span class="sec-num">10</span>Search and Filter</h2>
+        <p>Search and filtering controls appear consistently across the list pages, in the same place (top of the page, above the table).</p>
+<table><thead><tr><th>Page</th><th>Search matches</th><th>Filters available</th></tr></thead><tbody><tr><td>Motorbikes</td><td>Name, brand, model, plate code, or plate province</td><td>Status (Available / Rented / Maintenance / Inactive)</td></tr><tr><td>Bookings</td><td>Customer name, phone, or booking number</td><td>Status; date range; motorbike; payment status</td></tr><tr><td>Customers</td><td>Name or phone</td><td>—</td></tr><tr><td>Reservations (table view)</td><td>Same as Bookings</td><td>Same as Bookings, plus sortable columns</td></tr></tbody></table>
+<p>Search boxes filter as you type (after a short pause), so there is no separate "Search" button to click. Clear the search box or reset the filter dropdown to see the full list again.</p>
+      </section>
+
+      <section class="doc-section" id="sec-reports">
+        <h2><span class="sec-num">11</span>Reports &amp; Export</h2>
+        <p>Purpose: the Reports page turns the raw booking and customer data into business-level numbers, for a date range you choose.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reports/01-reports-overview.png" /><figcaption>The Reports page</figcaption></figure>
+<h3>Selecting a date range</h3>
+<p>Use the quick buttons (Today, Last 7 days, Last 30 days, This month, This year) or pick exact From/To dates, then click Apply.</p>
+<h3>What the report shows</h3>
+<ul><li>Revenue &amp; Financials — total revenue, subtotal, discounts given, and extra charges, plus a revenue-over-time chart and a breakdown by payment status (Unpaid / Partial / Paid).</li><li>Bookings &amp; Rentals — total bookings, average rental length, cancellation rate, amount paid to date, and a breakdown by booking status.</li><li>Motorbike Performance — a table of every motorbike with its bookings, revenue, utilization percentage, and maintenance cost for the period.</li><li>Customers — new vs. returning customers, a ranked list of top customers by spend, and a breakdown by nationality.</li></ul>
+<h3>Exporting data</h3>
+<p>Three CSV export buttons are available at the top of the page: Bookings / Revenue, Motorbikes, and Customers. Clicking one downloads a CSV file for the currently selected date range, which opens directly in Excel or Google Sheets.</p>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>CSV is currently the only export format. There is no PDF export or print-formatted report inside the application; the CSV file can be opened and printed from a spreadsheet program if a printed copy is needed. There is also no data import feature — all records are entered through the forms described in this guide.</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-settings">
+        <h2><span class="sec-num">12</span>Settings (Content &amp; Policies)</h2>
+        <p>Purpose: control everything about how the public website looks and behaves, organized into tabs.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/settings/01-business-info.png" /><figcaption>Business Info settings</figcaption></figure>
+<table><thead><tr><th>Tab</th><th>What it controls</th></tr></thead><tbody><tr><td>Business Info</td><td>Business name, currency, phone, email, address, description, footer text, and whether email notifications are sent (see below).</td></tr><tr><td>Social Media</td><td>Telegram, WhatsApp, Facebook, Instagram, and TikTok links shown on the site.</td></tr><tr><td>Homepage</td><td>The hero title, subtitle, and background image on the homepage.</td></tr><tr><td>About</td><td>The About page’s title, description, story, mission, and image.</td></tr><tr><td>Payment Methods</td><td>Live KHQR account details (for an automatically generated QR code with the exact amount), plus instructions shown to customers for ABA, ACLEDA, Wing, and Card payments.</td></tr><tr><td>Rental Policy</td><td>Minimum age, min/max rental days, required documents, and the policy text shown on the public Rental Policy page (deposit, fuel, late return, damage, cancellation, accident, traffic violation, and helmet policies), plus the late-fee-per-hour rate.</td></tr></tbody></table>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/settings/02-payment-methods.png" /><figcaption>Payment Methods settings, including the Live KHQR configuration</figcaption></figure>
+<p>Every tab is saved with the same Save Settings button; changes apply to the public website immediately.</p>
+<h3>Email notifications</h3>
+<p>When enabled, the system automatically emails a confirmation to the customer when a booking is created, a status-update email whenever the booking’s status changes, and an alert to the business email address for every new booking. Sending email requires an SMTP mail server to be configured by whoever manages the server — if none is configured, these emails are simply skipped rather than causing an error.</p>
+      </section>
+
+      <section class="doc-section" id="sec-website-content">
+        <h2><span class="sec-num">13</span>Website Content: Banners, FAQ, Locations, Messages</h2>
+        <p>These four menu items, under the Website group, manage smaller pieces of public website content.</p>
+<h3>Banners</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/banners/01-banner-list.png" /><figcaption>The banners list</figcaption></figure>
+<p>Promotional banners shown on the site, each with a title, subtitle, image, an optional button, an active/inactive toggle, a display order, and an optional start/end date for time-limited promotions.</p>
+<h3>FAQ</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/faqs/01-faq-list.png" /><figcaption>The FAQ list</figcaption></figure>
+<p>Question-and-answer pairs shown on the public FAQ page, with a display order and an active/inactive toggle.</p>
+<h3>Locations</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/locations/01-location-list.png" /><figcaption>The locations list</figcaption></figure>
+<p>Pickup/return locations offered to customers, each with an address, description, Google Maps link, phone number, and opening/closing hours.</p>
+<h3>Messages</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/contact-messages/01-contact-messages.png" /><figcaption>Messages submitted through the public Contact page</figcaption></figure>
+<p>Messages submitted through the public Contact page arrive here. Each can be marked as read/unread so the team can track which inquiries still need a reply.</p>
+      </section>
+
+      <section class="doc-section" id="sec-roles">
+        <h2><span class="sec-num">14</span>User Roles &amp; Permissions</h2>
+        <p>Purpose: the Users page (Settings group) manages who can log in to the admin panel and what they are allowed to do. Only a Super Admin can access this page.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/users/01-user-management.png" /><figcaption>The Users page — add a new admin/staff account</figcaption></figure>
+<h3>The three roles</h3>
+<table><thead><tr><th>Role</th><th>Description</th></tr></thead><tbody><tr><td>Super Admin</td><td>Full access to everything, including creating other admin/staff accounts and changing roles.</td></tr><tr><td>Admin</td><td>Full access to running the business — motorbikes, bookings, customers, settings, reports — except managing user accounts.</td></tr><tr><td>Staff</td><td>Day-to-day front-desk work: create and edit bookings, edit customer details, manage maintenance records, and view everything else. Cannot add/edit/delete motorbikes, change settings, delete bookings, or manage users.</td></tr></tbody></table>
+<h3>Permission matrix</h3>
+<table><thead><tr><th>Action</th><th>Super Admin</th><th>Admin</th><th>Staff</th></tr></thead><tbody><tr><td>View dashboard, bookings, motorbikes, customers, reports</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Create / edit bookings</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Delete bookings</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Edit customer details</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Create maintenance records</td><td>Yes</td><td>Yes</td><td>Yes</td></tr><tr><td>Add / edit / delete motorbikes</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Change settings, banners, FAQ, locations</td><td>Yes</td><td>Yes</td><td>No</td></tr><tr><td>Manage admin/staff users</td><td>Yes</td><td>No</td><td>No</td></tr></tbody></table>
+<h3>Creating a user</h3>
+<ol><li>Go to Settings → Users.</li><li>Fill in the new user’s full name, email, and a password (minimum 8 characters).</li><li>Choose their role — Staff, Admin, or Super Admin.</li><li>Click Create User.</li></ol>
+<p>An existing user’s role can be changed at any time from the dropdown next to their name, and their account can be deactivated (blocking login without deleting their history) using the Deactivate button.</p>
+      </section>
+
+      <section class="doc-section" id="sec-account">
+        <h2><span class="sec-num">15</span>Profile / Account</h2>
+        <p>Your account menu, in the top-right of every admin page, shows your name and role.</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/02-user-menu.png" /><figcaption>The account menu</figcaption></figure>
+<p>From here you can:</p>
+<ul><li>See your current role (Super Admin, Admin, or Staff).</li><li>Log out of the admin panel.</li></ul>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>There is currently no self-service "edit my profile" or "change my password while logged in" page. To change a password, use "Forgot password?" on the login screen (Section 3) to receive a reset link by email. A Super Admin can also update your name, email, or role from the Users page.</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-troubleshooting">
+        <h2><span class="sec-num">16</span>Common Errors &amp; Troubleshooting</h2>
+        <table><thead><tr><th>Problem</th><th>Possible Cause</th><th>Solution</th></tr></thead><tbody><tr><td>Cannot log in</td><td>Incorrect email or password, or the account has been deactivated</td><td>Double-check your email and password. If it still fails, ask a Super Admin to confirm your account is active.</td></tr><tr><td>"At least $X (50%) must be paid" when saving a booking</td><td>The booking is being set to a status other than Pending/Cancelled without enough of the deposit recorded</td><td>Increase the Paid Amount to at least 50% of the total, or leave the status as Pending until payment is confirmed.</td></tr><tr><td>"Motorbike is already reserved..." error</td><td>The chosen motorbike already has an overlapping booking for those dates</td><td>Pick different dates, choose a different motorbike, or check the Reservations calendar for that bike’s availability.</td></tr><tr><td>A motorbike doesn’t appear for customers to book</td><td>Its status is set to Maintenance or Inactive</td><td>Open the motorbike and change its status to Available once it is ready to rent again.</td></tr><tr><td>No data shows in a list</td><td>A search term or filter is still applied from a previous visit</td><td>Clear the search box and reset any status/date filters.</td></tr><tr><td>Booking confirmation emails are not arriving</td><td>No SMTP mail server has been configured, or email notifications are turned off</td><td>Ask whoever manages the server to configure SMTP settings, and check that "Send email notifications" is enabled under Settings → Business Info.</td></tr><tr><td>Can’t delete a motorbike or booking</td><td>Your account role is Staff</td><td>Ask an Admin or Super Admin to perform the deletion.</td></tr></tbody></table>
+      </section>
+
+      <section class="doc-section" id="sec-faq">
+        <h2><span class="sec-num">17</span>Frequently Asked Questions</h2>
+        <h3>Can a customer book directly from the website?</h3>
+<p>Yes. Customers browse motorbikes, choose dates, enter their details, choose a payment method, and submit the request. It arrives in the admin panel as a Pending booking for staff to review and confirm.</p>
+<h3>Does the system accept real online payments automatically?</h3>
+<p>Payments are not processed automatically by a payment gateway. For KHQR, the system generates a real, ready-to-scan QR code with the exact amount filled in. For ABA, ACLEDA, Wing, and Card, the customer is shown payment instructions and can upload a screenshot as proof; staff then confirm the payment manually in the booking.</p>
+<h3>What happens if a customer returns the motorbike late?</h3>
+<p>If a late-fee-per-hour rate is configured (Settings → Rental Policy), the system automatically suggests a late fee when the booking is marked Returned, based on how many hours late it was. Staff can adjust this amount before saving.</p>
+<h3>Can the same motorbike be booked twice for overlapping dates?</h3>
+<p>No. The system checks for date overlaps every time a booking is created or edited, for both website and staff-created bookings, and blocks the save with an error if there is a conflict.</p>
+<h3>Is the public website available in Khmer?</h3>
+<p>Yes. Customers can switch between English and Khmer using the language switcher in the site header. The admin panel itself is English-only.</p>
+<h3>Can I get a printed copy of a report?</h3>
+<p>Export the report as a CSV file and open/print it from Excel or Google Sheets — there is no built-in "print report" button inside the application.</p>
+      </section>
+
+      <section class="doc-section" id="sec-support">
+        <h2><span class="sec-num">18</span>Support</h2>
+        <p>For questions about using this system, contact the business using the details configured under Settings → Business Info:</p>
+<ul><li>Phone: +855 93 949 149</li><li>Email: hello@angkorwheels.com</li><li>Telegram and WhatsApp: available from the contact icons on the public website</li></ul>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>These contact details are the business’s own configured information, editable at any time from Settings → Business Info and Social Media.</div></div>
+      </section>
+
+</body>
+</html>

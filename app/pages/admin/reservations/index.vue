@@ -15,7 +15,7 @@
 
     <!-- Toolbar -->
     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-      <NuxtLink to="/admin/bookings/create" class="btn btn-amber"><i class="bi bi-plus-lg me-1" />New Reservation</NuxtLink>
+      <NuxtLink to="/admin/bookings?new=1" class="btn btn-amber"><i class="bi bi-plus-lg me-1" />New Reservation</NuxtLink>
       <div class="view-toggle">
         <button type="button" class="view-toggle__btn" :class="{ active: view === 'calendar' }" @click="setView('calendar')">
           <i class="bi bi-calendar3 me-1" />Calendar
@@ -387,7 +387,7 @@ motorbikes.value = motorbikeRes.items
     color 0.15s ease;
 }
 .view-toggle__btn.active {
-  background: var(--color-charcoal);
+  background: var(--btn-charcoal-bg);
   color: #fff;
 }
 .filter-bar {

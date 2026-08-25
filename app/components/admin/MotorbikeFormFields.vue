@@ -46,8 +46,15 @@
           </select>
         </div>
         <div class="col-md-3">
-          <label class="form-label small">Plate Number</label>
-          <input v-model="form.plateNumber" class="form-control" placeholder="1A-2345" />
+          <label class="form-label small">Plate Province</label>
+          <select v-model="form.plateProvince" class="form-select">
+            <option :value="null">— Not set —</option>
+            <option v-for="r in ALL_PLATE_REGIONS" :key="r.km" :value="r.km">{{ r.km }} — {{ r.en }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Plate Code</label>
+          <input v-model="form.plateNumber" class="form-control" placeholder="1AC-2345" />
         </div>
         <div class="col-md-3">
           <label class="form-label small">Color</label>

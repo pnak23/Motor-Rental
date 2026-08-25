@@ -26,6 +26,7 @@ export const motorbikeSchema = z.object({
   year: z.coerce.number().int().optional().nullable(),
   engineCc: z.coerce.number().int().positive(),
   plateNumber: z.string().optional().nullable(),
+  plateProvince: z.string().optional().nullable(),
   color: z.string().optional().nullable(),
   keyType: keyTypeEnum.default('NORMAL_KEY'),
   categoryId: z.string().optional().nullable(),
@@ -114,6 +115,14 @@ export const adminBookingCreateSchema = z
     message: 'Select an existing customer or enter new customer details',
     path: ['customer']
   })
+
+/** Editable on the admin booking detail page's "Return & Deposit" section. */
+export const bookingReturnSchema = z.object({
+  actualReturnAt: z.string().optional().nullable(),
+  lateFeeAmount: z.coerce.number().min(0).optional(),
+  depositRefundedAmount: z.coerce.number().min(0).optional(),
+  depositRefundedAt: z.string().optional().nullable()
+})
 
 export const locationSchema = z.object({
   name: z.string().min(1),
@@ -219,5 +228,7 @@ export const settingsSchema = z.object({
   abaInstructions: z.string().optional().nullable(),
   acledaInstructions: z.string().optional().nullable(),
   wingInstructions: z.string().optional().nullable(),
-  cardInstructions: z.string().optional().nullable()
+  cardInstructions: z.string().optional().nullable(),
+  emailNotificationsEnabled: z.coerce.boolean().optional(),
+  lateFeePerHour: z.coerce.number().min(0).optional()
 })

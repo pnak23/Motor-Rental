@@ -44,6 +44,8 @@ export interface BusinessSettings {
   acledaInstructions: string | null
   wingInstructions: string | null
   cardInstructions: string | null
+  emailNotificationsEnabled: boolean
+  lateFeePerHour: number
 }
 
 export const useSettingsStore = defineStore('settings', {

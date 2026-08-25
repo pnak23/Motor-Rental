@@ -7,7 +7,10 @@
             <p class="text-muted small mb-1">Booking #</p>
             <h2 class="font-mono h5 mb-0">{{ booking.bookingNumber }}</h2>
           </div>
-          <StatusBadge :status="booking.status" />
+          <div class="d-flex align-items-center gap-2">
+            <StatusBadge :status="booking.status" />
+            <button class="btn btn-sm btn-outline-secondary" @click="showEditModal = true"><i class="bi bi-pencil me-1" />Edit Booking</button>
+          </div>
         </div>
 
         <h3 class="h6 font-display mb-2">Customer</h3>
@@ -35,7 +38,7 @@
           <img :src="booking.motorbike.image || placeholder" :alt="booking.motorbike.name" class="motorbike-thumb" />
           <div class="row small flex-grow-1">
             <div class="col-6"><strong>Motorbike:</strong> {{ booking.motorbike.name }}</div>
-            <div class="col-6"><strong>Plate:</strong> {{ booking.motorbike.plateNumber || '—' }}</div>
+            <div class="col-6"><strong>Plate:</strong> {{ formatPlate(booking.motorbike.plateProvince, booking.motorbike.plateNumber) || '—' }}</div>
             <div class="col-6"><strong>Daily Price:</strong> ${{ Number(booking.motorbike.dailyPrice).toFixed(2) }}</div>
             <div class="col-6"><strong>Pickup:</strong> {{ formatDateTime(booking.pickupDate) }}</div>
             <div class="col-6"><strong>Return:</strong> {{ formatDateTime(booking.returnDate) }}</div>
@@ -55,6 +58,9 @@
             <tr><td>Deposit</td><td class="text-end">${{ Number(booking.deposit).toFixed(2) }}</td></tr>
             <tr><td>Paid</td><td class="text-end">${{ Number(booking.paidAmount).toFixed(2) }}</td></tr>
             <tr class="fw-600"><td>Remaining</td><td class="text-end price-tag">${{ remainingAmount.toFixed(2) }}</td></tr>
+            <tr v-if="Number(booking.lateFeeAmount) > 0"><td>Late Fee</td><td class="text-end text-danger">${{ Number(booking.lateFeeAmount).toFixed(2) }}</td></tr>
+            <tr v-if="Number(booking.depositRefundedAmount) > 0"><td>Deposit Refunded</td><td class="text-end">${{ Number(booking.depositRefundedAmount).toFixed(2) }}</td></tr>
+            <tr v-if="booking.actualReturnAt"><td>Actual Return</td><td class="text-end">{{ formatDateTime(booking.actualReturnAt) }}</td></tr>
             <tr><td>Payment Status</td><td class="text-end"><StatusBadge :status="booking.paymentStatus" /></td></tr>
             <tr v-if="booking.paymentMethod"><td>Payment Method</td><td class="text-end">{{ booking.paymentMethod }}</td></tr>
             <tr v-if="booking.paymentReference"><td>Transaction Ref</td><td class="text-end font-mono">{{ booking.paymentReference }}</td></tr>
@@ -71,96 +77,11 @@
         <h3 class="h6 font-display mb-2">Notes</h3>
         <p class="small text-muted">{{ booking.notes || 'No notes' }}</p>
 
-        <h3 class="h6 font-display mb-2 mt-2">Adjust Booking</h3>
-        <form class="row g-2" @submit.prevent="saveEdits">
-          <div class="col-md-6">
-            <label class="form-label small">Motorbike</label>
-            <select v-model="edits.motorbikeId" class="form-select form-select-sm">
-              <option v-for="m in motorbikes" :key="m.id" :value="m.id">{{ m.name }}</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label small">Pickup Date</label>
-            <input v-model="edits.pickupDate" type="date" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-3">
-            <label class="form-label small">Pickup Time</label>
-            <input v-model="edits.pickupTime" type="time" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-3">
-            <label class="form-label small">Return Date</label>
-            <input v-model="edits.returnDate" type="date" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-3">
-            <label class="form-label small">Return Time</label>
-            <input v-model="edits.returnTime" type="time" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label small">Pickup Location</label>
-            <select v-model="edits.pickupLocationId" class="form-select form-select-sm">
-              <option value="">No preference</option>
-              <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.name }}</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label small">Return Location</label>
-            <select v-model="edits.returnLocationId" class="form-select form-select-sm">
-              <option value="">No preference</option>
-              <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.name }}</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Discount ($)</label>
-            <input v-model.number="edits.discount" type="number" step="0.01" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Additional Charges ($)</label>
-            <input v-model.number="edits.additionalCharges" type="number" step="0.01" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Deposit ($)</label>
-            <input v-model.number="edits.deposit" type="number" step="0.01" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Payment Status</label>
-            <select v-model="edits.paymentStatus" class="form-select form-select-sm">
-              <option value="UNPAID">Unpaid</option>
-              <option value="PARTIAL">Partially Paid</option>
-              <option value="PAID">Paid</option>
-              <option value="REFUNDED">Refunded</option>
-            </select>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label small">Paid Amount ($)</label>
-            <input v-model.number="edits.paidAmount" type="number" step="0.01" class="form-control form-control-sm" />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label small">Payment Method</label>
-            <select v-model="edits.paymentMethod" class="form-select form-select-sm">
-              <option value="">—</option>
-              <option value="CASH">Cash</option>
-              <option value="KHQR">KHQR</option>
-              <option value="ABA">ABA</option>
-              <option value="ACLEDA">ACLEDA</option>
-              <option value="WING">Wing</option>
-              <option value="CARD">Card</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label small">Transaction Reference</label>
-            <input v-model="edits.paymentReference" class="form-control form-control-sm" />
-          </div>
-          <div class="col-12">
-            <label class="form-label small">Notes</label>
-            <textarea v-model="edits.notes" class="form-control form-control-sm" rows="2" />
-          </div>
-          <div class="col-12 d-flex gap-2 mt-1">
-            <button type="submit" class="btn btn-sm btn-charcoal">Save Changes</button>
-            <button type="button" class="btn btn-sm btn-outline-danger ms-auto" @click="showDelete = true">
-              <i class="bi bi-trash me-1" />Delete Booking
-            </button>
-          </div>
-        </form>
+        <div class="d-flex justify-content-end mt-2">
+          <button type="button" class="btn btn-sm btn-outline-danger" @click="showDelete = true">
+            <i class="bi bi-trash me-1" />Delete Booking
+          </button>
+        </div>
       </div>
     </div>
 
@@ -196,6 +117,113 @@
       danger
       @confirm="confirmDelete"
     />
+
+    <AdminModal v-model="showEditModal" title="Edit Booking" size="lg">
+      <form id="edit-booking-form" class="row g-2" @submit.prevent="saveEdits">
+        <div class="col-md-6">
+          <label class="form-label small">Motorbike</label>
+          <select v-model="edits.motorbikeId" class="form-select form-select-sm">
+            <option v-for="m in motorbikes" :key="m.id" :value="m.id">{{ m.name }}</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Pickup Date</label>
+          <input v-model="edits.pickupDate" type="date" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Pickup Time</label>
+          <input v-model="edits.pickupTime" type="time" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Return Date</label>
+          <input v-model="edits.returnDate" type="date" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-3">
+          <label class="form-label small">Return Time</label>
+          <input v-model="edits.returnTime" type="time" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">Pickup Location</label>
+          <select v-model="edits.pickupLocationId" class="form-select form-select-sm">
+            <option value="">No preference</option>
+            <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.name }}</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">Return Location</label>
+          <select v-model="edits.returnLocationId" class="form-select form-select-sm">
+            <option value="">No preference</option>
+            <option v-for="l in locations" :key="l.id" :value="l.id">{{ l.name }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Discount ($)</label>
+          <input v-model.number="edits.discount" type="number" step="0.01" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Additional Charges ($)</label>
+          <input v-model.number="edits.additionalCharges" type="number" step="0.01" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Deposit ($)</label>
+          <input v-model.number="edits.deposit" type="number" step="0.01" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Payment Status</label>
+          <select v-model="edits.paymentStatus" class="form-select form-select-sm">
+            <option value="UNPAID">Unpaid</option>
+            <option value="PARTIAL">Partially Paid</option>
+            <option value="PAID">Paid</option>
+            <option value="REFUNDED">Refunded</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Paid Amount ($)</label>
+          <input v-model.number="edits.paidAmount" type="number" step="0.01" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">Payment Method</label>
+          <select v-model="edits.paymentMethod" class="form-select form-select-sm">
+            <option value="">—</option>
+            <option value="CASH">Cash</option>
+            <option value="KHQR">KHQR</option>
+            <option value="ABA">ABA</option>
+            <option value="ACLEDA">ACLEDA</option>
+            <option value="WING">Wing</option>
+            <option value="CARD">Card</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label small">Transaction Reference</label>
+          <input v-model="edits.paymentReference" class="form-control form-control-sm" />
+        </div>
+        <div class="col-12">
+          <label class="form-label small">Notes</label>
+          <textarea v-model="edits.notes" class="form-control form-control-sm" rows="2" />
+        </div>
+
+        <div class="col-12 mt-2">
+          <h3 class="h6 font-display mb-2">Return &amp; Deposit</h3>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Actual Return Time</label>
+          <input v-model="edits.actualReturnAt" type="datetime-local" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Late Fee ($)</label>
+          <input v-model.number="edits.lateFeeAmount" type="number" min="0" step="0.01" class="form-control form-control-sm" />
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small">Deposit Refunded ($)</label>
+          <input v-model.number="edits.depositRefundedAmount" type="number" min="0" step="0.01" class="form-control form-control-sm" />
+          <p v-if="booking.depositRefundedAt" class="form-text small mb-0">Refunded {{ formatDateTime(booking.depositRefundedAt) }}</p>
+        </div>
+      </form>
+      <template #footer>
+        <button type="button" class="btn btn-outline-secondary" @click="showEditModal = false">Cancel</button>
+        <button type="submit" form="edit-booking-form" class="btn btn-amber">Save Changes</button>
+      </template>
+    </AdminModal>
   </div>
 </template>
 
@@ -221,6 +249,10 @@ interface BookingDetail {
   paymentReference: string | null
   paymentProofUrl: string | null
   paidAmount: string
+  actualReturnAt: string | null
+  lateFeeAmount: string
+  depositRefundedAmount: string
+  depositRefundedAt: string | null
   notes: string | null
   pickupLocationName: string | null
   returnLocationName: string | null
@@ -235,7 +267,7 @@ interface BookingDetail {
     passportId: string | null
     idDocumentUrl: string | null
   }
-  motorbike: { id: string; name: string; dailyPrice: string; plateNumber: string | null; image: string | null }
+  motorbike: { id: string; name: string; dailyPrice: string; plateNumber: string | null; plateProvince: string | null; image: string | null }
   timeline: { id: string; status: string; note: string | null; createdAt: string; changedByName: string | null }[]
 }
 interface MotorbikeOption {
@@ -266,6 +298,7 @@ const statusNote = ref('')
 const updating = ref(false)
 const showDelete = ref(false)
 const deleting = ref(false)
+const showEditModal = ref(false)
 
 const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200'
 
@@ -274,6 +307,14 @@ function toDateInput(d: string) {
 }
 function toTimeInput(d: string) {
   return new Date(d).toTimeString().slice(0, 5)
+}
+/** Local-time value for a `datetime-local` input (unlike toDateInput above,
+ *  which uses the UTC calendar day — fine for a bare date, but wrong here
+ *  since this also carries a time-of-day). */
+function toDateTimeInput(d: string) {
+  const date = new Date(d)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`
 }
 
 const edits = reactive({
@@ -291,6 +332,9 @@ const edits = reactive({
   paymentMethod: booking.value.paymentMethod || '',
   paymentReference: booking.value.paymentReference || '',
   paidAmount: Number(booking.value.paidAmount),
+  actualReturnAt: booking.value.actualReturnAt ? toDateTimeInput(booking.value.actualReturnAt) : '',
+  lateFeeAmount: Number(booking.value.lateFeeAmount),
+  depositRefundedAmount: Number(booking.value.depositRefundedAmount),
   notes: booking.value.notes || ''
 })
 
@@ -331,10 +375,14 @@ async function saveEdits() {
         paymentMethod: edits.paymentMethod || null,
         paymentReference: edits.paymentReference || null,
         paidAmount: edits.paidAmount,
-        notes: edits.notes || null
+        notes: edits.notes || null,
+        actualReturnAt: edits.actualReturnAt || null,
+        lateFeeAmount: edits.lateFeeAmount,
+        depositRefundedAmount: edits.depositRefundedAmount
       }
     })
     toast.success('Booking updated')
+    showEditModal.value = false
     await refresh()
   } catch (e) {
     toast.error(e instanceof Error ? e.message : 'Could not save changes')

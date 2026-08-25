@@ -176,7 +176,7 @@ async function onReorderDrop(targetIndex: number) {
   bottom: 4px;
   left: 4px;
   background: var(--color-amber);
-  color: var(--color-charcoal);
+  color: var(--btn-charcoal-bg);
   font-size: 0.68rem;
   font-weight: 600;
   padding: 0.1rem 0.5rem;

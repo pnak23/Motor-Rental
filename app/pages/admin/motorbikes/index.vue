@@ -1,8 +1,12 @@
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <div class="d-flex gap-2">
-        <input v-model="search" class="form-control" placeholder="Search motorbikes..." style="width: 240px" />
+    <div class="admin-page-header">
+      <div>
+        <h1 class="h4 font-display mb-0">Motorbikes</h1>
+        <p class="admin-page-header__subtitle">{{ total }} motorbikes in your fleet.</p>
+      </div>
+      <div class="admin-page-header__actions">
+        <input v-model="search" class="form-control" placeholder="Search motorbikes..." style="width: 220px" />
         <select v-model="status" class="form-select" style="width: 160px">
           <option value="">All statuses</option>
           <option value="AVAILABLE">Available</option>
@@ -10,8 +14,8 @@
           <option value="MAINTENANCE">Maintenance</option>
           <option value="INACTIVE">Inactive</option>
         </select>
+        <button class="btn btn-amber" @click="openCreate"><i class="bi bi-plus-lg me-1" />Add Motorbike</button>
       </div>
-      <NuxtLink to="/admin/motorbikes/create" class="btn btn-amber"><i class="bi bi-plus-lg me-1" />Add Motorbike</NuxtLink>
     </div>
 
     <div class="card">
@@ -40,7 +44,7 @@
               <td><img :src="m.primaryImage || placeholder" class="table-thumb" :alt="m.name" /></td>
               <td class="fw-600">{{ m.name }}</td>
               <td>{{ m.brand }} / {{ m.model }}</td>
-              <td class="font-mono small">{{ m.plateNumber || '—' }}</td>
+              <td class="font-mono small">{{ formatPlate(m.plateProvince, m.plateNumber) || '—' }}</td>
               <td>{{ m.color || '—' }}</td>
               <td>
                 <span class="key-badge" :class="m.keyType === 'SMART_KEY' ? 'key-badge--smart' : 'key-badge--normal'">
@@ -56,7 +60,7 @@
               <td class="text-end">
                 <div class="btn-group btn-group-sm">
                   <NuxtLink :to="`/motorbikes/${m.slug}`" target="_blank" class="btn btn-outline-secondary" title="View on site"><i class="bi bi-eye" /></NuxtLink>
-                  <NuxtLink :to="`/admin/motorbikes/${m.id}/edit`" class="btn btn-outline-secondary" title="Edit"><i class="bi bi-pencil" /></NuxtLink>
+                  <button class="btn btn-outline-secondary" title="Edit" @click="openEdit(m)"><i class="bi bi-pencil" /></button>
                   <button class="btn btn-outline-secondary" title="Toggle active" @click="toggleActive(m)">
                     <i class="bi" :class="m.status === 'INACTIVE' ? 'bi-toggle-off' : 'bi-toggle-on'" />
                   </button>
@@ -81,6 +85,29 @@
       danger
       @confirm="confirmDelete"
     />
+
+    <AdminModal
+      v-model="showModal"
+      :title="editingId ? 'Edit Motorbike' : 'Add Motorbike'"
+      :subtitle="editingId ? undefined : 'Save the motorbike first, then add photos and pricing rules.'"
+      size="xl"
+      :loading="modalLoading"
+    >
+      <MotorbikeImageManager v-if="editingId" v-model="images" :motorbike-id="editingId" />
+      <PricingRulesManager v-if="editingId" v-model="pricingRules" :motorbike-id="editingId" />
+
+      <form id="motorbike-form" @submit.prevent="submit">
+        <MotorbikeFormFields v-model="form" :categories="categories" />
+      </form>
+      <p v-if="formError" class="text-danger small mb-0">{{ formError }}</p>
+
+      <template #footer>
+        <button type="button" class="btn btn-outline-secondary" @click="showModal = false">{{ editingId ? 'Close' : 'Cancel' }}</button>
+        <button type="submit" form="motorbike-form" class="btn btn-amber" :disabled="saving">
+          <span v-if="saving" class="spinner-border spinner-border-sm me-2" />{{ editingId ? 'Save Changes' : 'Create Motorbike' }}
+        </button>
+      </template>
+    </AdminModal>
   </div>
 </template>
 
@@ -94,6 +121,7 @@ interface MotorbikeRow {
   brand: string
   model: string
   plateNumber: string | null
+  plateProvince: string | null
   color: string | null
   keyType: string
   engineCc: number
@@ -103,8 +131,66 @@ interface MotorbikeRow {
   featured: boolean
   primaryImage: string | null
 }
+interface Category {
+  id: string
+  name: string
+}
+interface MImage {
+  id: string
+  url: string
+  isPrimary: boolean
+}
+interface Rule {
+  id: string
+  name: string
+  type: string
+  minDays: number
+  maxDays: number | null
+  pricePerDay: string
+}
+interface MotorbikeDetail {
+  id: string
+  name: string
+  categoryId: string | null
+  brand: string
+  model: string
+  year: number | null
+  engineCc: number
+  transmission: string
+  fuelType: string
+  plateNumber: string | null
+  plateProvince: string | null
+  color: string | null
+  keyType: string
+  seatCapacity: number | null
+  fuelConsumption: string | null
+  description: string | null
+  dailyPrice: string
+  weeklyPrice: string | null
+  monthlyPrice: string | null
+  deposit: string
+  deliveryFee: string
+  minRentalDays: number
+  maxRentalDays: number
+  helmetIncluded: boolean
+  phoneHolder: boolean
+  usbCharger: boolean
+  goodForCity: boolean
+  goodForLongTrip: boolean
+  isNewBike: boolean
+  popular: boolean
+  featured: boolean
+  status: string
+  seoTitle: string | null
+  seoKeywords: string | null
+  seoDescription: string | null
+  images: MImage[]
+  pricingRules: Rule[]
+}
 
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200'
 
 const search = ref('')
@@ -117,6 +203,142 @@ const pending = ref(true)
 
 const showDelete = ref(false)
 const toDelete = ref<MotorbikeRow | null>(null)
+
+const categories = await useApi<Category[]>('/api/admin/categories')
+
+const showModal = ref(false)
+const modalLoading = ref(false)
+const editingId = ref<string | null>(null)
+const images = ref<MImage[]>([])
+const pricingRules = ref<Rule[]>([])
+const saving = ref(false)
+const formError = ref('')
+
+function emptyForm() {
+  return {
+    name: '',
+    categoryId: null,
+    brand: '',
+    model: '',
+    year: new Date().getFullYear(),
+    engineCc: 125,
+    transmission: 'AUTOMATIC',
+    fuelType: 'GASOLINE',
+    plateNumber: '',
+    plateProvince: null,
+    color: '',
+    keyType: 'NORMAL_KEY',
+    seatCapacity: 2,
+    fuelConsumption: '',
+    description: '',
+    dailyPrice: 10,
+    weeklyPrice: null,
+    monthlyPrice: null,
+    deposit: 0,
+    deliveryFee: 0,
+    minRentalDays: 1,
+    maxRentalDays: 60,
+    helmetIncluded: true,
+    phoneHolder: false,
+    usbCharger: false,
+    goodForCity: true,
+    goodForLongTrip: false,
+    isNewBike: false,
+    popular: false,
+    featured: false,
+    status: 'AVAILABLE',
+    seoTitle: '',
+    seoKeywords: '',
+    seoDescription: ''
+  }
+}
+const form = reactive<Record<string, unknown>>(emptyForm())
+
+function openCreate() {
+  editingId.value = null
+  images.value = []
+  pricingRules.value = []
+  formError.value = ''
+  Object.assign(form, emptyForm())
+  showModal.value = true
+}
+
+async function openEdit(m: MotorbikeRow) {
+  editingId.value = m.id
+  formError.value = ''
+  showModal.value = true
+  modalLoading.value = true
+  try {
+    const bike = await useApi<MotorbikeDetail>(`/api/admin/motorbikes/${m.id}`)
+    images.value = bike.images
+    pricingRules.value = bike.pricingRules
+    Object.assign(form, {
+      name: bike.name,
+      categoryId: bike.categoryId,
+      brand: bike.brand,
+      model: bike.model,
+      year: bike.year,
+      engineCc: bike.engineCc,
+      transmission: bike.transmission,
+      fuelType: bike.fuelType,
+      plateNumber: bike.plateNumber,
+      plateProvince: bike.plateProvince,
+      color: bike.color,
+      keyType: bike.keyType,
+      seatCapacity: bike.seatCapacity,
+      fuelConsumption: bike.fuelConsumption,
+      description: bike.description,
+      dailyPrice: Number(bike.dailyPrice),
+      weeklyPrice: bike.weeklyPrice ? Number(bike.weeklyPrice) : null,
+      monthlyPrice: bike.monthlyPrice ? Number(bike.monthlyPrice) : null,
+      deposit: Number(bike.deposit),
+      deliveryFee: Number(bike.deliveryFee),
+      minRentalDays: bike.minRentalDays,
+      maxRentalDays: bike.maxRentalDays,
+      helmetIncluded: bike.helmetIncluded,
+      phoneHolder: bike.phoneHolder,
+      usbCharger: bike.usbCharger,
+      goodForCity: bike.goodForCity,
+      goodForLongTrip: bike.goodForLongTrip,
+      isNewBike: bike.isNewBike,
+      popular: bike.popular,
+      featured: bike.featured,
+      status: bike.status,
+      seoTitle: bike.seoTitle,
+      seoKeywords: bike.seoKeywords,
+      seoDescription: bike.seoDescription
+    })
+  } catch (e) {
+    formError.value = e instanceof Error ? e.message : 'Could not load motorbike'
+  } finally {
+    modalLoading.value = false
+  }
+}
+
+async function submit() {
+  saving.value = true
+  formError.value = ''
+  try {
+    if (editingId.value) {
+      await useApi(`/api/admin/motorbikes/${editingId.value}`, { method: 'PUT', body: form })
+      toast.success('Motorbike updated')
+    } else {
+      const created = await useApi<{ id: string }>('/api/admin/motorbikes', { method: 'POST', body: form })
+      toast.success('Motorbike created — you can now add photos and pricing rules below')
+      editingId.value = created.id
+    }
+    fetchList()
+  } catch (e) {
+    formError.value = e instanceof Error ? e.message : 'Could not save motorbike'
+  } finally {
+    saving.value = false
+  }
+}
+
+if (route.query.new) {
+  openCreate()
+  router.replace({ query: { ...route.query, new: undefined } })
+}
 
 async function fetchList() {
   pending.value = true

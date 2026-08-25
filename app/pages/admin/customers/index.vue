@@ -1,7 +1,13 @@
 <template>
   <div>
-    <div class="mb-3">
-      <input v-model="search" class="form-control" placeholder="Search by name, phone, email..." style="width: 300px" />
+    <div class="admin-page-header">
+      <div>
+        <h1 class="h4 font-display mb-0">Customers</h1>
+        <p class="admin-page-header__subtitle">{{ total }} customers on record.</p>
+      </div>
+      <div class="admin-page-header__actions">
+        <input v-model="search" class="form-control" placeholder="Search by name, phone, email..." style="width: 280px" />
+      </div>
     </div>
 
     <div class="card">

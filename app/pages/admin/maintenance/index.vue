@@ -1,67 +1,79 @@
 <template>
-  <div class="row g-4">
-    <div class="col-lg-4">
-      <div class="card p-3">
-        <h3 class="h6 font-display mb-3">Log Maintenance</h3>
-        <form @submit.prevent="save">
-          <select v-model="form.motorbikeId" required class="form-select mb-2">
-            <option value="" disabled>Select motorbike *</option>
-            <option v-for="m in motorbikes" :key="m.id" :value="m.id">{{ m.name }}</option>
-          </select>
-          <select v-model="form.type" class="form-select mb-2">
-            <option value="OIL_CHANGE">Oil change</option>
-            <option value="TIRE">Tire</option>
-            <option value="BRAKE">Brake</option>
-            <option value="ENGINE">Engine</option>
-            <option value="BATTERY">Battery</option>
-            <option value="GENERAL_SERVICE">General service</option>
-            <option value="ACCIDENT_REPAIR">Accident repair</option>
-          </select>
-          <input v-model="form.date" type="date" required class="form-control mb-2" />
-          <textarea v-model="form.description" placeholder="Description" rows="2" class="form-control mb-2" />
-          <div class="row g-2 mb-2">
-            <div class="col-6"><input v-model.number="form.mileage" type="number" placeholder="Mileage" class="form-control" /></div>
-            <div class="col-6"><input v-model.number="form.cost" type="number" step="0.01" placeholder="Cost ($)" class="form-control" /></div>
-          </div>
-          <input v-model="form.garage" placeholder="Garage" class="form-control mb-2" />
-          <select v-model="form.status" class="form-select mb-3">
-            <option value="SCHEDULED">Scheduled</option>
-            <option value="IN_PROGRESS">In progress</option>
-            <option value="COMPLETED">Completed</option>
-          </select>
-          <button type="submit" class="btn btn-amber w-100">Log Record</button>
-        </form>
+  <div>
+    <div class="admin-page-header">
+      <div>
+        <h1 class="h4 font-display mb-0">Maintenance</h1>
+        <p class="admin-page-header__subtitle">Service history and scheduled maintenance for the fleet.</p>
+      </div>
+      <div class="admin-page-header__actions">
+        <button class="btn btn-amber" @click="openCreate"><i class="bi bi-plus-lg me-1" />Log Maintenance</button>
       </div>
     </div>
 
-    <div class="col-lg-8">
-      <div class="card">
-        <div class="table-responsive">
-          <table class="table align-middle mb-0">
-            <thead class="table-light">
-              <tr><th>Motorbike</th><th>Type</th><th>Date</th><th>Cost</th><th>Status</th><th></th></tr>
-            </thead>
-            <tbody>
-              <tr v-if="records.length === 0"><td colspan="6" class="text-center text-muted py-4">No maintenance records yet</td></tr>
-              <tr v-for="r in records" :key="r.id">
-                <td>{{ r.motorbikeName }}</td>
-                <td>{{ r.type.replace('_', ' ') }}</td>
-                <td class="small">{{ formatDate(r.date) }}</td>
-                <td class="price-tag">${{ Number(r.cost).toFixed(2) }}</td>
-                <td>
-                  <select :value="r.status" class="form-select form-select-sm" @change="updateStatus(r, ($event.target as HTMLSelectElement).value)">
-                    <option value="SCHEDULED">Scheduled</option>
-                    <option value="IN_PROGRESS">In progress</option>
-                    <option value="COMPLETED">Completed</option>
-                  </select>
-                </td>
-                <td><button class="btn btn-sm btn-outline-danger" @click="remove(r.id)"><i class="bi bi-trash" /></button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="card">
+      <div v-if="!records.length" class="admin-empty-state">
+        <i class="bi bi-tools" />
+        <p>No maintenance records yet</p>
+        <p class="small mb-0">Log your first maintenance record.</p>
+      </div>
+      <div v-else class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead class="table-light">
+            <tr><th>Motorbike</th><th>Type</th><th>Date</th><th>Cost</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr v-for="r in records" :key="r.id">
+              <td>{{ r.motorbikeName }}</td>
+              <td>{{ r.type.replace('_', ' ') }}</td>
+              <td class="small">{{ formatDate(r.date) }}</td>
+              <td class="price-tag">${{ Number(r.cost).toFixed(2) }}</td>
+              <td>
+                <select :value="r.status" class="form-select form-select-sm" @change="updateStatus(r, ($event.target as HTMLSelectElement).value)">
+                  <option value="SCHEDULED">Scheduled</option>
+                  <option value="IN_PROGRESS">In progress</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </td>
+              <td><button class="btn btn-sm btn-outline-danger" @click="remove(r.id)"><i class="bi bi-trash" /></button></td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
+
+    <AdminModal v-model="showModal" title="Log Maintenance">
+      <form id="maintenance-form" @submit.prevent="save">
+        <select v-model="form.motorbikeId" required class="form-select mb-2">
+          <option value="" disabled>Select motorbike *</option>
+          <option v-for="m in motorbikes" :key="m.id" :value="m.id">{{ m.name }}</option>
+        </select>
+        <select v-model="form.type" class="form-select mb-2">
+          <option value="OIL_CHANGE">Oil change</option>
+          <option value="TIRE">Tire</option>
+          <option value="BRAKE">Brake</option>
+          <option value="ENGINE">Engine</option>
+          <option value="BATTERY">Battery</option>
+          <option value="GENERAL_SERVICE">General service</option>
+          <option value="ACCIDENT_REPAIR">Accident repair</option>
+        </select>
+        <input v-model="form.date" type="date" required class="form-control mb-2" />
+        <textarea v-model="form.description" placeholder="Description" rows="2" class="form-control mb-2" />
+        <div class="row g-2 mb-2">
+          <div class="col-6"><input v-model.number="form.mileage" type="number" placeholder="Mileage" class="form-control" /></div>
+          <div class="col-6"><input v-model.number="form.cost" type="number" step="0.01" placeholder="Cost ($)" class="form-control" /></div>
+        </div>
+        <input v-model="form.garage" placeholder="Garage" class="form-control mb-2" />
+        <select v-model="form.status" class="form-select mb-1">
+          <option value="SCHEDULED">Scheduled</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </form>
+      <template #footer>
+        <button type="button" class="btn btn-outline-secondary" @click="showModal = false">Cancel</button>
+        <button type="submit" form="maintenance-form" class="btn btn-amber">Log Record</button>
+      </template>
+    </AdminModal>
   </div>
 </template>
 
@@ -104,6 +116,12 @@ function emptyForm() {
   }
 }
 const form = reactive(emptyForm())
+const showModal = ref(false)
+
+function openCreate() {
+  Object.assign(form, emptyForm())
+  showModal.value = true
+}
 
 async function save() {
   try {
@@ -111,6 +129,7 @@ async function save() {
     const bikeName = motorbikes.value.find((m) => m.id === created.motorbikeId)?.name || ''
     records.value.unshift({ ...created, motorbikeName: bikeName })
     Object.assign(form, emptyForm())
+    showModal.value = false
     toast.success('Maintenance record logged')
   } catch (e) {
     toast.error(e instanceof Error ? e.message : 'Could not save record')

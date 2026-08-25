@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="km">
+<head>
+<meta charset="utf-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Khmer:wght@500;600;700;800&family=Kantumruy+Pro:wght@400;500;600;700&display=swap');
+  :root {
+    --charcoal: #21262b;
+    --amber: #c97f2a;
+    --amber-light: #e7a03c;
+    --border: #e2ded4;
+    --gray: #6b7075;
+    --cream: #faf8f4;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Kantumruy Pro', 'Inter', sans-serif;
+    color: var(--charcoal);
+    font-size: 11.5pt;
+    line-height: 1.6;
+    margin: 0;
+  }
+  h1, h2, h3, .font-display { font-family: 'Noto Serif Khmer', Georgia, serif; }
+  a { color: var(--amber); text-decoration: none; }
+
+  /* ---- Cover page ---- */
+  .cover {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 70px;
+    background: linear-gradient(160deg, #21262b 0%, #2c333a 55%, #3a3226 100%);
+    color: #fff;
+    page-break-after: always;
+  }
+  .cover__eyebrow {
+    font-family: 'Kantumruy Pro', 'Inter', sans-serif;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber-light);
+    font-size: 11pt;
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .cover__app { font-size: 42pt; font-weight: 800; margin: 0 0 6px 0; }
+  .cover__doc { font-size: 26pt; font-weight: 600; color: var(--amber-light); margin: 0 0 40px 0; }
+  .cover__meta { font-size: 12pt; color: rgba(255,255,255,0.75); line-height: 2; }
+  .cover__meta b { color: #fff; }
+  .cover__bar { width: 90px; height: 5px; background: var(--amber-light); margin-bottom: 26px; border-radius: 3px; }
+
+  /* ---- TOC ---- */
+  .toc-page { page-break-after: always; padding-top: 40px; }
+  .toc-page h1 { font-size: 22pt; border-bottom: 3px solid var(--amber-light); padding-bottom: 12px; margin-bottom: 24px; }
+  .toc ul { list-style: none; margin: 0; padding: 0; }
+  .toc li a {
+    display: flex;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px dotted var(--border);
+    color: var(--charcoal);
+    font-size: 12pt;
+  }
+  .toc__num {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--amber);
+    font-weight: 600;
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  /* ---- Sections ---- */
+  .doc-section { page-break-before: always; padding-top: 10px; }
+  .doc-section h2 {
+    font-size: 19pt;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 3px solid var(--amber-light);
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  .sec-num {
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--charcoal);
+    color: #fff;
+    font-size: 13pt;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .doc-section h3 { font-size: 13.5pt; margin-top: 22px; color: var(--amber); }
+  .doc-section p { margin: 0 0 10px 0; text-align: justify; }
+  .doc-section ul, .doc-section ol { margin: 0 0 12px 0; padding-left: 22px; }
+  .doc-section li { margin-bottom: 5px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 14px 0 18px 0; font-size: 10pt; }
+  th, td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--charcoal); color: #fff; font-weight: 600; }
+  tr:nth-child(even) td { background: #f7f5f0; }
+
+  figure.shot { margin: 16px 0; page-break-inside: avoid; }
+  figure.shot img {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 6px 18px rgba(33,38,43,0.12);
+  }
+  figure.shot figcaption {
+    font-size: 9.5pt;
+    color: var(--gray);
+    text-align: center;
+    margin-top: 6px;
+    font-style: italic;
+  }
+
+  .callout {
+    display: flex;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin: 14px 0;
+    font-size: 10.5pt;
+    page-break-inside: avoid;
+  }
+  .callout--note { background: #eef5f0; border-left: 4px solid #3f8c5f; }
+  .callout--warn { background: #fdf1e8; border-left: 4px solid var(--amber); }
+  .callout__icon { font-size: 14pt; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="cover__eyebrow">Software Documentation</div>
+  <div class="cover__bar"></div>
+  <div class="cover__app">Angkor Wheels Rental</div>
+  <div class="cover__doc">សៀវភៅណែនាំអ្នកប្រើប្រាស់</div>
+  <div class="cover__meta">
+    <div><b>ភាសាខ្មែរ</b></div>
+    <div>Version 1.0</div>
+    <div>ខែសីហា ២០២៦</div>
+  </div>
+</div>
+
+<div class="toc-page">
+  <h1>មាតិកា</h1>
+  <div class="toc"><ul><li><a href="#sec-intro"><span class="toc__num">1</span><span class="toc__title">សេចក្តីផ្តើម</span></a></li><li><a href="#sec-requirements"><span class="toc__num">2</span><span class="toc__title">តម្រូវការប្រព័ន្ធ</span></a></li><li><a href="#sec-login"><span class="toc__num">3</span><span class="toc__title">ការចូលប្រព័ន្ធ (Login)</span></a></li><li><a href="#sec-dashboard"><span class="toc__num">4</span><span class="toc__title">ផ្ទាំងគ្រប់គ្រង (Dashboard)</span></a></li><li><a href="#sec-navigation"><span class="toc__num">5</span><span class="toc__title">របៀបរុករកប្រព័ន្ធ</span></a></li><li><a href="#sec-motorbikes"><span class="toc__num">6</span><span class="toc__title">ការគ្រប់គ្រងម៉ូតូ</span></a></li><li><a href="#sec-reservations"><span class="toc__num">7</span><span class="toc__title">ការកក់ និងការជួល</span></a></li><li><a href="#sec-customers"><span class="toc__num">8</span><span class="toc__title">អតិថិជន</span></a></li><li><a href="#sec-maintenance"><span class="toc__num">9</span><span class="toc__title">ការជួសជុល</span></a></li><li><a href="#sec-search-filter"><span class="toc__num">10</span><span class="toc__title">ការស្វែងរក និងតម្រង</span></a></li><li><a href="#sec-reports"><span class="toc__num">11</span><span class="toc__title">របាយការណ៍ និងការនាំចេញ</span></a></li><li><a href="#sec-settings"><span class="toc__num">12</span><span class="toc__title">ការកំណត់ (ខ្លឹមសារ និងគោលការណ៍)</span></a></li><li><a href="#sec-website-content"><span class="toc__num">13</span><span class="toc__title">ខ្លឹមសារគេហទំព័រ៖ បដា សំណួរញឹកញាប់ ទីតាំង និងសារ</span></a></li><li><a href="#sec-roles"><span class="toc__num">14</span><span class="toc__title">តួនាទី និងសិទ្ធិអ្នកប្រើប្រាស់</span></a></li><li><a href="#sec-account"><span class="toc__num">15</span><span class="toc__title">ព័ត៌មានផ្ទាល់ខ្លួន / គណនី</span></a></li><li><a href="#sec-troubleshooting"><span class="toc__num">16</span><span class="toc__title">បញ្ហាទូទៅ និងការដោះស្រាយ</span></a></li><li><a href="#sec-faq"><span class="toc__num">17</span><span class="toc__title">សំណួរដែលសួរញឹកញាប់</span></a></li><li><a href="#sec-support"><span class="toc__num">18</span><span class="toc__title">ជំនួយ</span></a></li></ul></div>
+</div>
+
+
+      <section class="doc-section" id="sec-intro">
+        <h2><span class="sec-num">1</span>សេចក្តីផ្តើម</h2>
+        <p>Angkor Wheels Rental គឺជាប្រព័ន្ធគ្រប់គ្រងអាជីវកម្មជួលម៉ូតូនៅសៀមរាប ប្រទេសកម្ពុជា។ ប្រព័ន្ធនេះមានផ្នែកភ្ជាប់គ្នាពីរ៖</p>
+<ul><li>គេហទំព័រសាធារណៈ ដែលអតិថិជនអាចមើលម៉ូតូដែលមាន ពិនិត្យតម្លៃ និងផ្ញើសំណើជួលបានដោយផ្ទាល់តាមអនឡាញ។</li><li>ផ្ទាំងគ្រប់គ្រង (Admin Panel) ដែលបុគ្គលិកប្រើដើម្បីគ្រប់គ្រងម៉ូតូទាំងអស់ ពិនិត្យ និងបញ្ជាក់ការកក់ តាមដានអតិថិជន កត់ត្រាការទូទាត់ និងតាមដានស្ថានភាពអាជីវកម្ម។</li></ul>
+<p>សៀវភៅណែនាំនេះនឹងពន្យល់លម្អិតអំពីផ្ទាំងគ្រប់គ្រង ព្រោះជាកន្លែងដែលបុគ្គលិកប្រើប្រាស់ច្រើនជាងគេ ហើយក៏នឹងបង្ហាញអំពីគេហទំព័រសាធារណៈផងដែរ ដើម្បីឱ្យអ្នកគ្រប់គ្រងយល់ច្បាស់ថាតើអតិថិជនឃើញអ្វីខ្លះ។</p>
+<h3>អ្នកគួរប្រើសៀវភៅណែនាំនេះ</h3>
+<ul><li>ម្ចាស់អាជីវកម្ម និងអ្នកគ្រប់គ្រង ដែលចង់យល់ច្បាស់អំពីលទ្ធភាពទាំងអស់របស់ប្រព័ន្ធ។</li><li>បុគ្គលិកផ្នែកខាងមុខ ដែលបង្កើតការកក់សម្រាប់អតិថិជនមកដល់កន្លែងផ្ទាល់ បញ្ជាក់ការទូទាត់ និងប្រគល់ម៉ូតូ។</li><li>សមាជិកថ្មីក្នុងក្រុមការងារ ដែលត្រូវការរៀនប្រើប្រព័ន្ធនេះឱ្យបានលឿន។</li></ul>
+<h3>អត្ថប្រយោជន៍សំខាន់ៗ</h3>
+<ul><li>អាចមើលការកក់ទាំងអស់នៅកន្លែងតែមួយ មិនថាមកពីគេហទំព័រ ឬអតិថិជនមកដល់ផ្ទាល់ទេ។</li><li>ប្រព័ន្ធពិនិត្យការជាន់គ្នានៃកាលបរិច្ឆេទដោយស្វ័យប្រវត្តិ ដូច្នេះម៉ូតូមួយគ្រឿងមិនអាចត្រូវបានកក់ជាន់គ្នាពីរដងឡើយ។</li><li>តម្រូវការកក់ប្រាក់មុន ៥០% ត្រូវបានអនុវត្តជាប់លាប់ចំពោះការកក់ទាំងអស់ មិនថាតាមអនឡាញ ឬនៅកន្លែងផ្ទាល់ទេ។</li><li>គាំទ្រវិធីទូទាត់ប្រាក់ដែលប្រើប្រាស់ក្នុងប្រទេសកម្ពុជា — KHQR អេប៊ីអេ (ABA) អេស៊ីលីដា (ACLEDA) វីង (Wing) និងកាតឥណទាន — ព្រមទាំងសាច់ប្រាក់សម្រាប់អតិថិជនមកដល់ផ្ទាល់។</li><li>របាយការណ៍ដែលភ្ជាប់ជាមួយប្រព័ន្ធរួចស្រេច សម្រាប់ចំណូល ការកក់ អត្រាប្រើប្រាស់ម៉ូតូ និងអតិថិជន។</li><li>គេហទំព័រសាធារណៈមានពីរភាសា (អង់គ្លេស និងខ្មែរ) ដើម្បីឱ្យទាំងអតិថិជនក្នុងស្រុក និងអន្តរជាតិអាចកក់បានយ៉ាងងាយស្រួល។</li></ul>
+      </section>
+
+      <section class="doc-section" id="sec-requirements">
+        <h2><span class="sec-num">2</span>តម្រូវការប្រព័ន្ធ</h2>
+        <p>Angkor Wheels Rental គឺជាកម្មវិធីតាមអ៊ីនធឺណិត — មិនចាំបាច់ដំឡើងអ្វីទាំងអស់នៅលើឧបករណ៍របស់អ្នកទេ។ វាដំណើរការនៅលើកម្មវិធីរុករកអ៊ីនធឺណិត (browser) ធម្មតា មិនថានៅលើកុំព្យូទ័រ ថេប្លេត ឬទូរស័ព្ទដៃ។</p>
+<table><thead><tr><th>តម្រូវការ</th><th>ព័ត៌មានលម្អិត</th></tr></thead><tbody><tr><td>កម្មវិធីរុករកដែលគាំទ្រ</td><td>Google Chrome, Microsoft Edge, Mozilla Firefox ឬ Safari (កំណែថ្មីៗ)។</td></tr><tr><td>ទំហំអេក្រង់</td><td>ផ្ទាំងគ្រប់គ្រងត្រូវបានរចនាឡើងសម្រាប់អេក្រង់កុំព្យូទ័រយួរដៃ ឬកុំព្យូទ័រតុ (ទទឹងយ៉ាងតិច ១២៨០ភីកសែល) ដើម្បីទទួលបានបទពិសោធន៍ល្អបំផុត។ វានៅតែប្រើប្រាស់បានលើថេប្លេត។</td></tr><tr><td>ការតភ្ជាប់អ៊ីនធឺណិត</td><td>ត្រូវការការតភ្ជាប់អ៊ីនធឺណិតជានិច្ច — ទិន្នន័យទាំងអស់ត្រូវបានផ្ទុកនៅលើម៉ាស៊ីនមេកណ្តាល មិនមែននៅលើឧបករណ៍របស់អ្នកទេ។</td></tr><tr><td>គណនី</td><td>ត្រូវការគណនីអ្នកគ្រប់គ្រង (អ៊ីមែល + ពាក្យសម្ងាត់) ដែលបង្កើតដោយ Super Admin។ សូមមើលផ្នែកទី១៤ សម្រាប់តួនាទីនានា។</td></tr></tbody></table>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>គេហទំព័រកក់សាធារណៈអាចប្រើប្រាស់បានយ៉ាងល្អនៅលើទូរស័ព្ទដៃរបស់អតិថិជន ដែលជាមធ្យោបាយសំខាន់ដែលអតិថិជនភាគច្រើនប្រើដើម្បីសាកសួរអំពីការជួល។</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-login">
+        <h2><span class="sec-num">3</span>ការចូលប្រព័ន្ធ (Login)</h2>
+        <p>បុគ្គលិកទាំងអស់ចូលប្រើប្រព័ន្ធតាមរយៈទំព័រចូលប្រព័ន្ធសម្រាប់អ្នកគ្រប់គ្រង។</p>
+<ol><li>បើកទំព័រចូលប្រព័ន្ធអ្នកគ្រប់គ្រងតាមកម្មវិធីរុករករបស់អ្នក។</li><li>វាយបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក។</li><li>វាយបញ្ចូលពាក្យសម្ងាត់របស់អ្នក។</li><li>ចុចប៊ូតុង ចូលប្រព័ន្ធ (Log In)។</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/login/01-login-page.png" /><figcaption>អេក្រង់ចូលប្រព័ន្ធសម្រាប់អ្នកគ្រប់គ្រង</figcaption></figure>
+<h3>ភ្លេចពាក្យសម្ងាត់?</h3>
+<p>ចុច "Forgot password?" នៅលើអេក្រង់ចូលប្រព័ន្ធ ហើយវាយបញ្ចូលអាសយដ្ឋានអ៊ីមែលរបស់អ្នក។ ប្រសិនបើមានគណនីប្រើអាសយដ្ឋាននោះ តំណភ្ជាប់សម្រាប់កំណត់ពាក្យសម្ងាត់ថ្មីនឹងត្រូវផ្ញើទៅអ៊ីមែលនោះ ដែលមានសុពលភាព ១ម៉ោង។</p>
+<h3>ចូលប្រព័ន្ធមិនជោគជ័យ</h3>
+<p>ប្រសិនបើអ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ ប្រព័ន្ធនឹងបង្ហាញសារកំហុស ហើយមិនអនុញ្ញាតឱ្យចូលឡើយ។ ប្រសិនបើនៅតែមិនអាចចូលបាន សូមទាក់ទង Super Admin ដើម្បីពិនិត្យមើលថាតើគណនីរបស់អ្នកនៅតែសកម្មដែរឬទេ (មើលទំព័រ Users ក្នុងផ្នែកទី១៤)។</p>
+      </section>
+
+      <section class="doc-section" id="sec-dashboard">
+        <h2><span class="sec-num">4</span>ផ្ទាំងគ្រប់គ្រង (Dashboard)</h2>
+        <p>ផ្ទាំងគ្រប់គ្រង គឺជាទំព័រដំបូងដែលអ្នកនឹងឃើញបន្ទាប់ពីចូលប្រព័ន្ធ។ វាបង្ហាញសង្ខេបរហ័សអំពីស្ថានភាពអាជីវកម្មប្រចាំថ្ងៃ។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/dashboard/01-dashboard-overview.png" /><figcaption>ផ្ទាំងគ្រប់គ្រងសម្រាប់អ្នកគ្រប់គ្រង</figcaption></figure>
+<h3>អ្វីខ្លះមាននៅលើផ្ទាំងគ្រប់គ្រង</h3>
+<ul><li>ការស្វាគមន៍ផ្ទាល់ខ្លួន ជាមួយកាលបរិច្ឆេទថ្ងៃនេះ និងប៊ូតុងផ្លូវកាត់ពីរ៖ ការកក់ថ្មី (New Booking) និង បន្ថែមម៉ូតូ (Add Motorbike)។</li><li>កាតសង្ខេបស្តុកម៉ូតូ — ចំនួនម៉ូតូសរុប ម៉ូតូនៅទំនេរ ម៉ូតូកំពុងជួល និងម៉ូតូកំពុងជួសជុល។</li><li>កាតសង្ខេបការកក់ និងចំណូល — ការកក់រង់ចាំបញ្ជាក់ ចំណូលថ្ងៃនេះ ចំណូលសប្តាហ៍នេះ និងចំណូលខែនេះ។</li><li>ក្រាបចំណូលប្រចាំខែ និងក្រាបចំនួនការកក់ប្រចាំខែ ដែលបង្ហាញរយៈពេល ១២ខែចុងក្រោយ។</li><li>ក្រាបបែងចែកស្ថានភាពការកក់ ដែលបង្ហាញសមាមាត្រនៃការកក់ដែលកំពុងរង់ចាំ បានបញ្ជាក់ កំពុងជួល បានបញ្ចប់ ឬបានលុបចោល។</li><li>បញ្ជីម៉ូតូដែលរកចំណូលបានច្រើនជាងគេ ជាមួយសញ្ញាសម្គាល់មាស/ប្រាក់សម្រាប់ចំណាត់ថ្នាក់ទីមួយ និងទីពីរ។</li></ul>
+<p>ចំនួនគ្រប់យ៉ាងនៅលើផ្ទាំងគ្រប់គ្រងគឺទិន្នន័យផ្ទាល់ — វាឆ្លុះបញ្ចាំងពីស្ថានភាពបច្ចុប្បន្នរបស់មូលដ្ឋានទិន្នន័យ មិនមែនជាទិន្នន័យចាស់ដែលបានរក្សាទុកមុននេះឡើយ។</p>
+      </section>
+
+      <section class="doc-section" id="sec-navigation">
+        <h2><span class="sec-num">5</span>របៀបរុករកប្រព័ន្ធ</h2>
+        <p>របារម៉ឺនុយខាងឆ្វេង គឺជាមធ្យោបាយសម្រាប់ផ្លាស់ទីទៅផ្នែកនីមួយៗនៃផ្ទាំងគ្រប់គ្រង។ វាត្រូវបានចែកជាបីក្រុម។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/01-sidebar-and-topbar.png" /><figcaption>របារម៉ឺនុយខាងឆ្វេង ចែកជាក្រុមតាមផ្នែក</figcaption></figure>
+<table><thead><tr><th>ក្រុម</th><th>ម៉ឺនុយ</th><th>គោលបំណង</th></tr></thead><tbody><tr><td>ការគ្រប់គ្រងជួល (Rental Management)</td><td>ម៉ូតូ (Motorbikes), ការកក់ (Reservations), បញ្ជីការកក់ (Bookings List), អតិថិជន (Customers), ការជួសជុល (Maintenance), របាយការណ៍ (Reports)</td><td>អ្វីៗទាំងអស់ទាក់ទងនឹងការជួលប្រចាំថ្ងៃ។</td></tr><tr><td>គេហទំព័រ (Website)</td><td>ខ្លឹមសារ និងគោលការណ៍ (Content &amp; Policies), បដា (Banners), សំណួរញឹកញាប់ (FAQ), ទីតាំង (Locations), សារ (Messages)</td><td>ខ្លឹមសារបង្ហាញនៅលើគេហទំព័រសាធារណៈ។</td></tr><tr><td>ការកំណត់ (Settings)</td><td>អ្នកប្រើប្រាស់ (Users), កំណត់ត្រាសកម្មភាព (Audit Logs)</td><td>ការគ្រប់គ្រងគណនី និងប្រវត្តិនៃការផ្លាស់ប្តូរនានាក្នុងប្រព័ន្ធ។</td></tr></tbody></table>
+<p>របារម៉ឺនុយអាចត្រូវបានបង្រួមឱ្យតូចនៅមានតែរូបតំណាងប៉ុណ្ណោះ ដោយប្រើប៊ូតុងព្រួញនៅខាងលើ ដើម្បីទុកកន្លែងបន្ថែមសម្រាប់មាតិកាទំព័រ។</p>
+<h3>របារខាងលើ (Top Bar)</h3>
+<p>រាល់ទំព័រគ្រប់គ្រងទាំងអស់មានរបារខាងលើ បង្ហាញផ្លូវរុករក (ឧទាហរណ៍ "Admin / Bookings") ចំណងជើងទំព័រ ប៊ូតុងប្តូររវាងរបៀបភ្លឺ/ងងឹត និងម៉ឺនុយគណនីរបស់អ្នកនៅខាងស្តាំ។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/02-user-menu.png" /><figcaption>ម៉ឺនុយគណនី បង្ហាញតួនាទីរបស់អ្នក និងជម្រើសចាកចេញ</figcaption></figure>
+      </section>
+
+      <section class="doc-section" id="sec-motorbikes">
+        <h2><span class="sec-num">6</span>ការគ្រប់គ្រងម៉ូតូ</h2>
+        <p>គោលបំណង៖ ផ្នែកម៉ូតូ គឺជាកន្លែងកត់ត្រាម៉ូតូទាំងអស់ក្នុងស្តុក — មួយកំណត់ត្រាសម្រាប់ម៉ូតូជាក់ស្តែងមួយគ្រឿង ជាមួយនឹងលក្ខណៈបច្ចេកទេស តម្លៃ រូបភាព និងស្ថានភាពបច្ចុប្បន្ន។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/01-motorbike-list.png" /><figcaption>បញ្ជីម៉ូតូ ជាមួយប្រអប់ស្វែងរក តម្រងស្ថានភាព និងសកម្មភាពរហ័ស</figcaption></figure>
+<h3>ព័ត៌មានលម្អិតរបស់ម៉ូតូ</h3>
+<table><thead><tr><th>វាល</th><th>ការពិពណ៌នា</th><th>តម្រូវឱ្យបំពេញ</th></tr></thead><tbody><tr><td>ឈ្មោះ</td><td>ឈ្មោះបង្ហាញដល់អតិថិជន ឧទាហរណ៍ "Honda Click"។</td><td>ត្រូវការ</td></tr><tr><td>ម៉ាក / ម៉ូដែល</td><td>ក្រុមហ៊ុនផលិត និងម៉ូដែល ឧទាហរណ៍ Honda / Click 125i។</td><td>ត្រូវការ</td></tr><tr><td>ស៊ីស៊ី (Engine CC)</td><td>ទំហំម៉ាស៊ីនគិតជាស៊ង់ទីម៉ែត្រគូប។</td><td>ត្រូវការ</td></tr><tr><td>ប្រព័ន្ធបញ្ជូនចលករ / ប្រភេទឥន្ធនៈ</td><td>អូតូ ធម្មតា ឬពាក់កណ្តាលអូតូ; សាំង ឬអគ្គិសនី។</td><td>មិនតម្រូវ (មានតម្លៃលំនាំដើម)</td></tr><tr><td>ខេត្ត/ក្រុងលើផ្លាកលេខ និងលេខផ្លាក</td><td>ខេត្តកម្ពុជាបោះពុម្ពនៅលើផ្លាកលេខ (ជ្រើសរើសពីបញ្ជីខេត្ត/ក្រុងទាំង ២៥ ឬផ្លាកជាតិ) និងលេខផ្លាក ឧទាហរណ៍ ភ្នំពេញ 1AC-2345។</td><td>មិនតម្រូវ</td></tr><tr><td>ប្រភេទសោ</td><td>សោធម្មតា ឬសោឆ្លាតវៃ (Smart Key)។</td><td>មិនតម្រូវ</td></tr><tr><td>តម្លៃប្រចាំថ្ងៃ/សប្តាហ៍/ខែ</td><td>អត្រាតម្លៃជួល។ តម្លៃប្រចាំសប្តាហ៍ និងប្រចាំខែជាតម្លៃបញ្ចុះតម្លៃមិនចាំបាច់មាន។</td><td>តម្លៃប្រចាំថ្ងៃត្រូវការ</td></tr><tr><td>ប្រាក់តម្កល់ / ថ្លៃដឹកជញ្ជូន</td><td>ប្រាក់តម្កល់ដែលអាចដកវិញបាន និងថ្លៃដឹកជញ្ជូនទៅសណ្ឋាគារ (បើមាន)។</td><td>មិនតម្រូវ</td></tr><tr><td>ចំនួនថ្ងៃជួលអប្បបរមា/អតិបរមា</td><td>រយៈពេលជួលខ្លីបំផុត និងវែងបំផុតដែលអនុញ្ញាតសម្រាប់ម៉ូតូនេះ (ការជួលកន្លះថ្ងៃ ១២ម៉ោង ឬតិចជាងនេះមិនអនុវត្តតាមលក្ខខណ្ឌនេះទេ)។</td><td>មិនតម្រូវ</td></tr><tr><td>ស្ថានភាព</td><td>អាចជួលបាន កំពុងជួល កំពុងជួសជុល ឬលែងប្រើ។</td><td>ត្រូវការ</td></tr></tbody></table>
+<h3>របៀបបន្ថែមម៉ូតូថ្មី</h3>
+<ol><li>ចុច បន្ថែមម៉ូតូ (Add Motorbike) ពីបញ្ជីម៉ូតូ (ឬពីផ្លូវកាត់នៅផ្ទាំងគ្រប់គ្រង)។</li><li>បំពេញផ្នែក ព័ត៌មានមូលដ្ឋាន ព័ត៌មានជួល និង លក្ខណៈពិសេស។</li><li>ចុច បង្កើតម៉ូតូ (Create Motorbike)។</li><li>នៅអេក្រង់បន្ទាប់ សូមបញ្ចូលរូបភាព — រូបភាពដំបូង ឬរូបភាពដែលបានកំណត់ជាចម្បង គឺជារូបភាពដែលអតិថិជនឃើញមុនគេ។</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/02-add-motorbike-form.png" /><figcaption>ទម្រង់បន្ថែមម៉ូតូថ្មី</figcaption></figure>
+<h3>របៀបកែសម្រួលម៉ូតូ</h3>
+<p>បើកម៉ូតូពីបញ្ជី ហើយចុចរូបខ្មៅដៃ (កែសម្រួល) ឬចុចលើជួរណាមួយផ្ទាល់។ គ្រប់វាលទាំងអស់អាចផ្លាស់ប្តូរបាន រួមទាំងរូបភាព នៅលើអេក្រង់តែមួយ។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/motorbikes/04-edit-motorbike-form.png" /><figcaption>ការកែសម្រួលម៉ូតូដែលមានស្រាប់</figcaption></figure>
+<h3>ការលុប / ដកម៉ូតូចេញពីសេវា</h3>
+<p>ប្រើរូបធុងសម្រាមដើម្បីលុបម៉ូតូជាអចិន្ត្រៃយ៍ ឬប្រើប៊ូតុងបិទ/បើកដើម្បីកំណត់ម៉ូតូជា "លែងប្រើ" ដោយមិនចាំបាច់លុប (មានប្រយោជន៍ចំពោះម៉ូតូដែលឈប់ប្រើប្រាស់បណ្តោះអាសន្ន ដូចជាបានលក់ ឬកំពុងជួសជុលរយៈពេលវែង — សូមមើលផ្នែកទី៩ ការជួសជុល ផងដែរសម្រាប់ការជួសជុលរយៈពេលខ្លី)។</p>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>ការលុបម៉ូតូគឺជាអចិន្ត្រៃយ៍ ហើយត្រូវការតួនាទី Admin ឬ Super Admin ប៉ុណ្ណោះ។ គណនី Staff មិនអាចលុបម៉ូតូ ឬការកក់បានទេ។</div></div>
+<h3>ការស្វែងរក និងតម្រង</h3>
+<p>ប្រើប្រអប់ស្វែងរកដើម្បីរកម៉ូតូតាមឈ្មោះ ម៉ាក ម៉ូដែល ឬលេខ/ខេត្តលើផ្លាកលេខ ហើយប្រើម៉ឺនុយទម្លាក់ស្ថានភាព ដើម្បីបង្ហាញតែម៉ូតូដែលអាចជួលបាន កំពុងជួល កំពុងជួសជុល ឬលែងប្រើប៉ុណ្ណោះ។</p>
+      </section>
+
+      <section class="doc-section" id="sec-reservations">
+        <h2><span class="sec-num">7</span>ការកក់ និងការជួល</h2>
+        <p>គោលបំណង៖ នេះជាផ្នែកស្នូលនៃប្រព័ន្ធ — រាល់ការជួលទាំងអស់ មិនថាដាក់ស្នើដោយអតិថិជនតាមគេហទំព័រ ឬបង្កើតដោយបុគ្គលិកសម្រាប់អតិថិជនមកដល់ផ្ទាល់ គឺជា "ការកក់" (Booking) ទាំងអស់។</p>
+<h3>ប្រតិទិនកក់</h3>
+<p>ទំព័រ Reservations បើកនៅជា "របៀបប្រតិទិន" ជាលំនាំដើម ជាមួយកាតសង្ខេបនៅខាងលើ (ការកក់ថ្ងៃនេះ ការជួលកំពុងដំណើរការ ត្រូវប្រគល់មកវិញថ្ងៃនេះ ម៉ូតូនៅទំនេរ ការកក់សប្តាហ៍នេះ រង់ចាំបញ្ជាក់ និងមិនទាន់ទូទាត់/ទូទាត់ខ្លះ)។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reservations/01-calendar-view.png" /><figcaption>ប្រតិទិនកក់ ជាមួយចំណុចពណ៌សម្គាល់ស្ថានភាពការកក់</figcaption></figure>
+<p>ថ្ងៃនីមួយៗនៅលើប្រតិទិនបង្ហាញចំនួនការកក់ដែលធ្លាក់ក្នុងថ្ងៃនោះ ជាមួយចំណុចពណ៌សម្រាប់ស្ថានភាពនីមួយៗ (កំពុងរង់ចាំ បានបញ្ជាក់ កំពុងជួល បានប្រគល់មកវិញ បានលុបចោល)។ ចុចថ្ងៃណាមួយដើម្បីមើលបញ្ជីពេញលេញនៃការកក់ថ្ងៃនោះ។</p>
+<p>ប្តូរទៅ "របៀបតារាង" ដោយប្រើប៊ូតុងនៅជ្រុងខាងស្តាំខាងលើ ដើម្បីទទួលបានបញ្ជីធម្មតាដែលអាចតម្រៀប និងតម្រងបាន ជំនួសឱ្យប្រតិទិន។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reservations/02-table-view.png" /><figcaption>ទំព័រការកក់ក្នុងរបៀបតារាង</figcaption></figure>
+<h3>ការបង្កើតការកក់ថ្មី (សម្រាប់អតិថិជនមកដល់ផ្ទាល់ / បង្កើតដោយបុគ្គលិក)</h3>
+<ol><li>ចុច ការកក់ថ្មី (New Booking) ពីទំព័រ Reservations ពីបញ្ជីការកក់ ឬពីផ្លូវកាត់នៅផ្ទាំងគ្រប់គ្រង។</li><li>ជ្រើសរើសម៉ូតូ និងកាលបរិច្ឆេទ/ម៉ោងទទួល និងប្រគល់មកវិញ — ចំនួនទឹកប្រាក់សរុបប៉ាន់ស្មាន និងប្រាក់តម្កល់ ៥០% ដែលត្រូវការ នឹងត្រូវបានគណនាដោយស្វ័យប្រវត្តិ។</li><li>ជ្រើសរើសអតិថិជនដែលមានស្រាប់ដោយស្វែងរកឈ្មោះ ឬលេខទូរស័ព្ទ ឬប្តូរទៅ "ថ្មី" ដើម្បីបញ្ចូលព័ត៌មានអតិថិជនថ្មី។</li><li>កំណត់ស្ថានភាពការកក់ (កំពុងរង់ចាំ បានបញ្ជាក់ កំពុងជួល ឬបានបញ្ចប់) និងព័ត៌មានទូទាត់ — ស្ថានភាពទូទាត់ ចំនួនទឹកប្រាក់ដែលបានបង់ និងវិធីទូទាត់។</li><li>ចុច បង្កើតការកក់ (Create Booking)។</li></ol>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/02-create-booking-form.png" /><figcaption>ទម្រង់បង្កើតការកក់ថ្មី</figcaption></figure>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>អតិថិជនមកដល់ផ្ទាល់ជាធម្មតាត្រូវបានកត់ត្រាថា "បានបញ្ជាក់" (Confirmed) ភ្លាមៗ ព្រោះពួកគេមានវត្តមានផ្ទាល់។ ការកក់ពីគេហទំព័រសាធារណៈចាប់ផ្តើមជា "កំពុងរង់ចាំ" (Pending) រហូតដល់បុគ្គលិកពិនិត្យ និងបញ្ជាក់។</div></div>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>ស្ថានភាពការកក់ណាមួយក្រៅពី "កំពុងរង់ចាំ" ឬ "បានលុបចោល" តម្រូវឱ្យមានការទូទាត់យ៉ាងតិច ៥០% នៃចំនួនទឹកប្រាក់សរុប។ ទម្រង់នឹងបង្ហាញការព្រមាន ហើយរារាំងការរក្សាទុក ប្រសិនបើចំនួនទឹកប្រាក់មិនគ្រប់គ្រាន់។</div></div>
+<h3>បញ្ជីការកក់</h3>
+<p>ទំព័រ បញ្ជីការកក់ (Bookings List) បង្ហាញការកក់ទាំងអស់ជាតារាងដែលអាចតម្រៀប ស្វែងរក និងតម្រងតាមស្ថានភាព។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/01-booking-list.png" /><figcaption>បញ្ជីការកក់</figcaption></figure>
+<h3>ទំព័រព័ត៌មានលម្អិតការកក់</h3>
+<p>ការបើកការកក់មួយបង្ហាញព័ត៌មានពេញលេញរបស់អតិថិជន ការជួល និងហិរញ្ញវត្ថុ ទម្រង់ "កែសម្រួលការកក់" ដែលអាចកែបាន ផ្នែក "ការប្រគល់មកវិញ និងប្រាក់តម្កល់" ផ្ទាំងកែប្រែស្ថានភាព និងកាលប្បវត្តិនៃការផ្លាស់ប្តូរស្ថានភាពទាំងអស់។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/04-booking-detail.png" /><figcaption>ទំព័រព័ត៌មានលម្អិតនៃការកក់មួយ</figcaption></figure>
+<h3>ការកែប្រែស្ថានភាពការកក់</h3>
+<p>ប្រើផ្ទាំង "កែប្រែស្ថានភាព" នៅផ្នែកខាងស្តាំនៃទំព័រព័ត៌មានលម្អិត៖ ជ្រើសរើសស្ថានភាពថ្មី អាចបញ្ចូលចំណាំបន្ថែម ហើយចុច កែប្រែស្ថានភាព។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/05-update-status.png" /><figcaption>ការកែប្រែស្ថានភាពការកក់</figcaption></figure>
+<p>នៅពេលការកក់ត្រូវបានកំណត់ថា "បានប្រគល់មកវិញ" (Returned) ប្រព័ន្ធនឹងកត់ត្រាពេលវេលាប្រគល់មកវិញដោយស្វ័យប្រវត្តិ និងស្នើសុំថ្លៃពិន័យយឺត ប្រសិនបើមានការកំណត់អត្រា (សូមមើលផ្នែកទី១២ ការកំណត់) និងម៉ូតូត្រូវបានប្រគល់មកវិញយឺតជាងកាលវិភាគ។ ថ្លៃពិន័យយឺត និងចំនួនប្រាក់តម្កល់ដែលសងវិញ នៅតែអាចកែប្រែបានក្នុងផ្នែក "ការប្រគល់មកវិញ និងប្រាក់តម្កល់"។</p>
+<h3>ការលុបការកក់</h3>
+<p>បើកការកក់ ហើយចុច លុបការកក់ (Delete Booking) នៅផ្នែកខាងក្រោមនៃទម្រង់កែសម្រួល។ ប្រអប់បញ្ជាក់នឹងបង្ហាញឡើងមុនពេលអ្វីមួយត្រូវបានលុប។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/bookings/06-delete-confirmation.png" /><figcaption>ប្រអប់បញ្ជាក់ការលុប</figcaption></figure>
+<div class="callout callout--warn"><span class="callout__icon">⚠</span><div>ការលុបការកក់គឺជាអចិន្ត្រៃយ៍ ហើយត្រូវការតួនាទី Admin ឬ Super Admin ប៉ុណ្ណោះ។</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-customers">
+        <h2><span class="sec-num">8</span>អតិថិជន</h2>
+        <p>គោលបំណង៖ រាល់អ្នកដែលធ្លាប់កក់ម៉ូតូ — មិនថាតាមគេហទំព័រ ឬមកដល់ផ្ទាល់ទេ — មានកំណត់ត្រាអតិថិជនមួយ ដែលបង្កើតដោយស្វ័យប្រវត្តិលើកដំបូងដែលពួកគេកក់ (ផ្គូផ្គងតាមលេខទូរស័ព្ទ) ហើយប្រើឡើងវិញសម្រាប់ការកក់លើកក្រោយៗទៀត។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/customers/01-customer-list.png" /><figcaption>បញ្ជីអតិថិជន</figcaption></figure>
+<h3>ព័ត៌មានអតិថិជន</h3>
+<table><thead><tr><th>វាល</th><th>ការពិពណ៌នា</th><th>តម្រូវឱ្យបំពេញ</th></tr></thead><tbody><tr><td>ឈ្មោះពេញ</td><td>ឈ្មោះរបស់អតិថិជន។</td><td>ត្រូវការ</td></tr><tr><td>លេខទូរស័ព្ទ</td><td>ប្រើសម្រាប់ផ្គូផ្គងអតិថិជនចាស់ដោយស្វ័យប្រវត្តិ។</td><td>ត្រូវការ</td></tr><tr><td>អ៊ីមែល សញ្ជាតិ តេឡេក្រាម វតស្អាប</td><td>ព័ត៌មានទំនាក់ទំនងបន្ថែម (មិនចាំបាច់)។</td><td>មិនតម្រូវ</td></tr><tr><td>ប្រភេទអត្តសញ្ញាណប័ណ្ណ / លេខអត្តសញ្ញាណប័ណ្ណ ឬលិខិតឆ្លងដែន</td><td>អត្តសញ្ញាណប័ណ្ណ ឬលិខិតឆ្លងដែន។</td><td>មិនតម្រូវ</td></tr><tr><td>រូបថតឯកសារអត្តសញ្ញាណ</td><td>រូបថតអត្តសញ្ញាណប័ណ្ណ/លិខិតឆ្លងដែនដែលបានផ្ទុកឡើងនៅពេលកក់ (បើមាន)។</td><td>មិនតម្រូវ</td></tr></tbody></table>
+<p>ការបើកកំណត់ត្រាអតិថិជនមួយបង្ហាញទាំងព័ត៌មានផ្ទាល់ខ្លួន និងប្រវត្តិការកក់ទាំងអស់របស់ពួកគេនៅកន្លែងតែមួយ។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/customers/02-customer-detail.png" /><figcaption>ព័ត៌មានលម្អិត និងប្រវត្តិការកក់របស់អតិថិជនម្នាក់</figcaption></figure>
+<p>ព័ត៌មានអតិថិជនអាចកែសម្រួលបានផ្ទាល់ពីទំព័រព័ត៌មានលម្អិត។ គណនី Staff, Admin និង Super Admin ទាំងអស់អាចកែសម្រួលព័ត៌មានអតិថិជនបាន។</p>
+      </section>
+
+      <section class="doc-section" id="sec-maintenance">
+        <h2><span class="sec-num">9</span>ការជួសជុល</h2>
+        <p>គោលបំណង៖ តាមដានប្រវត្តិសេវាកម្មរបស់ម៉ូតូនីមួយៗ — ប្តូរប្រេង កង់ ហ្វ្រាំង ម៉ាស៊ីន ថ្ម សេវាកម្មទូទៅ និងជួសជុលក្រោយគ្រោះថ្នាក់។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/maintenance/01-maintenance-list.png" /><figcaption>បញ្ជីកំណត់ត្រាការជួសជុល</figcaption></figure>
+<p>កំណត់ត្រាការជួសជុលនីមួយៗកត់ត្រាម៉ូតូ ប្រភេទការងារ កាលបរិច្ឆេទ ចម្ងាយបើកបរ (មិនតម្រូវ) ថ្លៃដើម ឈ្មោះហាងជួសជុល និងស្ថានភាព (បានកំណត់ពេល កំពុងធ្វើ ឬបានបញ្ចប់)។</p>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>កំណត់ត្រាការជួសជុលមានលក្ខណៈផ្សេងពីវាល "ស្ថានភាព" ទូទៅរបស់ម៉ូតូ។ ការកំណត់ស្ថានភាពម៉ូតូជា "កំពុងជួសជុល" នឹងលាក់វាមិនឱ្យអតិថិជនកក់ក្នុងអំឡុងពេលកំពុងជួសជុល ចំណែកឯផ្នែកការជួសជុលនៅតែរក្សាទុកប្រវត្តិការជួសជុលលម្អិត ដោយមិនគិតពីស្ថានភាពនោះទេ។</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-search-filter">
+        <h2><span class="sec-num">10</span>ការស្វែងរក និងតម្រង</h2>
+        <p>មុខងារស្វែងរក និងតម្រងបង្ហាញនៅទីតាំងដូចគ្នាជានិច្ចនៅលើគ្រប់ទំព័របញ្ជីទាំងអស់ (នៅផ្នែកខាងលើនៃទំព័រ លើសពីតារាង)។</p>
+<table><thead><tr><th>ទំព័រ</th><th>ការស្វែងរកផ្គូផ្គងតាម</th><th>តម្រងដែលមាន</th></tr></thead><tbody><tr><td>ម៉ូតូ</td><td>ឈ្មោះ ម៉ាក ម៉ូដែល លេខផ្លាក ឬខេត្តលើផ្លាកលេខ</td><td>ស្ថានភាព (អាចជួលបាន/កំពុងជួល/កំពុងជួសជុល/លែងប្រើ)</td></tr><tr><td>ការកក់</td><td>ឈ្មោះអតិថិជន លេខទូរស័ព្ទ ឬលេខការកក់</td><td>ស្ថានភាព; ចន្លោះកាលបរិច្ឆេទ; ម៉ូតូ; ស្ថានភាពទូទាត់</td></tr><tr><td>អតិថិជន</td><td>ឈ្មោះ ឬលេខទូរស័ព្ទ</td><td>—</td></tr><tr><td>ការកក់ (របៀបតារាង)</td><td>ដូចគ្នានឹងការកក់</td><td>ដូចគ្នានឹងការកក់ បូករួមទាំងជួរឈរដែលអាចតម្រៀបបាន</td></tr></tbody></table>
+<p>ប្រអប់ស្វែងរកនឹងតម្រងលទ្ធផលភ្លាមៗពេលអ្នកវាយបញ្ចូល (បន្ទាប់ពីការផ្អាកខ្លីមួយ) ដូច្នេះមិនចាំបាច់មានប៊ូតុង "ស្វែងរក" ដាច់ដោយឡែកទេ។ លុបអត្ថបទក្នុងប្រអប់ស្វែងរក ឬកំណត់តម្រងឡើងវិញ ដើម្បីមើលបញ្ជីពេញលេញម្តងទៀត។</p>
+      </section>
+
+      <section class="doc-section" id="sec-reports">
+        <h2><span class="sec-num">11</span>របាយការណ៍ និងការនាំចេញ</h2>
+        <p>គោលបំណង៖ ទំព័រ របាយការណ៍ (Reports) បំប្លែងទិន្នន័យការកក់ និងអតិថិជនឆៅ ទៅជាចំនួនលេខកម្រិតអាជីវកម្ម សម្រាប់ចន្លោះកាលបរិច្ឆេទដែលអ្នកជ្រើសរើស។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/reports/01-reports-overview.png" /><figcaption>ទំព័ររបាយការណ៍</figcaption></figure>
+<h3>ការជ្រើសរើសចន្លោះកាលបរិច្ឆេទ</h3>
+<p>ប្រើប៊ូតុងរហ័ស (ថ្ងៃនេះ ៧ថ្ងៃចុងក្រោយ ៣០ថ្ងៃចុងក្រោយ ខែនេះ ឆ្នាំនេះ) ឬជ្រើសរើសកាលបរិច្ឆេទ ពី/ដល់ ជាក់លាក់ ហើយចុច អនុវត្ត (Apply)។</p>
+<h3>អ្វីខ្លះបង្ហាញក្នុងរបាយការណ៍</h3>
+<ul><li>ចំណូល និងហិរញ្ញវត្ថុ — ចំណូលសរុប ចំណូលមុនកាត់បន្ថយ ការបញ្ចុះតម្លៃដែលបានផ្តល់ និងថ្លៃបន្ថែម ព្រមទាំងក្រាបចំណូលតាមពេលវេលា និងការបែងចែកតាមស្ថានភាពទូទាត់ (មិនទាន់ទូទាត់/ទូទាត់ខ្លះ/ទូទាត់ពេញលេញ)។</li><li>ការកក់ និងការជួល — ចំនួនការកក់សរុប រយៈពេលជួលជាមធ្យម អត្រាលុបចោល ចំនួនទឹកប្រាក់ដែលបានបង់រហូតដល់ពេលនេះ និងការបែងចែកតាមស្ថានភាពការកក់។</li><li>ការអនុវត្តរបស់ម៉ូតូ — តារាងម៉ូតូនីមួយៗ ជាមួយចំនួនការកក់ ចំណូល ភាគរយនៃការប្រើប្រាស់ និងថ្លៃជួសជុលសម្រាប់រយៈពេលនោះ។</li><li>អតិថិជន — អតិថិជនថ្មី ធៀបនឹងអតិថិជនចាស់ បញ្ជីអតិថិជនកំពូលតាមចំណាយ និងការបែងចែកតាមសញ្ជាតិ។</li></ul>
+<h3>ការនាំចេញទិន្នន័យ</h3>
+<p>មានប៊ូតុងនាំចេញ CSV ចំនួនបីនៅផ្នែកខាងលើទំព័រ៖ ការកក់/ចំណូល ម៉ូតូ និងអតិថិជន។ ការចុចប៊ូតុងណាមួយនឹងទាញយកឯកសារ CSV សម្រាប់ចន្លោះកាលបរិច្ឆេទដែលបានជ្រើសរើស ដែលអាចបើកដោយផ្ទាល់ក្នុង Excel ឬ Google Sheets។</p>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>បច្ចុប្បន្ន CSV គឺជាទម្រង់នាំចេញតែមួយគត់ដែលមាន។ គ្មានការនាំចេញជា PDF ឬរបាយការណ៍ត្រៀមបោះពុម្ពនៅក្នុងកម្មវិធីនោះទេ; ឯកសារ CSV អាចត្រូវបានបើក និងបោះពុម្ពពីកម្មវិធីតារាងគណនា ប្រសិនបើត្រូវការច្បាប់ចម្លងបោះពុម្ព។ ក៏គ្មានមុខងារនាំចូលទិន្នន័យផងដែរ — កំណត់ត្រាទាំងអស់ត្រូវបញ្ចូលតាមរយៈទម្រង់ដែលបានពិពណ៌នាក្នុងសៀវភៅណែនាំនេះ។</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-settings">
+        <h2><span class="sec-num">12</span>ការកំណត់ (ខ្លឹមសារ និងគោលការណ៍)</h2>
+        <p>គោលបំណង៖ គ្រប់គ្រងអ្វីៗទាំងអស់អំពីរូបរាង និងឥរិយាបថនៃគេហទំព័រសាធារណៈ ដែលបានរៀបចំជាផ្ទាំងផ្សេងៗគ្នា (tabs)។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/settings/01-business-info.png" /><figcaption>ការកំណត់ព័ត៌មានអាជីវកម្ម</figcaption></figure>
+<table><thead><tr><th>ផ្ទាំង</th><th>អ្វីដែលវាគ្រប់គ្រង</th></tr></thead><tbody><tr><td>ព័ត៌មានអាជីវកម្ម</td><td>ឈ្មោះអាជីវកម្ម រូបិយប័ណ្ណ លេខទូរស័ព្ទ អ៊ីមែល អាសយដ្ឋាន ការពិពណ៌នា អត្ថបទបាតទំព័រ និងថាតើការជូនដំណឹងតាមអ៊ីមែលត្រូវបានបើកដែរឬទេ (សូមមើលខាងក្រោម)។</td></tr><tr><td>បណ្តាញសង្គម</td><td>តំណភ្ជាប់ទៅ តេឡេក្រាម វតស្អាប ហ្វេសប៊ុក អ៊ីនស្តាក្រាម និងទីកតុក ដែលបង្ហាញនៅលើគេហទំព័រ។</td></tr><tr><td>ទំព័រដើម</td><td>ចំណងជើងធំ ចំណងជើងរង និងរូបភាពផ្ទៃខាងក្រោយនៅលើទំព័រដើម។</td></tr><tr><td>អំពីយើង</td><td>ចំណងជើង ការពិពណ៌នា រឿងរ៉ាវ បេសកកម្ម និងរូបភាពនៃទំព័រ អំពីយើង។</td></tr><tr><td>វិធីទូទាត់</td><td>ព័ត៌មានគណនី KHQR ផ្ទាល់ (សម្រាប់បង្កើតកូដ QR ដោយស្វ័យប្រវត្តិដែលមានចំនួនទឹកប្រាក់ត្រឹមត្រូវ) និងការណែនាំដែលបង្ហាញដល់អតិថិជនសម្រាប់ការទូទាត់តាម ABA, ACLEDA, Wing និងកាត។</td></tr><tr><td>គោលការណ៍ជួល</td><td>អាយុអប្បបរមា ចំនួនថ្ងៃជួលអប្បបរមា/អតិបរមា ឯកសារដែលត្រូវការ និងអត្ថបទគោលការណ៍ដែលបង្ហាញនៅលើទំព័រគោលការណ៍ជួលសាធារណៈ (ប្រាក់តម្កល់ ប្រេងឥន្ធនៈ ការប្រគល់មកវិញយឺត ការខូចខាត ការលុបចោល គ្រោះថ្នាក់ ការល្មើសច្បាប់ចរាចរណ៍ និងគោលការណ៍មួក) ព្រមទាំងអត្រាថ្លៃពិន័យយឺតក្នុងមួយម៉ោង។</td></tr></tbody></table>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/settings/02-payment-methods.png" /><figcaption>ការកំណត់វិធីទូទាត់ រួមទាំងការកំណត់ KHQR ផ្ទាល់</figcaption></figure>
+<p>ផ្ទាំងទាំងអស់ត្រូវបានរក្សាទុកដោយប៊ូតុង រក្សាទុកការកំណត់ (Save Settings) ដូចគ្នា; ការផ្លាស់ប្តូរនានានឹងអនុវត្តទៅលើគេហទំព័រសាធារណៈភ្លាមៗ។</p>
+<h3>ការជូនដំណឹងតាមអ៊ីមែល</h3>
+<p>នៅពេលបើកដំណើរការ ប្រព័ន្ធនឹងផ្ញើអ៊ីមែលបញ្ជាក់ដោយស្វ័យប្រវត្តិទៅកាន់អតិថិជននៅពេលការកក់ត្រូវបានបង្កើត អ៊ីមែលធ្វើបច្ចុប្បន្នភាពរាល់ពេលស្ថានភាពការកក់ផ្លាស់ប្តូរ និងអ៊ីមែលជូនដំណឹងទៅកាន់អាសយដ្ឋានអាជីវកម្មសម្រាប់រាល់ការកក់ថ្មីៗ។ ការផ្ញើអ៊ីមែលទាមទារឱ្យមានការកំណត់ម៉ាស៊ីនមេអ៊ីមែល SMTP ដោយអ្នកគ្រប់គ្រងម៉ាស៊ីនមេ — ប្រសិនបើមិនទាន់មានការកំណត់ទេ អ៊ីមែលទាំងនោះគ្រាន់តែមិនត្រូវបានផ្ញើ ដោយមិនបណ្តាលឱ្យមានកំហុសអ្វីឡើយ។</p>
+      </section>
+
+      <section class="doc-section" id="sec-website-content">
+        <h2><span class="sec-num">13</span>ខ្លឹមសារគេហទំព័រ៖ បដា សំណួរញឹកញាប់ ទីតាំង និងសារ</h2>
+        <p>ម៉ឺនុយទាំងបួននេះ ក្រោមក្រុម "គេហទំព័រ" គ្រប់គ្រងផ្នែកខ្លីៗនៃខ្លឹមសារគេហទំព័រសាធារណៈ។</p>
+<h3>បដា (Banners)</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/banners/01-banner-list.png" /><figcaption>បញ្ជីបដា</figcaption></figure>
+<p>បដាផ្សព្វផ្សាយដែលបង្ហាញនៅលើគេហទំព័រ នីមួយៗមានចំណងជើង ចំណងជើងរង រូបភាព ប៊ូតុងបន្ថែម (មិនតម្រូវ) ការបិទ/បើកសកម្មភាព លំដាប់បង្ហាញ និងកាលបរិច្ឆេទចាប់ផ្តើម/បញ្ចប់ (មិនតម្រូវ) សម្រាប់ការផ្សព្វផ្សាយមានកំណត់ពេល។</p>
+<h3>សំណួរញឹកញាប់ (FAQ)</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/faqs/01-faq-list.png" /><figcaption>បញ្ជីសំណួរញឹកញាប់</figcaption></figure>
+<p>គូសំណួរ-ចម្លើយដែលបង្ហាញនៅលើទំព័រសំណួរញឹកញាប់សាធារណៈ ជាមួយលំដាប់បង្ហាញ និងការបិទ/បើកសកម្មភាព។</p>
+<h3>ទីតាំង (Locations)</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/locations/01-location-list.png" /><figcaption>បញ្ជីទីតាំង</figcaption></figure>
+<p>ទីតាំងទទួល/ប្រគល់មកវិញដែលបានផ្តល់ជូនអតិថិជន នីមួយៗមានអាសយដ្ឋាន ការពិពណ៌នា តំណភ្ជាប់ Google Maps លេខទូរស័ព្ទ និងម៉ោងបើក/បិទ។</p>
+<h3>សារ (Messages)</h3>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/contact-messages/01-contact-messages.png" /><figcaption>សារដែលបានផ្ញើតាមទំព័រទំនាក់ទំនងសាធារណៈ</figcaption></figure>
+<p>សារដែលបានផ្ញើតាមទំព័រ ទំនាក់ទំនង សាធារណៈនឹងមកដល់ទីនេះ។ សារនីមួយៗអាចត្រូវបានកំណត់ថាបានអាន/មិនទាន់អាន ដើម្បីឱ្យក្រុមការងារអាចតាមដានថាតើសំណួរណាមួយនៅមិនទាន់បានឆ្លើយតប។</p>
+      </section>
+
+      <section class="doc-section" id="sec-roles">
+        <h2><span class="sec-num">14</span>តួនាទី និងសិទ្ធិអ្នកប្រើប្រាស់</h2>
+        <p>គោលបំណង៖ ទំព័រ Users (ក្រុមការកំណត់) គ្រប់គ្រងថាតើអ្នកណាខ្លះអាចចូលប្រើផ្ទាំងគ្រប់គ្រង និងអ្វីដែលពួកគេត្រូវបានអនុញ្ញាតឱ្យធ្វើ។ មានតែ Super Admin ប៉ុណ្ណោះទើបអាចចូលទំព័រនេះបាន។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/users/01-user-management.png" /><figcaption>ទំព័រអ្នកប្រើប្រាស់ — បន្ថែមគណនីអ្នកគ្រប់គ្រង/បុគ្គលិកថ្មី</figcaption></figure>
+<h3>តួនាទីទាំងបី</h3>
+<table><thead><tr><th>តួនាទី</th><th>ការពិពណ៌នា</th></tr></thead><tbody><tr><td>Super Admin (អ្នកគ្រប់គ្រងជាន់ខ្ពស់)</td><td>សិទ្ធិពេញលេញលើអ្វីៗទាំងអស់ រួមទាំងការបង្កើតគណនីអ្នកគ្រប់គ្រង/បុគ្គលិកផ្សេងទៀត និងការផ្លាស់ប្តូរតួនាទី។</td></tr><tr><td>Admin (អ្នកគ្រប់គ្រង)</td><td>សិទ្ធិពេញលេញលើការដំណើរការអាជីវកម្ម — ម៉ូតូ ការកក់ អតិថិជន ការកំណត់ របាយការណ៍ — លើកលែងតែការគ្រប់គ្រងគណនីអ្នកប្រើប្រាស់។</td></tr><tr><td>Staff (បុគ្គលិក)</td><td>ការងារប្រចាំថ្ងៃនៅផ្នែកខាងមុខ៖ បង្កើត និងកែសម្រួលការកក់ កែសម្រួលព័ត៌មានអតិថិជន គ្រប់គ្រងកំណត់ត្រាការជួសជុល និងមើលអ្វីៗផ្សេងទៀតទាំងអស់។ មិនអាចបន្ថែម/កែសម្រួល/លុបម៉ូតូ ផ្លាស់ប្តូរការកំណត់ លុបការកក់ ឬគ្រប់គ្រងអ្នកប្រើប្រាស់បានទេ។</td></tr></tbody></table>
+<h3>តារាងសិទ្ធិ</h3>
+<table><thead><tr><th>សកម្មភាព</th><th>Super Admin</th><th>Admin</th><th>Staff</th></tr></thead><tbody><tr><td>មើលផ្ទាំងគ្រប់គ្រង ការកក់ ម៉ូតូ អតិថិជន របាយការណ៍</td><td>បាន</td><td>បាន</td><td>បាន</td></tr><tr><td>បង្កើត/កែសម្រួលការកក់</td><td>បាន</td><td>បាន</td><td>បាន</td></tr><tr><td>លុបការកក់</td><td>បាន</td><td>បាន</td><td>មិនបាន</td></tr><tr><td>កែសម្រួលព័ត៌មានអតិថិជន</td><td>បាន</td><td>បាន</td><td>បាន</td></tr><tr><td>បង្កើតកំណត់ត្រាការជួសជុល</td><td>បាន</td><td>បាន</td><td>បាន</td></tr><tr><td>បន្ថែម/កែសម្រួល/លុបម៉ូតូ</td><td>បាន</td><td>បាន</td><td>មិនបាន</td></tr><tr><td>ផ្លាស់ប្តូរការកំណត់ បដា សំណួរញឹកញាប់ ទីតាំង</td><td>បាន</td><td>បាន</td><td>មិនបាន</td></tr><tr><td>គ្រប់គ្រងអ្នកប្រើប្រាស់ជាអ្នកគ្រប់គ្រង/បុគ្គលិក</td><td>បាន</td><td>មិនបាន</td><td>មិនបាន</td></tr></tbody></table>
+<h3>របៀបបង្កើតអ្នកប្រើប្រាស់ថ្មី</h3>
+<ol><li>ចូលទៅ Settings → Users។</li><li>បំពេញឈ្មោះពេញ អ៊ីមែល និងពាក្យសម្ងាត់ (យ៉ាងតិច ៨តួអក្សរ) របស់អ្នកប្រើប្រាស់ថ្មី។</li><li>ជ្រើសរើសតួនាទីរបស់ពួកគេ — Staff, Admin ឬ Super Admin។</li><li>ចុច បង្កើតអ្នកប្រើប្រាស់ (Create User)។</li></ol>
+<p>តួនាទីរបស់អ្នកប្រើប្រាស់ដែលមានស្រាប់អាចផ្លាស់ប្តូរបានគ្រប់ពេលវេលា ពីម៉ឺនុយទម្លាក់នៅជាប់ឈ្មោះរបស់ពួកគេ ហើយគណនីរបស់ពួកគេអាចត្រូវបានធ្វើឱ្យអសកម្ម (រារាំងការចូលប្រព័ន្ធ ដោយមិនលុបប្រវត្តិការងាររបស់ពួកគេចោល) ដោយប្រើប៊ូតុង Deactivate។</p>
+      </section>
+
+      <section class="doc-section" id="sec-account">
+        <h2><span class="sec-num">15</span>ព័ត៌មានផ្ទាល់ខ្លួន / គណនី</h2>
+        <p>ម៉ឺនុយគណនីរបស់អ្នក នៅជ្រុងខាងស្តាំខាងលើនៃគ្រប់ទំព័រគ្រប់គ្រងទាំងអស់ បង្ហាញឈ្មោះ និងតួនាទីរបស់អ្នក។</p>
+<figure class="shot"><img src="d:/My Project/motorbike-rental/motorbike-rental/docs/screenshots/navigation/02-user-menu.png" /><figcaption>ម៉ឺនុយគណនី</figcaption></figure>
+<p>ពីទីនេះ អ្នកអាច៖</p>
+<ul><li>មើលតួនាទីបច្ចុប្បន្នរបស់អ្នក (Super Admin, Admin ឬ Staff)។</li><li>ចាកចេញ (Log out) ពីផ្ទាំងគ្រប់គ្រង។</li></ul>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>បច្ចុប្បន្នមិនទាន់មានទំព័រ "កែសម្រួលព័ត៌មានផ្ទាល់ខ្លួន" ឬ "ប្តូរពាក្យសម្ងាត់ខណៈកំពុងចូលប្រព័ន្ធ" ដោយខ្លួនឯងនៅឡើយទេ។ ដើម្បីប្តូរពាក្យសម្ងាត់ សូមប្រើ "Forgot password?" នៅអេក្រង់ចូលប្រព័ន្ធ (ផ្នែកទី៣) ដើម្បីទទួលបានតំណភ្ជាប់កំណត់ពាក្យសម្ងាត់ថ្មីតាមអ៊ីមែល។ Super Admin ក៏អាចធ្វើបច្ចុប្បន្នភាពឈ្មោះ អ៊ីមែល ឬតួនាទីរបស់អ្នកបានផងដែរ ពីទំព័រ Users។</div></div>
+      </section>
+
+      <section class="doc-section" id="sec-troubleshooting">
+        <h2><span class="sec-num">16</span>បញ្ហាទូទៅ និងការដោះស្រាយ</h2>
+        <table><thead><tr><th>បញ្ហា</th><th>មូលហេតុដែលអាចកើតមាន</th><th>ដំណោះស្រាយ</th></tr></thead><tbody><tr><td>មិនអាចចូលប្រព័ន្ធបាន</td><td>អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគណនីត្រូវបានធ្វើឱ្យអសកម្ម</td><td>ពិនិត្យអ៊ីមែល និងពាក្យសម្ងាត់របស់អ្នកម្តងទៀត។ ប្រសិនបើនៅតែមិនជោគជ័យ សូមសុំឱ្យ Super Admin ពិនិត្យថាតើគណនីរបស់អ្នកនៅតែសកម្មដែរឬទេ។</td></tr><tr><td>សារ "At least $X (50%) must be paid" ពេលរក្សាទុកការកក់</td><td>ការកក់កំពុងត្រូវបានកំណត់ស្ថានភាពក្រៅពី Pending/Cancelled ដោយមិនទាន់មានការទូទាត់គ្រប់គ្រាន់</td><td>បង្កើនចំនួនទឹកប្រាក់ដែលបានបង់ឱ្យបានយ៉ាងតិច ៥០% នៃចំនួនសរុប ឬទុកស្ថានភាពជា "កំពុងរង់ចាំ" រហូតដល់មានការបញ្ជាក់ការទូទាត់។</td></tr><tr><td>សារកំហុស "Motorbike is already reserved..."</td><td>ម៉ូតូដែលបានជ្រើសរើសមានការកក់ជាន់គ្នារួចហើយសម្រាប់កាលបរិច្ឆេទនោះ</td><td>ជ្រើសរើសកាលបរិច្ឆេទផ្សេង ជ្រើសរើសម៉ូតូផ្សេង ឬពិនិត្យប្រតិទិនកក់សម្រាប់ភាពទំនេររបស់ម៉ូតូនោះ។</td></tr><tr><td>ម៉ូតូមួយមិនបង្ហាញឱ្យអតិថិជនកក់</td><td>ស្ថានភាពរបស់វាត្រូវបានកំណត់ជា កំពុងជួសជុល ឬ លែងប្រើ</td><td>បើកម៉ូតូនោះ ហើយប្តូរស្ថានភាពទៅជា "អាចជួលបាន" នៅពេលវាត្រៀមខ្លួនសម្រាប់ជួលម្តងទៀត។</td></tr><tr><td>គ្មានទិន្នន័យបង្ហាញក្នុងបញ្ជីណាមួយ</td><td>ពាក្យស្វែងរក ឬតម្រងនៅតែអនុវត្តពីលើកមុន</td><td>លុបប្រអប់ស្វែងរក និងកំណត់តម្រងស្ថានភាព/កាលបរិច្ឆេទឡើងវិញ។</td></tr><tr><td>អ៊ីមែលបញ្ជាក់ការកក់មិនមកដល់</td><td>មិនទាន់មានការកំណត់ម៉ាស៊ីនមេអ៊ីមែល SMTP ឬការជូនដំណឹងតាមអ៊ីមែលត្រូវបានបិទ</td><td>សុំឱ្យអ្នកគ្រប់គ្រងម៉ាស៊ីនមេកំណត់ SMTP ហើយពិនិត្យថា "Send email notifications" ត្រូវបានបើកនៅ Settings → Business Info។</td></tr><tr><td>មិនអាចលុបម៉ូតូ ឬការកក់</td><td>តួនាទីគណនីរបស់អ្នកគឺ Staff</td><td>សុំឱ្យ Admin ឬ Super Admin ធ្វើការលុបជំនួសអ្នក។</td></tr></tbody></table>
+      </section>
+
+      <section class="doc-section" id="sec-faq">
+        <h2><span class="sec-num">17</span>សំណួរដែលសួរញឹកញាប់</h2>
+        <h3>តើអតិថិជនអាចកក់ដោយផ្ទាល់ពីគេហទំព័របានទេ?</h3>
+<p>បាទ/ចាស។ អតិថិជនអាចមើលម៉ូតូ ជ្រើសរើសកាលបរិច្ឆេទ បញ្ចូលព័ត៌មានរបស់ខ្លួន ជ្រើសរើសវិធីទូទាត់ និងដាក់ស្នើសំណើ។ សំណើនេះនឹងមកដល់ផ្ទាំងគ្រប់គ្រងជា "ការកក់កំពុងរង់ចាំ" សម្រាប់ឱ្យបុគ្គលិកពិនិត្យ និងបញ្ជាក់។</p>
+<h3>តើប្រព័ន្ធទទួលការទូទាត់អនឡាញពិតប្រាកដដោយស្វ័យប្រវត្តិដែរឬទេ?</h3>
+<p>ការទូទាត់មិនត្រូវបានដំណើរការដោយស្វ័យប្រវត្តិតាមរយៈផ្លូវទូទាត់ (payment gateway) ណាមួយឡើយ។ សម្រាប់ KHQR ប្រព័ន្ធបង្កើតកូដ QR ពិតប្រាកដ ត្រៀមរួចជាស្រេចសម្រាប់ស្កេន ជាមួយចំនួនទឹកប្រាក់ត្រឹមត្រូវ។ សម្រាប់ ABA, ACLEDA, Wing និងកាត អតិថិជននឹងឃើញការណែនាំទូទាត់ ហើយអាចផ្ទុករូបថតជាភស្តុតាង; បន្ទាប់មកបុគ្គលិកនឹងបញ្ជាក់ការទូទាត់ដោយដៃនៅក្នុងការកក់នោះ។</p>
+<h3>ចុះបើអតិថិជនប្រគល់ម៉ូតូមកវិញយឺត តើមានអ្វីកើតឡើង?</h3>
+<p>ប្រសិនបើមានការកំណត់អត្រាថ្លៃពិន័យយឺតក្នុងមួយម៉ោង (Settings → Rental Policy) ប្រព័ន្ធនឹងស្នើសុំថ្លៃពិន័យយឺតដោយស្វ័យប្រវត្តិ នៅពេលការកក់ត្រូវបានកំណត់ថា "បានប្រគល់មកវិញ" ដោយផ្អែកលើចំនួនម៉ោងដែលយឺត។ បុគ្គលិកអាចកែសម្រួលចំនួនទឹកប្រាក់នេះមុនពេលរក្សាទុក។</p>
+<h3>តើម៉ូតូមួយអាចត្រូវបានកក់ជាន់គ្នាពីរដងសម្រាប់កាលបរិច្ឆេទដូចគ្នាបានទេ?</h3>
+<p>ទេ។ ប្រព័ន្ធពិនិត្យមើលការជាន់គ្នានៃកាលបរិច្ឆេទរាល់ពេលមានការបង្កើត ឬកែសម្រួលការកក់ ទាំងសម្រាប់ការកក់ពីគេហទំព័រ និងបង្កើតដោយបុគ្គលិក ហើយនឹងរារាំងការរក្សាទុកជាមួយសារកំហុស ប្រសិនបើមានការប៉ះទង្គិចគ្នា។</p>
+<h3>តើគេហទំព័រសាធារណៈមានជាភាសាខ្មែរដែរឬទេ?</h3>
+<p>បាទ/ចាស។ អតិថិជនអាចប្តូររវាងភាសាអង់គ្លេស និងភាសាខ្មែរ ដោយប្រើប៊ូតុងប្តូរភាសានៅក្នុងក្បាលទំព័រគេហទំព័រ។ ចំណែកឯផ្ទាំងគ្រប់គ្រងខ្លួនឯង មានតែជាភាសាអង់គ្លេសប៉ុណ្ណោះ។</p>
+<h3>តើខ្ញុំអាចទទួលបានច្បាប់ចម្លងបោះពុម្ពនៃរបាយការណ៍មួយបានទេ?</h3>
+<p>សូមនាំចេញរបាយការណ៍ជាឯកសារ CSV ហើយបើក/បោះពុម្ពវាពី Excel ឬ Google Sheets — មិនមានប៊ូតុង "បោះពុម្ពរបាយការណ៍" ភ្ជាប់មកជាមួយកម្មវិធីនោះទេ។</p>
+      </section>
+
+      <section class="doc-section" id="sec-support">
+        <h2><span class="sec-num">18</span>ជំនួយ</h2>
+        <p>សម្រាប់សំណួរទាក់ទងនឹងការប្រើប្រាស់ប្រព័ន្ធនេះ សូមទាក់ទងអាជីវកម្មដោយប្រើព័ត៌មានលម្អិតដែលបានកំណត់ក្រោម Settings → Business Info៖</p>
+<ul><li>ទូរស័ព្ទ៖ +855 93 949 149</li><li>អ៊ីមែល៖ hello@angkorwheels.com</li><li>តេឡេក្រាម និងវតស្អាប៖ អាចរកបានពីរូបតំណាងទំនាក់ទំនងនៅលើគេហទំព័រសាធារណៈ</li></ul>
+<div class="callout callout--note"><span class="callout__icon">ℹ</span><div>ព័ត៌មានទំនាក់ទំនងទាំងនេះជាព័ត៌មានផ្ទាល់ខ្លួនរបស់អាជីវកម្មដែលបានកំណត់រចនាសម្ព័ន្ធ ដែលអាចកែសម្រួលបានគ្រប់ពេលវេលា ពី Settings → Business Info និង Social Media។</div></div>
+      </section>
+
+</body>
+</html>

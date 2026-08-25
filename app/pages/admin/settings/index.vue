@@ -19,6 +19,18 @@
           <div class="col-12"><label class="form-label small">Address</label><input v-model="form.address" class="form-control" /></div>
           <div class="col-12"><label class="form-label small">Description</label><textarea v-model="form.description" rows="2" class="form-control" /></div>
           <div class="col-12"><label class="form-label small">Footer Text</label><textarea v-model="form.footerText" rows="2" class="form-control" /></div>
+          <div class="col-12">
+            <div class="form-check">
+              <input id="emailNotificationsEnabled" v-model="form.emailNotificationsEnabled" type="checkbox" class="form-check-input" />
+              <label class="form-check-label small" for="emailNotificationsEnabled">
+                Send email notifications (booking confirmations, status updates, and reminders to customers; new-booking alerts to the Email address above)
+              </label>
+            </div>
+            <p class="form-text small">
+              Emails only send once an SMTP server is configured (SMTP_HOST / SMTP_PORT / SMTP_USER / SMTP_PASSWORD environment
+              variables). Until then they're logged to the server console instead.
+            </p>
+          </div>
         </div>
       </div>
 
@@ -121,6 +133,11 @@
           <div class="col-md-6"><label class="form-label small">Deposit Policy</label><textarea v-model="form.depositPolicy" rows="2" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Fuel Policy</label><textarea v-model="form.fuelPolicy" rows="2" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Late Return Policy</label><textarea v-model="form.lateReturnPolicy" rows="2" class="form-control" /></div>
+          <div class="col-md-6">
+            <label class="form-label small">Late Fee Per Hour ($)</label>
+            <input v-model.number="form.lateFeePerHour" type="number" min="0" step="0.5" class="form-control" />
+            <p class="form-text small">Charged per hour (rounded up) a motorbike is returned after its scheduled return time. Suggested automatically when marking a booking Returned — still editable on the booking.</p>
+          </div>
           <div class="col-md-6"><label class="form-label small">Damage Policy</label><textarea v-model="form.damagePolicy" rows="2" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Cancellation Policy</label><textarea v-model="form.cancellationPolicy" rows="2" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Accident Policy</label><textarea v-model="form.accidentPolicy" rows="2" class="form-control" /></div>
