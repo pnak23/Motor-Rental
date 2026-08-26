@@ -31,13 +31,13 @@
 
         <div id="mainNav" class="collapse navbar-collapse">
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li class="nav-item"><NuxtLink class="nav-link" to="/"><i class="bi bi-house-door nav-link__icon" />{{ t('nav.home') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/motorbikes"><i class="bi bi-motorcycle nav-link__icon" />{{ t('nav.motorbikes') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/how-it-works"><i class="bi bi-signpost-2 nav-link__icon" />{{ t('nav.howItWorks') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/about"><i class="bi bi-info-circle nav-link__icon" />{{ t('nav.about') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/rental-policy"><i class="bi bi-file-earmark-text nav-link__icon" />{{ t('nav.rentalPolicy') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/faq"><i class="bi bi-question-circle nav-link__icon" />{{ t('nav.faq') }}</NuxtLink></li>
-            <li class="nav-item"><NuxtLink class="nav-link" to="/contact"><i class="bi bi-envelope nav-link__icon" />{{ t('nav.contact') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/">{{ t('nav.home') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/motorbikes">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/how-it-works">{{ t('nav.howItWorks') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/about">{{ t('nav.about') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/rental-policy">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/faq">{{ t('nav.faq') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/contact">{{ t('nav.contact') }}</NuxtLink></li>
             <li class="nav-item">
               <LanguageSwitcher />
             </li>
@@ -119,10 +119,6 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-}
-.nav-link__icon {
-  font-size: 0.85rem;
-  opacity: 0.65;
 }
 .nav-link.router-link-active {
   color: var(--color-gold-deep, var(--color-amber-deep));

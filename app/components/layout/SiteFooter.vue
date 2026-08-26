@@ -1,6 +1,5 @@
 <template>
   <footer class="bg-charcoal pt-5 pb-4 mt-auto position-relative footer-site">
-    <TempleSilhouette class="footer-site__silhouette" />
     <div class="container position-relative">
       <div class="row g-4">
         <div class="col-lg-4">
@@ -69,15 +68,3 @@ const whatsappLink = computed(() => {
   return w ? `https://wa.me/${w}` : '#'
 })
 </script>
-
-<style scoped>
-.footer-site__silhouette {
-  position: absolute;
-  top: -1px;
-  left: 0;
-  right: 0;
-  height: 46px;
-  color: var(--color-cream, #f7f2e8);
-  opacity: 0.05;
-}
-</style>

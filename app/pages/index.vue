@@ -180,7 +180,8 @@
     <!-- Booking CTA -->
     <section class="cta position-relative overflow-hidden bg-forest text-center">
       <div class="cta__glow" />
-      <TempleSilhouette class="cta__silhouette" />
+      <TempleSilhouette class="cta__silhouette cta__silhouette--top" />
+      <TempleSilhouette class="cta__silhouette cta__silhouette--bottom" />
       <div class="container position-relative py-5" v-reveal>
         <p class="eyebrow text-gold-light mb-2">{{ t('home.readyWhenYouAre') }}</p>
         <h2 class="font-display display-6 mb-3">{{ t('home.readyToExplore') }}</h2>
@@ -531,11 +532,16 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
   height: 60px;
   color: var(--color-cream, #f7f2e8);
   opacity: 0.06;
+}
+.cta__silhouette--top {
+  top: 0;
   transform: scaleY(-1);
+}
+.cta__silhouette--bottom {
+  bottom: 0;
 }
 
 /* ── Responsive tuning ── */
