@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { queryOne, query, newId } from '../../utils/db'
 import { generateResetToken } from '../../utils/auth'
 import { sendEmail } from '../../utils/mailer'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 const bodySchema = z.object({
   email: z.string().email()
@@ -15,6 +16,9 @@ interface UserRow {
 }
 
 export default defineEventHandler(async (event) => {
+  // Prevent using this form to spam an inbox: 5 requests per IP per hour.
+  enforceRateLimit(event, 'forgot-password', { max: 5, windowMs: 60 * 60 * 1000 })
+
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Please provide a valid email address' })

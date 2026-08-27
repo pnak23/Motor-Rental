@@ -1,5 +1,14 @@
+import { timingSafeEqual } from 'node:crypto'
 import { query } from '../../../utils/db'
 import { notifyPickupReminder, notifyReturnReminder } from '../../../utils/notify'
+
+function isValidCronSecret(provided: string | undefined): boolean {
+  const expected = process.env.CRON_SECRET
+  if (!expected || !provided) return false
+  const a = Buffer.from(provided)
+  const b = Buffer.from(expected)
+  return a.length === b.length && timingSafeEqual(a, b)
+}
 
 /**
  * Sends pickup/return reminder emails for bookings coming up within the next
@@ -31,7 +40,7 @@ interface ReminderBookingRow {
 
 export default defineEventHandler(async (event) => {
   const secret = getHeader(event, 'x-cron-secret')
-  if (!process.env.CRON_SECRET || secret !== process.env.CRON_SECRET) {
+  if (!isValidCronSecret(secret)) {
     throw createError({ statusCode: 401, statusMessage: 'Invalid or missing cron secret' })
   }
 

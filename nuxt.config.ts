@@ -45,6 +45,7 @@ export default defineNuxtConfig({
     }
   },
   nitro: {
+    errorHandler: '~~/server/error-handler',
     experimental: {
       // allow larger multipart bodies for image uploads
     }

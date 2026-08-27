@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { queryOne } from '../../../utils/db'
 import { generateKhqr, abaDeepLink } from '../../../utils/khqr'
+import { enforceRateLimit } from '../../../utils/rateLimit'
 
 const bodySchema = z.object({
   amount: z.coerce.number().positive(),
@@ -8,6 +9,8 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
+  enforceRateLimit(event, 'khqr', { max: 30, windowMs: 5 * 60 * 1000 })
+
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'A valid amount is required' })

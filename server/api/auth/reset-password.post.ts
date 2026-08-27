@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { queryOne, query } from '../../utils/db'
 import { hashResetToken, hashPassword } from '../../utils/auth'
 import { logAudit } from '../../utils/audit'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 const bodySchema = z.object({
   token: z.string().min(1),
@@ -16,6 +17,9 @@ interface TokenRow {
 }
 
 export default defineEventHandler(async (event) => {
+  // Guard against brute-forcing reset tokens: 10 attempts per IP per 15 minutes.
+  enforceRateLimit(event, 'reset-password', { max: 10, windowMs: 15 * 60 * 1000 })
+
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: parsed.error.issues[0]?.message || 'Invalid request' })

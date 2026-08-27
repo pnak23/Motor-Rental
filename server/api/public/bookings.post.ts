@@ -5,6 +5,7 @@ import { quotePrice, requiredDeposit, meetsDepositRequirement } from '../../util
 import { createBookingSafely } from '../../utils/availability'
 import { saveIdDocument, savePaymentProof } from '../../utils/upload'
 import { notifyBookingCreated } from '../../utils/notify'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 /**
  * The public booking form submits multipart/form-data (not JSON) so it can
@@ -60,6 +61,9 @@ async function readBookingFormData(event: H3Event) {
 }
 
 export default defineEventHandler(async (event) => {
+  // Limit booking-form spam/abuse: 10 submissions per IP per hour.
+  enforceRateLimit(event, 'public-booking', { max: 10, windowMs: 60 * 60 * 1000 })
+
   const { body, idDocument, paymentProof } = await readBookingFormData(event)
   const parsed = bookingCreateSchema.safeParse(body)
   if (!parsed.success) {

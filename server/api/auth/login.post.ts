@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { queryOne } from '../../utils/db'
 import { verifyPassword, signAuthToken, AUTH_COOKIE } from '../../utils/auth'
 import { logAudit } from '../../utils/audit'
+import { enforceRateLimit } from '../../utils/rateLimit'
 
 const bodySchema = z.object({
   email: z.string().email(),
@@ -19,6 +20,9 @@ interface UserRow {
 }
 
 export default defineEventHandler(async (event) => {
+  // Brute-force guard: 10 attempts per IP per 15 minutes.
+  enforceRateLimit(event, 'login', { max: 10, windowMs: 15 * 60 * 1000 })
+
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Please provide a valid email and password' })
