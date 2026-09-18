@@ -5,7 +5,7 @@
       <div>
         <p class="eyebrow mb-1">{{ todayLabel }}</p>
         <h2 class="h3 font-display mb-1">{{ greeting }}, {{ firstName }}</h2>
-        <p class="text-muted mb-0">Here's how Angkor Wheels Rental is doing today.</p>
+        <p class="text-muted mb-0">Here's how RideNow is doing today.</p>
       </div>
       <div class="d-flex gap-2">
         <NuxtLink to="/admin/bookings?new=1" class="btn btn-charcoal"><i class="bi bi-plus-lg me-1" />New Booking</NuxtLink>

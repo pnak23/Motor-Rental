@@ -119,7 +119,7 @@
   "rentalPolicy": {
     "pleaseRead": "Please Read",
     "title": "Rental Policy",
-    "subtitle": "Siem Reap Wheels is a marketplace of independent shops — each one sets its own deposit, fuel, and cancellation terms. Expand a shop below to see its policy before you book.",
+    "subtitle": "RideNow is a marketplace of independent shops — each one sets its own deposit, fuel, and cancellation terms. Expand a shop below to see its policy before you book.",
     "eligibility": "Eligibility",
     "minimumAge": "Minimum age: {age} years old",
     "requiredDocuments": "Required Documents",
@@ -138,6 +138,8 @@
     "viewShop": "View Shop & All Motorbikes"
   },
   "shops": {
+    "province": "Province",
+    "allProvinces": "All provinces",
     "eyebrow": "Our Partners",
     "title": "Browse by Shop",
     "subtitle": "Choose a shop to see their available motorbikes",

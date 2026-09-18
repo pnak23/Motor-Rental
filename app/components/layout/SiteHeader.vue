@@ -14,7 +14,7 @@
             <rect x="9" y="19" width="12" height="7" rx="1" :fill="markColor" />
             <rect x="13.5" y="21" width="3" height="5" :fill="bgTone" />
           </svg>
-          <span class="fs-5 navbar-brand__label">{{ settings?.businessName || 'Angkor Wheels Rental' }}</span>
+          <span class="fs-5 navbar-brand__label">{{ settings?.businessName || 'RideNow' }}</span>
         </NuxtLink>
 
         <button
@@ -43,7 +43,7 @@
               <LanguageSwitcher />
             </li>
             <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-              <NuxtLink class="btn btn-amber w-100" to="/shops">{{ t('nav.bookNow') }}</NuxtLink>
+              <NuxtLink class="btn btn-amber rounded-pill w-100" to="/shops">{{ t('nav.bookNow') }}</NuxtLink>
             </li>
           </ul>
         </div>

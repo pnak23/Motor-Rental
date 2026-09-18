@@ -133,6 +133,8 @@ model Shop {
   phone    String?
   email    String?
   address  String?
+  /// Which of Cambodia's 25 provinces/cities this shop operates out of — see app/utils/cambodiaProvinces.ts
+  province String?
   telegram String?
   whatsapp String?
 
@@ -516,7 +518,7 @@ model ContactMessage {
 model BusinessSetting {
   id String @id @default("main")
 
-  businessName String  @default("Angkor Wheels Rental")
+  businessName String  @default("RideNow")
   logoUrl      String?
   faviconUrl   String?
   description  String?

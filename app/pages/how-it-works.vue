@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 const { t, tm, rt } = useI18n()
-useHead({ title: 'How It Works — Motorbike Rental Siem Reap' })
+useHead({ title: 'How It Works — RideNow' })
 
 const steps = computed(() => {
   const raw = tm('howItWorks.steps') as unknown as { title: unknown; text: unknown }[]

@@ -9,7 +9,10 @@
       <span v-else>{{ initials }}</span>
     </div>
     <div class="shop-card__body">
-      <h3 class="h5 font-display mb-2 text-center">{{ shop.name }}</h3>
+      <h3 class="h5 font-display mb-1 text-center">{{ shop.name }}</h3>
+      <p v-if="shop.province" class="text-center mb-2">
+        <span class="shop-card__province"><i class="bi bi-geo-alt-fill me-1" />{{ shop.province }}</span>
+      </p>
       <p v-if="shop.address" class="small text-muted text-center mb-1 shop-card__line">
         <i class="bi bi-geo-alt text-gold" />{{ shop.address }}
       </p>
@@ -35,6 +38,7 @@ const props = defineProps<{
     name: string
     logoUrl?: string | null
     address?: string | null
+    province?: string | null
     phone?: string | null
     email?: string | null
     motorbikeCount: number
@@ -149,6 +153,17 @@ const initials = computed(() =>
   background: rgba(212, 175, 55, 0.14);
   color: var(--color-amber-deep, var(--color-gold-deep));
   white-space: nowrap;
+}
+.shop-card__province {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-gray-light);
+  color: var(--color-forest, var(--color-charcoal));
 }
 .shop-card__cta {
   font-size: 0.85rem;

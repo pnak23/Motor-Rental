@@ -20,6 +20,7 @@
         </div>
 
         <div class="shop-hero__contacts mt-4">
+          <span v-if="shop.province" class="shop-hero__chip"><i class="bi bi-map" />{{ shop.province }}</span>
           <span v-if="shop.address" class="shop-hero__chip"><i class="bi bi-geo-alt" />{{ shop.address }}</span>
           <a v-if="shop.phone" :href="`tel:${shop.phone}`" class="shop-hero__chip"><i class="bi bi-telephone" />{{ shop.phone }}</a>
           <a v-if="shop.telegram" :href="shop.telegram" target="_blank" rel="noopener" class="shop-hero__chip"><i class="bi bi-telegram" />Telegram</a>
@@ -80,6 +81,7 @@ interface ShopDetail {
   name: string
   logoUrl?: string | null
   address?: string | null
+  province?: string | null
   phone?: string | null
   email?: string | null
   telegram?: string | null

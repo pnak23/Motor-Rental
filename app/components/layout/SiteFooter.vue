@@ -3,7 +3,7 @@
     <div class="container position-relative">
       <div class="row g-4">
         <div class="col-lg-4">
-          <h5 class="font-display mb-3">{{ settings?.businessName || 'Angkor Wheels Rental' }}</h5>
+          <h5 class="font-display mb-3">{{ settings?.businessName || 'RideNow' }}</h5>
           <p class="text-white-50 mb-3">
             {{ settings?.footerText || settings?.description || 'Reliable motorbike rental in Siem Reap, Cambodia.' }}
           </p>
@@ -49,7 +49,7 @@
         <span class="khmer-divider__mark" />
       </div>
       <p class="text-white-50 small mb-0 text-center">
-        &copy; {{ new Date().getFullYear() }} {{ settings?.businessName || 'Angkor Wheels Rental' }}. {{ t('footer.rightsReserved') }}
+        &copy; {{ new Date().getFullYear() }} {{ settings?.businessName || 'RideNow' }}. {{ t('footer.rightsReserved') }}
       </p>
     </div>
   </footer>

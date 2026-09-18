@@ -42,5 +42,5 @@ interface Faq {
   answer: string
 }
 const faqs = await useApi<Faq[]>('/api/public/faqs')
-useHead({ title: 'FAQ — Motorbike Rental Siem Reap' })
+useHead({ title: 'FAQ — RideNow' })
 </script>

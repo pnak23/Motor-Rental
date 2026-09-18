@@ -29,6 +29,12 @@
             <option v-for="b in filters?.brands" :key="b" :value="b">{{ b }}</option>
           </select>
 
+          <label class="form-label small fw-600">{{ t('shops.province') }}</label>
+          <select v-model="province" class="form-select mb-3">
+            <option value="">{{ t('shops.allProvinces') }}</option>
+            <option v-for="p in CAMBODIA_PLATE_REGIONS" :key="p.en" :value="p.en">{{ p.en }}</option>
+          </select>
+
           <label class="form-label small fw-600">{{ t('motorbikes.transmission') }}</label>
           <select v-model="transmission" class="form-select mb-3">
             <option value="">{{ t('motorbikes.any') }}</option>
@@ -114,7 +120,7 @@ interface MotorbikesResponse {
   filters: { brands: string[]; categories: Category[] }
 }
 
-useHead({ title: 'Browse Motorbikes — Siem Reap Rentals' })
+useHead({ title: 'Browse Motorbikes — RideNow' })
 
 const route = useRoute()
 const router = useRouter()
@@ -122,6 +128,7 @@ const router = useRouter()
 const search = ref((route.query.search as string) || '')
 const category = ref((route.query.category as string) || '')
 const brand = ref((route.query.brand as string) || '')
+const province = ref((route.query.province as string) || '')
 const transmission = ref((route.query.transmission as string) || '')
 const maxPrice = ref(Number(route.query.maxPrice) || 30)
 const sort = ref((route.query.sort as string) || 'popular')
@@ -142,6 +149,7 @@ async function fetchMotorbikes() {
     if (search.value) query.search = search.value
     if (category.value) query.category = category.value
     if (brand.value) query.brand = brand.value
+    if (province.value) query.province = province.value
     if (transmission.value) query.transmission = transmission.value
     if (maxPrice.value) query.maxPrice = maxPrice.value
 
@@ -161,12 +169,13 @@ function resetFilters() {
   search.value = ''
   category.value = ''
   brand.value = ''
+  province.value = ''
   transmission.value = ''
   maxPrice.value = 30
   page.value = 1
 }
 
-watch([category, brand, transmission, maxPrice, sort], () => {
+watch([category, brand, province, transmission, maxPrice, sort], () => {
   page.value = 1
   fetchMotorbikes()
 })

@@ -178,6 +178,27 @@ a:hover {
   background-color: var(--color-gray-light);
 }
 
+/* ── Motorbike "no photo yet" placeholder ───────────
+   Applied alongside an existing sizing class (.bike-card__image,
+   .table-thumb, .motorbike-thumb, etc.) on a <div> in place of the <img>,
+   so it inherits that class's width/height/border-radius for free. */
+.motor-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-gray-light);
+  color: var(--color-gray-mid);
+}
+.motor-placeholder--sm i {
+  font-size: 1.1rem;
+}
+.motor-placeholder--md i {
+  font-size: 1.8rem;
+}
+.motor-placeholder--lg i {
+  font-size: 3rem;
+}
+
 /* ── Admin shell ────────────────────────────────────*/
 .admin-sidebar {
   background: var(--btn-charcoal-bg);

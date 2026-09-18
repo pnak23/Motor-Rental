@@ -130,7 +130,11 @@
         <input v-model="createForm.slug" placeholder="URL slug (auto-generated if blank)" class="form-control mb-2" />
         <input v-model="createForm.phone" placeholder="Phone" class="form-control mb-2" />
         <input v-model="createForm.email" placeholder="Email" class="form-control mb-2" />
-        <input v-model="createForm.address" placeholder="Address" class="form-control mb-3" />
+        <input v-model="createForm.address" placeholder="Address" class="form-control mb-2" />
+        <select v-model="createForm.province" class="form-select mb-3">
+          <option value="">Province — not set</option>
+          <option v-for="p in CAMBODIA_PLATE_REGIONS" :key="p.en" :value="p.en">{{ p.en }}</option>
+        </select>
         <h3 class="h6 font-display mb-2">Owner account</h3>
         <input v-model="createForm.ownerName" required placeholder="Owner name *" class="form-control mb-2" />
         <input v-model="createForm.ownerEmail" required type="email" placeholder="Owner email *" class="form-control mb-2" />
@@ -285,7 +289,7 @@ function confirmClose() {
 
 const showCreateModal = ref(false)
 function emptyCreateForm() {
-  return { name: '', slug: '', phone: '', email: '', address: '', ownerName: '', ownerEmail: '', ownerPassword: '' }
+  return { name: '', slug: '', phone: '', email: '', address: '', province: '', ownerName: '', ownerEmail: '', ownerPassword: '' }
 }
 const createForm = reactive(emptyCreateForm())
 

@@ -10,7 +10,7 @@
           <span class="login-brand__mark d-flex align-items-center justify-content-center">
             <i class="bi bi-scooter" />
           </span>
-          <span class="fs-5 fw-600 font-display">Angkor Wheels Rental</span>
+          <span class="fs-5 fw-600 font-display">RideNow</span>
         </div>
       </div>
 
@@ -40,7 +40,7 @@
             <i class="bi bi-scooter" />
           </span>
           <h1 class="h4 font-display mt-1 mb-1">Welcome back</h1>
-          <p class="text-muted small mb-0">Sign in to Angkor Wheels admin</p>
+          <p class="text-muted small mb-0">Sign in to RideNow admin</p>
         </div>
 
         <form @submit.prevent="submit">

@@ -222,6 +222,7 @@ export const shopSettingsSchema = z.object({
   phone: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
+  province: z.string().optional().nullable(),
   telegram: z.string().optional().nullable(),
   whatsapp: z.string().optional().nullable(),
   minRentalDays: z.coerce.number().int().optional(),
@@ -259,6 +260,7 @@ export const shopCreateSchema = z.object({
   phone: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
+  province: z.string().optional().nullable(),
   ownerEmail: z.string().email(),
   ownerPassword: z.string().min(8),
   ownerName: z.string().min(1)
@@ -272,6 +274,7 @@ export const shopUpdateSchema = z.object({
   phone: z.string().optional().nullable(),
   email: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
+  province: z.string().optional().nullable(),
   telegram: z.string().optional().nullable(),
   whatsapp: z.string().optional().nullable(),
   minRentalDays: z.coerce.number().int().optional(),

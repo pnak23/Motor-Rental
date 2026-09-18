@@ -2,11 +2,16 @@
   <div class="card bike-card h-100 overflow-hidden">
     <NuxtLink :to="`/motorbikes/${bike.slug}`" class="bike-card__media d-block">
       <img
-        :src="bike.image || placeholder"
+        v-if="bike.image && !imgError"
+        :src="bike.image"
         :alt="bike.name"
         class="w-100 bike-card__image"
         loading="lazy"
+        @error="imgError = true"
       />
+      <div v-else class="w-100 bike-card__image motor-placeholder motor-placeholder--lg">
+        <i class="bi bi-scooter" />
+      </div>
       <span class="bike-card__badge">{{ t('motorbikeCard.available') }}</span>
       <span v-if="bike.isNewBike" class="bike-card__new">{{ t('motorbikeCard.new') }}</span>
     </NuxtLink>
@@ -56,7 +61,7 @@ defineProps<{
   }
 }>()
 
-const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=800'
+const imgError = ref(false)
 
 function formatTransmission(t: string) {
   return t.replace(/_/g, '-').replace(/\b\w/g, (c) => c.toUpperCase())

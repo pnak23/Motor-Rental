@@ -1,8 +1,9 @@
-# Angkor Wheels Rental — Motorbike Rental Platform (Siem Reap)
+# RideNow — Motorbike Rental Platform (Cambodia)
 
-A full-stack motorbike rental website and admin management system for a rental
-business in Siem Reap, Cambodia: a public booking site plus a role-based admin
-dashboard that controls every piece of content and business data on the site.
+A full-stack motorbike rental marketplace and admin management system for
+independent motorbike rental shops across Cambodia: a public booking site plus
+a role-based admin dashboard that controls every piece of content and business
+data on the site.
 
 Built with **Nuxt 4** (Vue 3 + TypeScript), using Nuxt's own server API as the
 backend (no separate NestJS service needed), **PostgreSQL** as the database,

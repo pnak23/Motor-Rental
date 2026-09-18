@@ -3,12 +3,18 @@
     <PageHeader :eyebrow="t('shops.eyebrow')" :title="t('shops.title')" :subtitle="t('shops.subtitle')" />
 
     <div class="container py-5">
-      <div class="row justify-content-center mb-5">
-        <div class="col-lg-6">
+      <div class="row justify-content-center mb-5 g-2">
+        <div class="col-md-6 col-lg-5">
           <div class="search-input">
             <i class="bi bi-search" />
             <input v-model="search" type="text" class="form-control" :placeholder="t('shops.searchPlaceholder')" />
           </div>
+        </div>
+        <div class="col-md-4 col-lg-3">
+          <select v-model="province" class="form-select">
+            <option value="">{{ t('shops.allProvinces') }}</option>
+            <option v-for="p in CAMBODIA_PLATE_REGIONS" :key="p.en" :value="p.en">{{ p.en }}</option>
+          </select>
         </div>
       </div>
 
@@ -41,6 +47,7 @@ interface Shop {
   name: string
   logoUrl?: string | null
   address?: string | null
+  province?: string | null
   phone?: string | null
   email?: string | null
   motorbikeCount: number
@@ -49,6 +56,7 @@ interface Shop {
 useHead({ title: 'Shops — Browse by Shop' })
 
 const search = ref('')
+const province = ref('')
 const shops = ref<Shop[]>([])
 const pending = ref(true)
 
@@ -59,6 +67,7 @@ async function fetchShops() {
   try {
     const query: Record<string, string> = {}
     if (search.value) query.search = search.value
+    if (province.value) query.province = province.value
     shops.value = await useApi<Shop[]>('/api/public/shops', { query })
   } finally {
     pending.value = false
@@ -69,6 +78,7 @@ watch(search, () => {
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(fetchShops, 350)
 })
+watch(province, fetchShops)
 
 await fetchShops()
 </script>

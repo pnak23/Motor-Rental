@@ -1,36 +1,39 @@
 <template>
   <div>
-    <div class="gallery-main position-relative" @click="fullscreen = true">
-      <img :src="current" :alt="alt" class="w-100 gallery-main__image" />
-      <button v-if="images.length > 1" class="gallery-nav gallery-nav--prev" @click.stop="prev">
+    <div class="gallery-main position-relative" :class="{ 'gallery-main--empty': !validImages.length }" @click="validImages.length && (fullscreen = true)">
+      <img v-if="current" :src="current" :alt="alt" class="w-100 gallery-main__image" @error="markFailed(current)" />
+      <div v-else class="w-100 gallery-main__image motor-placeholder motor-placeholder--lg">
+        <i class="bi bi-scooter" />
+      </div>
+      <button v-if="validImages.length > 1" class="gallery-nav gallery-nav--prev" @click.stop="prev">
         <i class="bi bi-chevron-left" />
       </button>
-      <button v-if="images.length > 1" class="gallery-nav gallery-nav--next" @click.stop="next">
+      <button v-if="validImages.length > 1" class="gallery-nav gallery-nav--next" @click.stop="next">
         <i class="bi bi-chevron-right" />
       </button>
-      <span class="gallery-zoom-hint"><i class="bi bi-arrows-fullscreen" /></span>
+      <span v-if="current" class="gallery-zoom-hint"><i class="bi bi-arrows-fullscreen" /></span>
     </div>
 
-    <div v-if="images.length > 1" class="d-flex gap-2 mt-2 flex-wrap">
+    <div v-if="validImages.length > 1" class="d-flex gap-2 mt-2 flex-wrap">
       <button
-        v-for="(img, i) in images"
+        v-for="(img, i) in validImages"
         :key="img"
         class="thumb-btn"
-        :class="{ 'thumb-btn--active': i === index }"
+        :class="{ 'thumb-btn--active': img === current }"
         @click="index = i"
       >
-        <img :src="img" :alt="`${alt} thumbnail ${i + 1}`" />
+        <img :src="img" :alt="`${alt} thumbnail ${i + 1}`" @error="markFailed(img)" />
       </button>
     </div>
 
     <Teleport to="body">
       <div v-if="fullscreen" class="gallery-fullscreen" @click.self="fullscreen = false">
         <button class="gallery-fullscreen__close" @click="fullscreen = false"><i class="bi bi-x-lg" /></button>
-        <button v-if="images.length > 1" class="gallery-nav gallery-nav--prev gallery-nav--light" @click="prev">
+        <button v-if="validImages.length > 1" class="gallery-nav gallery-nav--prev gallery-nav--light" @click="prev">
           <i class="bi bi-chevron-left" />
         </button>
-        <img :src="current" :alt="alt" class="gallery-fullscreen__image" />
-        <button v-if="images.length > 1" class="gallery-nav gallery-nav--next gallery-nav--light" @click="next">
+        <img v-if="current" :src="current" :alt="alt" class="gallery-fullscreen__image" @error="markFailed(current)" />
+        <button v-if="validImages.length > 1" class="gallery-nav gallery-nav--next gallery-nav--light" @click="next">
           <i class="bi bi-chevron-right" />
         </button>
       </div>
@@ -43,14 +46,20 @@ const props = defineProps<{ images: string[]; alt: string }>()
 
 const index = ref(0)
 const fullscreen = ref(false)
+const failedUrls = reactive(new Set<string>())
 
-const current = computed(() => props.images[index.value] || props.images[0])
+const validImages = computed(() => props.images.filter((u) => !failedUrls.has(u)))
+const current = computed(() => validImages.value[index.value] || validImages.value[0])
+
+function markFailed(url?: string) {
+  if (url) failedUrls.add(url)
+}
 
 function next() {
-  index.value = (index.value + 1) % props.images.length
+  index.value = (index.value + 1) % validImages.value.length
 }
 function prev() {
-  index.value = (index.value - 1 + props.images.length) % props.images.length
+  index.value = (index.value - 1 + validImages.value.length) % validImages.value.length
 }
 
 let touchStartX = 0
@@ -79,6 +88,9 @@ onBeforeUnmount(() => {
   overflow: hidden;
   cursor: zoom-in;
   background: var(--color-gray-light);
+}
+.gallery-main--empty {
+  cursor: default;
 }
 .gallery-main__image {
   aspect-ratio: 4 / 3;

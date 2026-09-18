@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: 'Siem Reap Wheels — Compare Motorbike Rental Shops in Siem Reap',
+      title: 'RideNow — Compare Motorbike Rental Shops in Cambodia',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'description', content: 'Compare and book motorbikes from trusted local rental shops in Siem Reap, Cambodia. Automatic scooters and manual bikes for exploring Angkor and beyond.' }

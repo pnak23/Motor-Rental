@@ -126,9 +126,7 @@ const { t } = useI18n()
 const route = useRoute()
 const bike = await useApi<MotorbikeDetail>(`/api/public/motorbikes/${route.params.slug}`)
 
-const images = computed(() =>
-  bike.images.length ? bike.images.map((i) => i.url) : ['https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200']
-)
+const images = computed(() => bike.images.map((i) => i.url))
 const related = computed(() => bike.related || [])
 
 const priceTiers = computed(() => {

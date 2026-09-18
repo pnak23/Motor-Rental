@@ -35,7 +35,8 @@
 
         <h3 class="h6 font-display mb-2">Rental</h3>
         <div class="d-flex gap-3 align-items-start mb-3">
-          <img :src="booking.motorbike.image || placeholder" :alt="booking.motorbike.name" class="motorbike-thumb" />
+          <img v-if="booking.motorbike.image" :src="booking.motorbike.image" :alt="booking.motorbike.name" class="motorbike-thumb" />
+          <div v-else class="motorbike-thumb motor-placeholder motor-placeholder--sm"><i class="bi bi-scooter" /></div>
           <div class="row small flex-grow-1">
             <div class="col-6"><strong>Motorbike:</strong> {{ booking.motorbike.name }}</div>
             <div class="col-6"><strong>Plate:</strong> {{ formatPlate(booking.motorbike.plateProvince, booking.motorbike.plateNumber) || '—' }}</div>
@@ -299,8 +300,6 @@ const updating = ref(false)
 const showDelete = ref(false)
 const deleting = ref(false)
 const showEditModal = ref(false)
-
-const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200'
 
 function toDateInput(d: string) {
   return new Date(d).toISOString().slice(0, 10)

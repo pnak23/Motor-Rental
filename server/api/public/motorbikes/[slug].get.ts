@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
 
   const motorbike = await queryOne(
     `SELECT m.*, c.name as "categoryName", c.slug as "categorySlug",
-            s.id as "shopId", s.slug as "shopSlug", s.name as "shopName", s.address as "shopAddress", s.phone as "shopPhone", s."logoUrl" as "shopLogoUrl",
+            s.id as "shopId", s.slug as "shopSlug", s.name as "shopName", s.address as "shopAddress", s.province as "shopProvince", s.phone as "shopPhone", s."logoUrl" as "shopLogoUrl",
             s.telegram as "shopTelegram", s.whatsapp as "shopWhatsapp",
             s."khqrImageUrl" as "shopKhqrImageUrl", s."khqrInstructions" as "shopKhqrInstructions",
             s."abaInstructions" as "shopAbaInstructions", s."acledaInstructions" as "shopAcledaInstructions",

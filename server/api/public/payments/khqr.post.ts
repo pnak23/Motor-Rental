@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
 
   const generated = await generateKhqr({
     bakongAccountId: shop.khqrAccountId,
-    merchantName: shop.khqrMerchantName || shop.name || 'Angkor Wheels Rental',
+    merchantName: shop.khqrMerchantName || shop.name || 'RideNow',
     merchantCity: shop.khqrMerchantCity || 'Siem Reap',
     amount: parsed.data.amount,
     billNumber: parsed.data.reference

@@ -80,9 +80,9 @@ export default defineEventHandler(async (event) => {
   const shopId = newId()
   const shop = await withTransaction(async (client) => {
     const shopRes = await client.query(
-      `INSERT INTO shops (id, slug, name, phone, email, address, "createdAt", "updatedAt")
-       VALUES ($1,$2,$3,$4,$5,$6, now(), now()) RETURNING *`,
-      [shopId, slug, d.name, d.phone ?? null, d.email ?? null, d.address ?? null]
+      `INSERT INTO shops (id, slug, name, phone, email, address, province, "createdAt", "updatedAt")
+       VALUES ($1,$2,$3,$4,$5,$6,$7, now(), now()) RETURNING *`,
+      [shopId, slug, d.name, d.phone ?? null, d.email ?? null, d.address ?? null, d.province ?? null]
     )
 
     const ownerId = newId()

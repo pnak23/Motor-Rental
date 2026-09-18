@@ -41,7 +41,10 @@
             <tr v-if="pending"><td colspan="12" class="text-center py-4"><span class="spinner-border spinner-border-sm" /></td></tr>
             <tr v-else-if="items.length === 0"><td colspan="12" class="text-center py-4 text-muted">No motorbikes found</td></tr>
             <tr v-for="m in items" :key="m.id">
-              <td><img :src="m.primaryImage || placeholder" class="table-thumb" :alt="m.name" /></td>
+              <td>
+                <img v-if="m.primaryImage" :src="m.primaryImage" class="table-thumb" :alt="m.name" />
+                <div v-else class="table-thumb motor-placeholder motor-placeholder--sm"><i class="bi bi-scooter" /></div>
+              </td>
               <td class="fw-600">{{ m.name }}</td>
               <td>{{ m.brand }} / {{ m.model }}</td>
               <td class="font-mono small">{{ formatPlate(m.plateProvince, m.plateNumber) || '—' }}</td>
@@ -191,7 +194,6 @@ interface MotorbikeDetail {
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
-const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200'
 
 const search = ref('')
 const status = ref('')

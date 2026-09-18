@@ -60,7 +60,7 @@ const { t } = useI18n()
 const settingsStore = useSettingsStore()
 await settingsStore.load()
 const settings = computed(() => settingsStore.settings)
-useHead({ title: 'Contact Us — ' + (settings.value?.businessName || 'Angkor Wheels Rental') })
+useHead({ title: 'Contact Us — ' + (settings.value?.businessName || 'RideNow') })
 
 const telegramLink = computed(() => {
   const t = settings.value?.telegram?.replace('@', '')

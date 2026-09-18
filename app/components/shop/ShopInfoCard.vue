@@ -9,6 +9,7 @@
       </NuxtLink>
       <div class="flex-grow-1 min-w-0">
         <NuxtLink :to="`/shops/${shop.shopSlug}`" class="shop-info-card__name text-decoration-none d-block">{{ shop.shopName }}</NuxtLink>
+        <span v-if="shop.shopProvince" class="shop-info-card__province mb-1"><i class="bi bi-geo-alt-fill me-1" />{{ shop.shopProvince }}</span>
         <p v-if="shop.shopMotorbikeCount != null" class="small text-muted mb-0">
           <i class="bi bi-motorcycle me-1" />{{ t('shopInfoCard.motorbikesAvailable', { count: shop.shopMotorbikeCount }) }}
         </p>
@@ -45,6 +46,7 @@ const props = defineProps<{
     shopSlug?: string | null
     shopName?: string | null
     shopAddress?: string | null
+    shopProvince?: string | null
     shopPhone?: string | null
     shopLogoUrl?: string | null
     shopTelegram?: string | null
@@ -102,6 +104,17 @@ const mapEmbedUrl = computed(() => {
 }
 .shop-info-card__name:hover {
   color: var(--color-amber-deep, var(--color-gold-deep));
+}
+.shop-info-card__province {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  margin: 0.2rem 0;
+  border-radius: 999px;
+  background: var(--color-gray-light);
+  color: var(--color-forest, var(--color-charcoal));
 }
 .shop-info-card__contact {
   display: inline-flex;

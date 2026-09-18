@@ -47,6 +47,7 @@ async function main() {
       phone: '+855 12 345 678',
       email: 'hello@angkorwheels.com',
       address: 'Sivatha Boulevard, Siem Reap, Cambodia',
+      province: 'Siem Reap',
       telegram: '@angkorwheels',
       whatsapp: '85512345678',
       khqrAccountId: 'angkorwheels@aclb',
@@ -61,6 +62,7 @@ async function main() {
       phone: '+855 89 222 111',
       email: 'hello@pubstreetscooters.com',
       address: 'Old Market, Siem Reap, Cambodia',
+      province: 'Siem Reap',
       telegram: '@pubstreetscooters',
       whatsapp: '85589222111',
       khqrAccountId: 'pubstreetscooters@aclb',
@@ -77,18 +79,18 @@ async function main() {
     shopIds[s.slug] = sid
     await pool.query(
       `INSERT INTO shops (
-        id, slug, name, phone, email, address, telegram, whatsapp,
+        id, slug, name, phone, email, address, province, telegram, whatsapp,
         "khqrAccountId", "khqrMerchantName", "khqrMerchantCity",
         "depositPolicy", "fuelPolicy", "lateReturnPolicy", "damagePolicy", "cancellationPolicy",
         "accidentPolicy", "trafficViolationPolicy", "helmetPolicy", "minimumAge", "requiredDocuments",
         "isActive", "updatedAt"
       ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,
-        $12,$13,$14,$15,$16,$17,$18,$19,$20,$21,
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,
+        $13,$14,$15,$16,$17,$18,$19,$20,$21,$22,
         true, now()
       ) ON CONFLICT (slug) DO NOTHING`,
       [
-        sid, s.slug, s.name, s.phone, s.email, s.address, s.telegram, s.whatsapp,
+        sid, s.slug, s.name, s.phone, s.email, s.address, s.province, s.telegram, s.whatsapp,
         s.khqrAccountId, s.khqrMerchantName, s.khqrMerchantCity,
         'A refundable deposit is collected at pickup and returned in full when the motorbike is returned undamaged.',
         'Motorbikes are provided with a full tank. Please return with a full tank or a small refueling fee will apply.',
@@ -129,7 +131,7 @@ async function main() {
   const placeholderImages = [
     'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=1200',
     'https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=1200',
-    'https://images.unsplash.com/photo-1571646750134-a02fb50c1b23?w=1200',
+    'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200',
     'https://images.unsplash.com/photo-1622185135505-2d795003994a?w=1200'
   ]
 
@@ -202,16 +204,16 @@ async function main() {
       "heroTitle", "heroSubtitle", "aboutTitle", "aboutDescription", "aboutStory", "aboutMission", "aboutWhyChooseUs",
       "footerText", "updatedAt"
     ) VALUES (
-      'main', 'Siem Reap Wheels',
+      'main', 'RideNow',
       'Siem Reap''s marketplace for trusted local motorbike rental shops — compare bikes and book direct from independent shops around town.',
       'https://facebook.com/siemreapwheels', 'https://instagram.com/siemreapwheels',
       'Explore Siem Reap on Two Wheels', 'Compare motorbikes from trusted local shops in Siem Reap, Cambodia.',
-      'About Siem Reap Wheels',
+      'About RideNow',
       'We connect travelers with well-reviewed, independently owned motorbike rental shops across Siem Reap.',
-      'Siem Reap Wheels started as a way to help travelers find honest, well-maintained motorbikes without having to shop around town in person.',
+      'RideNow started as a way to help travelers find honest, well-maintained motorbikes without having to shop around town in person.',
       'To make independent exploration of Siem Reap safe, easy, and affordable for every traveler.',
       'Compare multiple local shops in one place, transparent pricing, and direct booking with the shop that has your bike.',
-      'Siem Reap Wheels — your marketplace for motorbike rental in Siem Reap.',
+      'RideNow — your marketplace for motorbike rental in Siem Reap.',
       now()
     ) ON CONFLICT (id) DO NOTHING`
   )

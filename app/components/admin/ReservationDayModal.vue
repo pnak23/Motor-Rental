@@ -44,7 +44,8 @@
                     <p class="small text-muted mb-0">{{ b.customerPhone }}</p>
                   </td>
                   <td class="d-flex align-items-center gap-2">
-                    <img :src="b.motorbikeImage || placeholder" class="day-modal__thumb" :alt="b.motorbikeName" />
+                    <img v-if="b.motorbikeImage" :src="b.motorbikeImage" class="day-modal__thumb" :alt="b.motorbikeName" />
+                    <div v-else class="day-modal__thumb motor-placeholder motor-placeholder--sm"><i class="bi bi-scooter" /></div>
                     <div>
                       <p class="mb-0">{{ b.motorbikeName }}</p>
                       <p class="small text-muted mb-0">{{ b.motorbikePlate || '—' }}</p>
@@ -88,8 +89,6 @@ interface DayBooking {
 
 const props = defineProps<{ modelValue: boolean; date: string | null }>()
 const emit = defineEmits<{ 'update:modelValue': [boolean] }>()
-
-const placeholder = 'https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=200'
 const items = ref<DayBooking[]>([])
 const pending = ref(false)
 

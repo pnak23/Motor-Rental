@@ -54,7 +54,7 @@ const { t } = useI18n()
 const settingsStore = useSettingsStore()
 await settingsStore.load()
 const settings = computed(() => settingsStore.settings)
-useHead({ title: 'About Us — ' + (settings.value?.businessName || 'Angkor Wheels Rental') })
+useHead({ title: 'About Us — ' + (settings.value?.businessName || 'RideNow') })
 </script>
 
 <style scoped>

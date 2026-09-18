@@ -16,8 +16,8 @@
               {{ settings?.heroSubtitle || t('home.heroSubtitleDefault') }}
             </p>
             <div class="d-flex flex-wrap gap-3 hero-fade-in-3">
-              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4 btn-shine">{{ t('home.exploreMotorbikes') }}</NuxtLink>
-              <NuxtLink to="/shops" class="btn btn-lg btn-outline-cream px-4">{{ t('home.bookNow') }}</NuxtLink>
+              <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg rounded-pill px-4 btn-shine">{{ t('home.exploreMotorbikes') }}</NuxtLink>
+              <NuxtLink to="/shops" class="btn btn-lg btn-outline-cream rounded-pill px-4">{{ t('home.bookNow') }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -258,7 +258,7 @@ const whyChooseUs = [
   { icon: 'bi-building', titleKey: 'home.whyChooseUs.hotelDelivery' }
 ]
 
-useHead({ title: settings.value?.businessName ? `${settings.value.businessName} — Motorbike Rental Siem Reap` : 'Motorbike Rental Siem Reap' })
+useHead({ title: settings.value?.businessName ? `${settings.value.businessName} — Motorbike Rental in Cambodia` : 'RideNow — Motorbike Rental in Cambodia' })
 </script>
 
 <style scoped>

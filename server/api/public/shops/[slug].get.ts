@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
 
   const shop = await queryOne(
-    `SELECT s.id, s.slug, s.name, s."logoUrl", s.address, s.phone, s.email, s.telegram, s.whatsapp,
+    `SELECT s.id, s.slug, s.name, s."logoUrl", s.address, s.province, s.phone, s.email, s.telegram, s.whatsapp,
             s."minRentalDays", s."maxRentalDays", s."minimumAge", s."requiredDocuments",
             s."depositPolicy", s."fuelPolicy", s."lateReturnPolicy", s."damagePolicy",
             s."cancellationPolicy", s."accidentPolicy", s."trafficViolationPolicy", s."helmetPolicy",

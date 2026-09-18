@@ -71,7 +71,7 @@ interface ShopPolicy {
   helmetPolicy?: string | null
 }
 
-useHead({ title: 'Rental Policy — Siem Reap Wheels' })
+useHead({ title: 'Rental Policy — RideNow' })
 
 const shops = ref<ShopPolicy[]>([])
 const pending = ref(true)

@@ -14,7 +14,14 @@
           <div class="col-md-6"><label class="form-label small">Logo URL</label><input v-model="form.logoUrl" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Phone</label><input v-model="form.phone" class="form-control" /></div>
           <div class="col-md-6"><label class="form-label small">Email</label><input v-model="form.email" class="form-control" /></div>
-          <div class="col-12"><label class="form-label small">Address</label><input v-model="form.address" class="form-control" /></div>
+          <div class="col-md-6"><label class="form-label small">Address</label><input v-model="form.address" class="form-control" /></div>
+          <div class="col-md-6">
+            <label class="form-label small">Province</label>
+            <select v-model="form.province" class="form-select">
+              <option :value="null">— Not set —</option>
+              <option v-for="p in CAMBODIA_PLATE_REGIONS" :key="p.en" :value="p.en">{{ p.en }}</option>
+            </select>
+          </div>
         </div>
       </div>
 
