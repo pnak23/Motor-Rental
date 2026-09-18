@@ -3,7 +3,7 @@ import { adminBookingCreateSchema } from '../../../utils/schemas'
 import { queryOne, query, newId } from '../../../utils/db'
 import { quotePrice, requiredDeposit, meetsDepositRequirement } from '../../../utils/pricing'
 import { createBookingSafely } from '../../../utils/availability'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { saveIdDocument, savePaymentProof } from '../../../utils/upload'
 import { notifyBookingCreated } from '../../../utils/notify'
@@ -85,7 +85,7 @@ async function readBookingFormData(event: H3Event) {
 }
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
 
   const { body, idDocument, paymentProof } = await readBookingFormData(event)
   const parsed = adminBookingCreateSchema.safeParse(body)
@@ -101,8 +101,8 @@ export default defineEventHandler(async (event) => {
   }
 
   const motorbike = await queryOne<MotorbikeRow>(
-    `SELECT id, name, "dailyPrice", "weeklyPrice", "monthlyPrice", deposit, "deliveryFee", "minRentalDays", "maxRentalDays", status FROM motorbikes WHERE id = $1`,
-    [d.motorbikeId]
+    `SELECT id, name, "dailyPrice", "weeklyPrice", "monthlyPrice", deposit, "deliveryFee", "minRentalDays", "maxRentalDays", status, "shopId" FROM motorbikes WHERE id = $1 AND "shopId" = $2`,
+    [d.motorbikeId, user.shopId]
   )
   if (!motorbike) {
     throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
@@ -183,6 +183,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const booking = await createBookingSafely({
+    shopId: user.shopId,
     motorbikeId: motorbike.id,
     customerId,
     pickupDate,
@@ -211,13 +212,13 @@ export default defineEventHandler(async (event) => {
     await query(`UPDATE motorbikes SET status = 'RENTED' WHERE id = $1`, [motorbike.id])
   }
 
-  await logAudit(event, user.id, 'CREATE_BOOKING', 'Booking', booking.id, `Created booking ${booking.bookingNumber}`)
+  await logAudit(event, user.id, 'CREATE_BOOKING', 'Booking', booking.id, `Created booking ${booking.bookingNumber}`, user.shopId)
 
   const customerRow = await queryOne<{ fullName: string; email: string | null }>(
     `SELECT "fullName", email FROM customers WHERE id = $1`,
     [customerId]
   )
-  await notifyBookingCreated(customerRow?.email, {
+  await notifyBookingCreated(customerRow?.email, user.shopId, {
     bookingNumber: booking.bookingNumber,
     motorbikeName: motorbike.name,
     pickupDate: booking.pickupDate,

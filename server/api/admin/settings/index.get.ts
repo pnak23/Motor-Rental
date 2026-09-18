@@ -1,8 +1,8 @@
 import { queryOne } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requirePlatformAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePlatformAdmin(event)
   let settings = await queryOne(`SELECT * FROM business_settings WHERE id = 'main'`)
   if (!settings) {
     settings = await queryOne(`INSERT INTO business_settings (id) VALUES ('main') RETURNING *`)

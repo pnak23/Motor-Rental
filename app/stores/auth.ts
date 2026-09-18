@@ -3,6 +3,11 @@ export interface AdminUser {
   email: string
   name: string
   role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF'
+  /** NULL for a platform-level super admin; otherwise the shop this user belongs to. */
+  shopId: string | null
+  shopName: string | null
+  /** True while a platform super admin is accessing this session's shop as this user. */
+  impersonating?: boolean
 }
 
 export const useAuthStore = defineStore('auth', {

@@ -1,10 +1,10 @@
 import { motorbikeSchema } from '../../../utils/schemas'
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN'])
   const id = getRouterParam(event, 'id')
   const parsed = motorbikeSchema.partial().safeParse(await readBody(event))
   if (!parsed.success) {
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
   const d = parsed.data
 
-  const existing = await query(`SELECT id FROM motorbikes WHERE id = $1`, [id])
+  const existing = await query(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [id, user.shopId])
   if (existing.length === 0) {
     throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
   }
@@ -29,13 +29,14 @@ export default defineEventHandler(async (event) => {
   }
   fields.push(`"updatedAt" = now()`)
   params.push(id)
+  params.push(user.shopId)
 
   const rows = await query(
-    `UPDATE motorbikes SET ${fields.join(', ')} WHERE id = $${params.length} RETURNING *`,
+    `UPDATE motorbikes SET ${fields.join(', ')} WHERE id = $${params.length - 1} AND "shopId" = $${params.length} RETURNING *`,
     params
   )
 
-  await logAudit(event, user.id, 'UPDATE_MOTORBIKE', 'Motorbike', id, `Updated ${rows[0]?.name}`)
+  await logAudit(event, user.id, 'UPDATE_MOTORBIKE', 'Motorbike', id, `Updated ${rows[0]?.name}`, user.shopId)
 
   return { success: true, data: rows[0] }
 })

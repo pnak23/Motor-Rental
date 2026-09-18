@@ -3,7 +3,11 @@
     <nav aria-label="breadcrumb" class="mb-4">
       <ol class="breadcrumb small">
         <li class="breadcrumb-item"><NuxtLink to="/">{{ t('motorbikeDetail.home') }}</NuxtLink></li>
-        <li class="breadcrumb-item"><NuxtLink to="/motorbikes">{{ t('motorbikeDetail.motorbikes') }}</NuxtLink></li>
+        <li class="breadcrumb-item">
+          <NuxtLink :to="bike.shopSlug ? `/shops/${bike.shopSlug}` : '/motorbikes'">
+            {{ bike.shopSlug ? bike.shopName : t('motorbikeDetail.motorbikes') }}
+          </NuxtLink>
+        </li>
         <li class="breadcrumb-item active">{{ bike.name }}</li>
       </ol>
     </nav>
@@ -21,7 +25,7 @@
         </div>
 
         <div class="row g-3 my-3" v-reveal>
-          <div class="col-4 col-md-2" v-for="spec in specs" :key="spec.label">
+          <div class="col-6 col-sm-4 col-md-2" v-for="spec in specs" :key="spec.label">
             <div class="spec-box text-center p-3">
               <div class="spec-box__icon mx-auto mb-2"><i class="bi" :class="spec.icon" /></div>
               <p class="small fw-600 mb-0">{{ spec.value }}</p>
@@ -62,7 +66,8 @@
       </div>
 
       <div class="col-lg-5">
-        <div class="booking-sticky">
+        <div class="booking-sticky d-flex flex-column gap-3">
+          <ShopInfoCard v-if="bike.shopSlug" :shop="bike" />
           <BookingForm :bike="bike" />
         </div>
       </div>
@@ -77,6 +82,21 @@ interface MotorbikeDetail {
   slug: string
   brand: string
   model: string
+  shopId?: string
+  shopSlug?: string | null
+  shopName?: string | null
+  shopAddress?: string | null
+  shopPhone?: string | null
+  shopLogoUrl?: string | null
+  shopTelegram?: string | null
+  shopWhatsapp?: string | null
+  shopMotorbikeCount?: number | null
+  shopKhqrImageUrl?: string | null
+  shopKhqrInstructions?: string | null
+  shopAbaInstructions?: string | null
+  shopAcledaInstructions?: string | null
+  shopWingInstructions?: string | null
+  shopCardInstructions?: string | null
   year: number | null
   engineCc: number
   transmission: string

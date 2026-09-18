@@ -54,6 +54,7 @@ export async function isMotorbikeAvailable(
 
 export interface CreateBookingInput {
   motorbikeId: string
+  shopId: string
   customerId: string
   pickupDate: Date
   returnDate: Date
@@ -108,18 +109,19 @@ export async function createBookingSafely(input: CreateBookingInput) {
 
     const inserted = await client.query(
       `INSERT INTO bookings (
-        id, "bookingNumber", "motorbikeId", "customerId",
+        id, "bookingNumber", "shopId", "motorbikeId", "customerId",
         "pickupDate", "returnDate", "pickupLocationId", "returnLocationId",
         subtotal, discount, "deliveryFee", "additionalCharges", deposit, total,
         status, "paymentStatus", "paymentMethod", "paymentReference", "paidAmount", "paidAt", "paymentProofUrl",
         notes, "createdAt", "updatedAt"
       ) VALUES (
-        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,
-        $22, now(), now()
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,
+        $23, now(), now()
       ) RETURNING *`,
       [
         id,
         bookingNumber,
+        input.shopId,
         input.motorbikeId,
         input.customerId,
         input.pickupDate,

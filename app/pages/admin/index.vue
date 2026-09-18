@@ -92,7 +92,18 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin-auth', title: 'Dashboard' })
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin-auth', function (to) {
+    const auth = useAuthStore()
+    // Platform-level super admins have no shop, so the shop stats dashboard
+    // (which requires a shopId) doesn't apply to them.
+    if (auth.user && !auth.user.shopId && to.path === '/admin') {
+      return navigateTo('/admin/platform/shops')
+    }
+  }],
+  title: 'Dashboard'
+})
 
 interface Stats {
   motorbikes: { total: number; available: number; rented: number; maintenance: number }

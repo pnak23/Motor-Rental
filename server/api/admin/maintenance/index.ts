@@ -1,30 +1,43 @@
 import { query, newId, queryOne } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { maintenanceSchema } from '../../../utils/schemas'
 import { logAudit } from '../../../utils/audit'
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
-    await requireAuth(event)
+    const user = await requireShopAdmin(event)
     const q = getQuery(event)
     const motorbikeId = q.motorbikeId as string | undefined
+    if (motorbikeId) {
+      const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [motorbikeId, user.shopId])
+      if (!motorbike) {
+        throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
+      }
+    }
     const rows = motorbikeId
       ? await query(
           `SELECT r.*, m.name as "motorbikeName" FROM maintenance_records r JOIN motorbikes m ON m.id = r."motorbikeId" WHERE r."motorbikeId" = $1 ORDER BY r.date DESC`,
           [motorbikeId]
         )
       : await query(
-          `SELECT r.*, m.name as "motorbikeName" FROM maintenance_records r JOIN motorbikes m ON m.id = r."motorbikeId" ORDER BY r.date DESC`
+          `SELECT r.*, m.name as "motorbikeName" FROM maintenance_records r JOIN motorbikes m ON m.id = r."motorbikeId" WHERE m."shopId" = $1 ORDER BY r.date DESC`,
+          [user.shopId]
         )
     return { success: true, data: rows }
   }
 
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
   const parsed = maintenanceSchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: parsed.error.issues[0]?.message || 'Invalid maintenance record' })
   }
   const d = parsed.data
+
+  const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [d.motorbikeId, user.shopId])
+  if (!motorbike) {
+    throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
+  }
+
   const id = newId()
   const rows = await query(
     `INSERT INTO maintenance_records (id, "motorbikeId", type, description, date, mileage, cost, garage, notes, status, "createdAt")
@@ -43,7 +56,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  await logAudit(event, user.id, 'CREATE_MAINTENANCE', 'Motorbike', d.motorbikeId, `Logged ${d.type} maintenance`)
+  await logAudit(event, user.id, 'CREATE_MAINTENANCE', 'Motorbike', d.motorbikeId, `Logged ${d.type} maintenance`, user.shopId)
 
   return { success: true, data: rows[0] }
 })

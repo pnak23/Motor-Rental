@@ -1,12 +1,18 @@
 import { z } from 'zod'
-import { query } from '../../../../../utils/db'
-import { requireAuth } from '../../../../../utils/auth'
+import { query, queryOne } from '../../../../../utils/db'
+import { requireShopAdmin } from '../../../../../utils/auth'
 
 const bodySchema = z.object({ imageIds: z.array(z.string()).min(1) })
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN'])
   const motorbikeId = getRouterParam(event, 'id')
+
+  const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [motorbikeId, user.shopId])
+  if (!motorbike) {
+    throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
+  }
+
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'imageIds array is required' })

@@ -17,6 +17,7 @@ interface UserRow {
   name: string
   role: 'SUPER_ADMIN' | 'ADMIN' | 'STAFF'
   isActive: boolean
+  shopId: string | null
 }
 
 export default defineEventHandler(async (event) => {
@@ -55,6 +56,6 @@ export default defineEventHandler(async (event) => {
 
   return {
     success: true,
-    data: { id: user.id, email: user.email, name: user.name, role: user.role }
+    data: { id: user.id, email: user.email, name: user.name, role: user.role, shopId: user.shopId }
   }
 })

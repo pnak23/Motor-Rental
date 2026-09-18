@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 const querySchema = z.object({
   from: z.string().min(1),
@@ -19,7 +19,7 @@ interface DayRow {
 }
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
   const parsed = querySchema.safeParse(getQuery(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'from and to dates are required' })
@@ -44,10 +44,10 @@ export default defineEventHandler(async (event) => {
       COUNT(b.id) FILTER (WHERE b.status = 'CANCELLED' OR b.status = 'REJECTED')::text as cancelled,
       COUNT(b.id) FILTER (WHERE b."returnDate"::date = d::date AND b.status NOT IN ('CANCELLED','REJECTED'))::text as returning
      FROM generate_series($1::date, $2::date, interval '1 day') d
-     LEFT JOIN bookings b ON b."pickupDate" < (d + interval '1 day') AND b."returnDate" > d
+     LEFT JOIN bookings b ON b."pickupDate" < (d + interval '1 day') AND b."returnDate" > d AND b."shopId" = $3
      GROUP BY d
      ORDER BY d`,
-    [from, to]
+    [from, to, user.shopId]
   )
 
   return {

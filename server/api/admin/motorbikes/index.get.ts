@@ -1,8 +1,8 @@
 import { query, queryOne } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
 
   const q = getQuery(event)
   const page = Math.max(1, Number(q.page) || 1)
@@ -14,6 +14,9 @@ export default defineEventHandler(async (event) => {
 
   const where: string[] = []
   const params: unknown[] = []
+
+  params.push(user.shopId)
+  where.push(`m."shopId" = $${params.length}`)
 
   if (search) {
     params.push(`%${search.toLowerCase()}%`)

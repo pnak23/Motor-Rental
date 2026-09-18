@@ -27,7 +27,6 @@
                 <select :value="u.role" class="form-select form-select-sm" @change="updateRole(u, ($event.target as HTMLSelectElement).value)">
                   <option value="STAFF">Staff</option>
                   <option value="ADMIN">Admin</option>
-                  <option value="SUPER_ADMIN">Super Admin</option>
                 </select>
               </td>
               <td>
@@ -36,7 +35,12 @@
                 </span>
               </td>
               <td class="text-end">
-                <button class="btn btn-sm btn-outline-secondary" @click="toggleActive(u)">
+                <button
+                  class="btn btn-sm btn-outline-secondary"
+                  :disabled="u.id === auth.user?.id && u.isActive"
+                  :title="u.id === auth.user?.id && u.isActive ? 'You cannot deactivate your own account' : undefined"
+                  @click="toggleActive(u)"
+                >
                   {{ u.isActive ? 'Deactivate' : 'Activate' }}
                 </button>
               </td>
@@ -54,7 +58,6 @@
         <select v-model="form.role" class="form-select mb-1">
           <option value="STAFF">Staff</option>
           <option value="ADMIN">Admin</option>
-          <option value="SUPER_ADMIN">Super Admin</option>
         </select>
         <p v-if="error" class="text-danger small mt-2 mb-0">{{ error }}</p>
       </form>
@@ -67,7 +70,16 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin-auth', title: 'Users' })
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin-auth', function () {
+    const auth = useAuthStore()
+    if (auth.user && auth.user.role !== 'ADMIN') {
+      return navigateTo('/admin')
+    }
+  }],
+  title: 'Users'
+})
 
 interface UserRow {
   id: string
@@ -78,6 +90,7 @@ interface UserRow {
 }
 
 const toast = useToast()
+const auth = useAuthStore()
 const users = ref<UserRow[]>(await useApi<UserRow[]>('/api/admin/users'))
 
 const form = reactive({ name: '', email: '', password: '', role: 'STAFF' })
@@ -110,8 +123,12 @@ async function updateRole(u: UserRow, role: string) {
 }
 
 async function toggleActive(u: UserRow) {
-  await useApi(`/api/admin/users/${u.id}`, { method: 'PUT', body: { isActive: !u.isActive } })
-  u.isActive = !u.isActive
-  toast.success(u.isActive ? 'User activated' : 'User deactivated')
+  try {
+    await useApi(`/api/admin/users/${u.id}`, { method: 'PUT', body: { isActive: !u.isActive } })
+    u.isActive = !u.isActive
+    toast.success(u.isActive ? 'User activated' : 'User deactivated')
+  } catch (e) {
+    toast.error(e instanceof Error ? e.message : 'Could not update user')
+  }
 }
 </script>

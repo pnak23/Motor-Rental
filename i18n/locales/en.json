@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "motorbikes": "Motorbikes",
+    "shops": "Shops",
     "howItWorks": "How It Works",
     "about": "About Us",
     "rentalPolicy": "Rental Policy",
@@ -22,7 +23,6 @@
     "viewDetails": "View Details",
     "learnMore": "Learn more",
     "viewAll": "View all",
-    "viewAllMotorbikes": "View all motorbikes",
     "day": "day",
     "perDay": "/day",
     "from": "From",
@@ -42,8 +42,8 @@
       "easyBooking": "Easy Booking",
       "localSupport": "Local Support"
     },
-    "ourFleet": "Our Fleet",
-    "featuredMotorbikes": "Featured Motorbikes",
+    "ourShops": "Our Shops",
+    "viewAllShops": "View all shops",
     "whyChooseUsEyebrow": "A Local Siem Reap Business",
     "whyRideWithUs": "Why Ride With Us",
     "whyChooseUs": {
@@ -119,8 +119,10 @@
   "rentalPolicy": {
     "pleaseRead": "Please Read",
     "title": "Rental Policy",
+    "subtitle": "Siem Reap Wheels is a marketplace of independent shops — each one sets its own deposit, fuel, and cancellation terms. Expand a shop below to see its policy before you book.",
     "eligibility": "Eligibility",
     "minimumAge": "Minimum age: {age} years old",
+    "requiredDocuments": "Required Documents",
     "deposit": "Deposit",
     "fuelPolicy": "Fuel Policy",
     "lateReturn": "Late Return",
@@ -129,6 +131,23 @@
     "accidentPolicy": "Accident Policy",
     "trafficViolations": "Traffic Violations",
     "helmetPolicy": "Helmet Policy"
+  },
+  "shopInfoCard": {
+    "aboutThisShop": "About this Shop",
+    "motorbikesAvailable": "{count} motorbikes available",
+    "viewShop": "View Shop & All Motorbikes"
+  },
+  "shops": {
+    "eyebrow": "Our Partners",
+    "title": "Browse by Shop",
+    "subtitle": "Choose a shop to see their available motorbikes",
+    "searchPlaceholder": "Search shops...",
+    "motorbikesAvailable": "{count} motorbikes available",
+    "viewMotorbikes": "View Motorbikes",
+    "noShops": "No shops found.",
+    "backToShops": "Back to all shops",
+    "rentalPolicies": "Rental Policies",
+    "contactInfo": "Contact"
   },
   "motorbikes": {
     "ourFleet": "Our Fleet",

@@ -1,13 +1,13 @@
 import { query, queryOne, newId } from '../../../../utils/db'
-import { requireAuth } from '../../../../utils/auth'
+import { requireShopAdmin } from '../../../../utils/auth'
 import { saveMotorbikeImage } from '../../../../utils/upload'
 import { logAudit } from '../../../../utils/audit'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN'])
   const motorbikeId = getRouterParam(event, 'id')
 
-  const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1`, [motorbikeId])
+  const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [motorbikeId, user.shopId])
   if (!motorbike) {
     throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
   }
@@ -39,7 +39,7 @@ export default defineEventHandler(async (event) => {
     nextOrder += 1
   }
 
-  await logAudit(event, user.id, 'UPLOAD_MOTORBIKE_IMAGE', 'Motorbike', motorbikeId, `Uploaded ${saved.length} image(s)`)
+  await logAudit(event, user.id, 'UPLOAD_MOTORBIKE_IMAGE', 'Motorbike', motorbikeId, `Uploaded ${saved.length} image(s)`, user.shopId)
 
   return { success: true, data: saved }
 })

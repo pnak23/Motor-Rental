@@ -1,5 +1,5 @@
 import { query, newId } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireAuth, requirePlatformAdmin } from '../../../utils/auth'
 import { slugify } from '../../../utils/response'
 import { z } from 'zod'
 
@@ -7,11 +7,12 @@ const bodySchema = z.object({ name: z.string().min(1), description: z.string().o
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
+    await requireAuth(event)
     const rows = await query(`SELECT * FROM motorbike_categories ORDER BY name ASC`)
     return { success: true, data: rows }
   }
 
-  await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  await requirePlatformAdmin(event)
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Category name is required' })

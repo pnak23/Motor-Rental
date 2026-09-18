@@ -1,8 +1,8 @@
 import { queryOne } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
 
   const row = await queryOne<{
     todayReservations: string
@@ -15,18 +15,19 @@ export default defineEventHandler(async (event) => {
   }>(
     `SELECT
       (SELECT COUNT(*) FROM bookings
-        WHERE "pickupDate"::date = CURRENT_DATE AND status NOT IN ('CANCELLED','REJECTED'))::text as "todayReservations",
-      (SELECT COUNT(*) FROM bookings WHERE status = 'PICKED_UP')::text as "activeRentals",
+        WHERE "shopId" = $1 AND "pickupDate"::date = CURRENT_DATE AND status NOT IN ('CANCELLED','REJECTED'))::text as "todayReservations",
+      (SELECT COUNT(*) FROM bookings WHERE "shopId" = $1 AND status = 'PICKED_UP')::text as "activeRentals",
       (SELECT COUNT(*) FROM bookings
-        WHERE status = 'PICKED_UP' AND "returnDate"::date = CURRENT_DATE)::text as "returningToday",
-      (SELECT COUNT(*) FROM motorbikes WHERE status = 'AVAILABLE')::text as "availableMotors",
+        WHERE "shopId" = $1 AND status = 'PICKED_UP' AND "returnDate"::date = CURRENT_DATE)::text as "returningToday",
+      (SELECT COUNT(*) FROM motorbikes WHERE "shopId" = $1 AND status = 'AVAILABLE')::text as "availableMotors",
       (SELECT COUNT(*) FROM bookings
-        WHERE "pickupDate"::date > CURRENT_DATE AND "pickupDate"::date <= CURRENT_DATE + interval '7 days'
+        WHERE "shopId" = $1 AND "pickupDate"::date > CURRENT_DATE AND "pickupDate"::date <= CURRENT_DATE + interval '7 days'
           AND status IN ('PENDING','CONFIRMED'))::text as "upcomingThisWeek",
-      (SELECT COUNT(*) FROM bookings WHERE status = 'PENDING')::text as "pendingCount",
+      (SELECT COUNT(*) FROM bookings WHERE "shopId" = $1 AND status = 'PENDING')::text as "pendingCount",
       (SELECT COUNT(*) FROM bookings
-        WHERE "paymentStatus" IN ('UNPAID','PARTIAL') AND status NOT IN ('CANCELLED','REJECTED'))::text as "unpaidCustomers"
-    `
+        WHERE "shopId" = $1 AND "paymentStatus" IN ('UNPAID','PARTIAL') AND status NOT IN ('CANCELLED','REJECTED'))::text as "unpaidCustomers"
+    `,
+    [user.shopId]
   )
 
   return {

@@ -17,7 +17,7 @@
             </p>
             <div class="d-flex flex-wrap gap-3 hero-fade-in-3">
               <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg px-4 btn-shine">{{ t('home.exploreMotorbikes') }}</NuxtLink>
-              <NuxtLink to="/motorbikes" class="btn btn-lg btn-outline-cream px-4">{{ t('home.bookNow') }}</NuxtLink>
+              <NuxtLink to="/shops" class="btn btn-lg btn-outline-cream px-4">{{ t('home.bookNow') }}</NuxtLink>
             </div>
           </div>
         </div>
@@ -66,31 +66,35 @@
       </div>
     </section>
 
-    <!-- Featured motorbikes -->
+    <!-- Shops -->
     <section class="section bg-white">
       <div class="container">
         <div class="d-flex align-items-end justify-content-between mb-4" v-reveal>
           <div>
-            <p class="eyebrow mb-1">{{ t('home.ourFleet') }}</p>
-            <h2 class="font-display">{{ t('home.featuredMotorbikes') }}</h2>
+            <p class="eyebrow mb-1">{{ t('shops.eyebrow') }}</p>
+            <h2 class="font-display">{{ t('home.ourShops') }}</h2>
           </div>
-          <NuxtLink to="/motorbikes" class="d-none d-md-inline-block text-decoration-none fw-600 link-underline-grow">
+          <NuxtLink to="/shops" class="d-none d-md-inline-block text-decoration-none fw-600 link-underline-grow">
             {{ t('common.viewAll') }} <i class="bi bi-arrow-right ms-1" />
           </NuxtLink>
         </div>
-        <div class="row g-3 g-md-4">
-          <div
-            v-for="(bike, i) in featured"
-            :key="bike.id"
-            class="col-12 col-sm-6 col-md-4 col-lg-3"
-            v-reveal
-            :class="`reveal-delay-${i % 4}`"
-          >
-            <MotorbikeCard :bike="bike" />
+
+        <div class="shop-slider-wrap position-relative" v-reveal>
+          <button v-if="shops.length > 3" class="shop-slider-nav shop-slider-nav--prev" @click="scrollShops(-1)">
+            <i class="bi bi-chevron-left" />
+          </button>
+          <div ref="shopSliderEl" class="shop-slider">
+            <div v-for="shop in shops" :key="shop.id" class="shop-slider__item">
+              <ShopCard :shop="shop" />
+            </div>
           </div>
+          <button v-if="shops.length > 3" class="shop-slider-nav shop-slider-nav--next" @click="scrollShops(1)">
+            <i class="bi bi-chevron-right" />
+          </button>
         </div>
+
         <div class="text-center mt-4 d-md-none">
-          <NuxtLink to="/motorbikes" class="btn btn-outline-charcoal">{{ t('common.viewAllMotorbikes') }}</NuxtLink>
+          <NuxtLink to="/shops" class="btn btn-outline-charcoal">{{ t('home.viewAllShops') }}</NuxtLink>
         </div>
       </div>
     </section>
@@ -198,16 +202,15 @@ const settingsStore = useSettingsStore()
 await settingsStore.load()
 const settings = computed(() => settingsStore.settings)
 
-interface Bike {
+interface Shop {
   id: string
-  name: string
   slug: string
-  brand: string
-  engineCc: number
-  transmission: string
-  dailyPrice: string
-  isNewBike?: boolean
-  image?: string | null
+  name: string
+  logoUrl?: string | null
+  address?: string | null
+  phone?: string | null
+  email?: string | null
+  motorbikeCount: number
 }
 interface Banner {
   id: string
@@ -223,11 +226,16 @@ interface Faq {
   answer: string
 }
 
-const [{ items: featured }, banners, faqs] = await Promise.all([
-  useApi<{ items: Bike[] }>('/api/public/motorbikes?pageSize=4&sort=popular'),
+const [shops, banners, faqs] = await Promise.all([
+  useApi<Shop[]>('/api/public/shops'),
   useApi<Banner[]>('/api/public/banners'),
   useApi<Faq[]>('/api/public/faqs')
 ])
+
+const shopSliderEl = ref<HTMLElement | null>(null)
+function scrollShops(dir: 1 | -1) {
+  shopSliderEl.value?.scrollBy({ left: dir * 320, behavior: 'smooth' })
+}
 
 const heroImageStyle = computed(() => {
   const img = settings.value?.heroImage || 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=1800'
@@ -419,6 +427,72 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   max-width: 260px;
   height: 180px;
   object-fit: cover;
+}
+@media (max-width: 767.98px) {
+  .banner-card__img {
+    max-width: 100%;
+    height: 200px;
+  }
+}
+
+/* ── Shops slider ── */
+.shop-slider-wrap {
+  position: relative;
+}
+.shop-slider {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding: 0.25rem;
+  scrollbar-width: none;
+}
+.shop-slider::-webkit-scrollbar {
+  display: none;
+}
+.shop-slider__item {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+}
+@media (max-width: 575.98px) {
+  .shop-slider__item {
+    /* leave a peek of the next card so it's visually obvious the row scrolls */
+    flex: 0 0 82%;
+  }
+}
+.shop-slider-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border);
+  background: var(--color-white, #fff);
+  box-shadow: 0 8px 20px rgba(38, 58, 46, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-forest, var(--color-charcoal));
+  transition:
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.shop-slider-nav:hover {
+  color: var(--color-amber-deep, var(--color-gold-deep));
+  box-shadow: 0 10px 24px rgba(38, 58, 46, 0.18);
+}
+.shop-slider-nav--prev {
+  left: 0.25rem;
+}
+.shop-slider-nav--next {
+  right: 0.25rem;
+}
+@media (max-width: 767.98px) {
+  .shop-slider-nav {
+    display: none;
+  }
 }
 
 /* ── Quick fact cards ── */

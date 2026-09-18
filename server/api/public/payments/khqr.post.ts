@@ -4,6 +4,7 @@ import { generateKhqr, abaDeepLink } from '../../../utils/khqr'
 import { enforceRateLimit } from '../../../utils/rateLimit'
 
 const bodySchema = z.object({
+  motorbikeId: z.string().min(1),
   amount: z.coerce.number().positive(),
   reference: z.string().optional()
 })
@@ -16,23 +17,30 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'A valid amount is required' })
   }
 
-  const settings = await queryOne<{
+  const motorbike = await queryOne<{ shopId: string }>(`SELECT "shopId" FROM motorbikes WHERE id = $1`, [parsed.data.motorbikeId])
+  if (!motorbike) {
+    throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
+  }
+
+  // KHQR account details are configured per-shop — each shop is paid into
+  // its own Bakong account, never a shared/default one.
+  const shop = await queryOne<{
     khqrAccountId: string | null
     khqrMerchantName: string | null
     khqrMerchantCity: string | null
-    businessName: string
-  }>(`SELECT "khqrAccountId", "khqrMerchantName", "khqrMerchantCity", "businessName" FROM business_settings WHERE id = 'main'`)
+    name: string
+  }>(`SELECT "khqrAccountId", "khqrMerchantName", "khqrMerchantCity", name FROM shops WHERE id = $1`, [motorbike.shopId])
 
-  if (!settings?.khqrAccountId) {
-    // Business hasn't configured a Bakong account yet — caller should fall
+  if (!shop?.khqrAccountId) {
+    // This shop hasn't configured a Bakong account yet — caller should fall
     // back to a static QR image / plain instructions instead.
     return { success: true, data: { available: false } }
   }
 
   const generated = await generateKhqr({
-    bakongAccountId: settings.khqrAccountId,
-    merchantName: settings.khqrMerchantName || settings.businessName || 'Angkor Wheels Rental',
-    merchantCity: settings.khqrMerchantCity || 'Siem Reap',
+    bakongAccountId: shop.khqrAccountId,
+    merchantName: shop.khqrMerchantName || shop.name || 'Angkor Wheels Rental',
+    merchantCity: shop.khqrMerchantCity || 'Siem Reap',
     amount: parsed.data.amount,
     billNumber: parsed.data.reference
   })

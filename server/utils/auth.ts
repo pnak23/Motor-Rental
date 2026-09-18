@@ -5,6 +5,8 @@ import type { H3Event } from 'h3'
 import { queryOne } from './db'
 
 export const AUTH_COOKIE = 'admin_session'
+/** Holds the platform admin's own token while they're impersonating a shop user (see platform/shops/[id]/impersonate.post.ts). */
+export const IMPERSONATOR_COOKIE = 'impersonator_session'
 
 export type AdminRole = 'SUPER_ADMIN' | 'ADMIN' | 'STAFF'
 
@@ -14,6 +16,8 @@ export interface AuthUser {
   name: string
   role: AdminRole
   isActive: boolean
+  /** NULL for a platform-level super admin; otherwise the shop this user belongs to. */
+  shopId: string | null
 }
 
 interface JwtPayload {
@@ -55,19 +59,24 @@ export function verifyAuthToken(token: string): JwtPayload | null {
   }
 }
 
-/** Resolve the currently logged-in admin user from the session cookie, or null. */
-export async function getAuthUser(event: H3Event): Promise<AuthUser | null> {
-  const token = getCookie(event, AUTH_COOKIE)
+/** Resolve the admin user a session token belongs to, or null. Shared by both the
+ *  cookie-based HTTP auth below and the WebSocket upgrade handler (which has no H3Event). */
+export async function getAuthUserFromToken(token: string | undefined | null): Promise<AuthUser | null> {
   if (!token) return null
   const payload = verifyAuthToken(token)
   if (!payload) return null
 
   const user = await queryOne<AuthUser>(
-    `SELECT id, email, name, role, "isActive" FROM users WHERE id = $1`,
+    `SELECT id, email, name, role, "isActive", "shopId" FROM users WHERE id = $1`,
     [payload.sub]
   )
   if (!user || !user.isActive) return null
   return user
+}
+
+/** Resolve the currently logged-in admin user from the session cookie, or null. */
+export async function getAuthUser(event: H3Event): Promise<AuthUser | null> {
+  return getAuthUserFromToken(getCookie(event, AUTH_COOKIE))
 }
 
 /**
@@ -82,6 +91,36 @@ export async function requireAuth(event: H3Event, roles?: AdminRole[]): Promise<
   }
   if (roles && roles.length > 0 && !roles.includes(user.role)) {
     throw createError({ statusCode: 403, statusMessage: 'You do not have permission to do this' })
+  }
+  return user
+}
+
+/**
+ * Require a logged-in user who belongs to a shop (i.e. not a platform-level
+ * super admin), optionally restricted to specific roles. Use at the top of
+ * any shop-scoped /api/admin/** handler; the returned `shopId` should be
+ * used to filter every query in that handler.
+ */
+export async function requireShopAdmin(
+  event: H3Event,
+  roles?: AdminRole[]
+): Promise<AuthUser & { shopId: string }> {
+  const user = await requireAuth(event, roles)
+  if (!user.shopId) {
+    throw createError({ statusCode: 400, statusMessage: 'This action requires a shop-level account' })
+  }
+  return user as AuthUser & { shopId: string }
+}
+
+/**
+ * Require a platform-level super admin (a SUPER_ADMIN with no shop of
+ * their own). Use for routes that manage Shop records themselves, e.g.
+ * /api/admin/platform/**.
+ */
+export async function requirePlatformAdmin(event: H3Event): Promise<AuthUser> {
+  const user = await requireAuth(event, ['SUPER_ADMIN'])
+  if (user.shopId) {
+    throw createError({ statusCode: 403, statusMessage: 'This action requires a platform-level account' })
   }
   return user
 }

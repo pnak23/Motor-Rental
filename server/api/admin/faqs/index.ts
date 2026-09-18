@@ -1,15 +1,15 @@
 import { query, newId } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requirePlatformAdmin } from '../../../utils/auth'
 import { faqSchema } from '../../../utils/schemas'
 
 export default defineEventHandler(async (event) => {
   if (event.method === 'GET') {
-    await requireAuth(event)
+    await requirePlatformAdmin(event)
     const rows = await query(`SELECT * FROM faqs ORDER BY "sortOrder" ASC, "createdAt" ASC`)
     return { success: true, data: rows }
   }
 
-  await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  await requirePlatformAdmin(event)
   const parsed = faqSchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Question and answer are required' })

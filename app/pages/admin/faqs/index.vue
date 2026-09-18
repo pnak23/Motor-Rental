@@ -49,7 +49,16 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin-auth', title: 'FAQ' })
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin-auth', function () {
+    const auth = useAuthStore()
+    if (auth.user && (auth.user.shopId || auth.user.role !== 'SUPER_ADMIN')) {
+      return navigateTo('/admin')
+    }
+  }],
+  title: 'FAQ'
+})
 
 interface Faq {
   id: string

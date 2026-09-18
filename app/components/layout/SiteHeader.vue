@@ -5,8 +5,8 @@
   >
     <nav class="navbar navbar-expand-lg py-3">
       <div class="container">
-        <NuxtLink class="navbar-brand d-flex align-items-center gap-2 font-display fw-600" to="/">
-          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+        <NuxtLink class="navbar-brand d-flex align-items-center gap-2 font-display fw-600 min-w-0" to="/">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true" class="flex-shrink-0">
             <!-- Stylized temple-tower silhouette (Angkor prasat) -->
             <path d="M15 3 L18 9 H12 Z" :fill="markColor" />
             <path d="M10 9 H20 L18 14 H12 Z" :fill="markColor" />
@@ -14,7 +14,7 @@
             <rect x="9" y="19" width="12" height="7" rx="1" :fill="markColor" />
             <rect x="13.5" y="21" width="3" height="5" :fill="bgTone" />
           </svg>
-          <span class="fs-5">{{ settings?.businessName || 'Angkor Wheels Rental' }}</span>
+          <span class="fs-5 navbar-brand__label">{{ settings?.businessName || 'Angkor Wheels Rental' }}</span>
         </NuxtLink>
 
         <button
@@ -33,6 +33,7 @@
           <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
             <li class="nav-item"><NuxtLink class="nav-link" to="/">{{ t('nav.home') }}</NuxtLink></li>
             <li class="nav-item"><NuxtLink class="nav-link" to="/motorbikes">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li class="nav-item"><NuxtLink class="nav-link" to="/shops">{{ t('nav.shops') }}</NuxtLink></li>
             <li class="nav-item"><NuxtLink class="nav-link" to="/how-it-works">{{ t('nav.howItWorks') }}</NuxtLink></li>
             <li class="nav-item"><NuxtLink class="nav-link" to="/about">{{ t('nav.about') }}</NuxtLink></li>
             <li class="nav-item"><NuxtLink class="nav-link" to="/rental-policy">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
@@ -42,7 +43,7 @@
               <LanguageSwitcher />
             </li>
             <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-              <NuxtLink class="btn btn-amber w-100" to="/motorbikes">{{ t('nav.bookNow') }}</NuxtLink>
+              <NuxtLink class="btn btn-amber w-100" to="/shops">{{ t('nav.bookNow') }}</NuxtLink>
             </li>
           </ul>
         </div>
@@ -106,6 +107,19 @@ onBeforeUnmount(() => {
 .site-header--transparent .navbar-brand {
   color: #fff;
 }
+.min-w-0 {
+  min-width: 0;
+}
+.navbar-brand__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@media (max-width: 420px) {
+  .navbar-brand__label {
+    max-width: 44vw;
+  }
+}
 .site-header--transparent .navbar-toggler {
   border-color: rgba(255, 255, 255, 0.6);
 }
@@ -128,10 +142,10 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 991.98px) {
-  /* the mobile menu panel always gets a solid surface once opened, so
-     it stays readable regardless of the header's transparent state */
-  .site-header--transparent .navbar-collapse.show,
-  .site-header--transparent .navbar-collapse.collapsing {
+  /* the mobile menu panel always gets a solid card surface once opened,
+     on every page (not just the homepage's transparent header) */
+  .navbar-collapse.show,
+  .navbar-collapse.collapsing {
     background: var(--color-cream, #f7f2e8);
     margin: 0.75rem -0.5rem 0;
     padding: 0.75rem 0.5rem;
@@ -141,6 +155,10 @@ onBeforeUnmount(() => {
   .site-header--transparent .navbar-collapse.show .nav-link,
   .site-header--transparent .navbar-collapse.collapsing .nav-link {
     color: var(--color-forest, var(--color-charcoal));
+  }
+  /* comfortable touch targets for the stacked mobile menu links */
+  .navbar-collapse .nav-link {
+    padding: 0.7rem 0.5rem;
   }
 }
 </style>

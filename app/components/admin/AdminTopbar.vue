@@ -11,6 +11,10 @@
     </div>
 
     <div class="d-flex align-items-center gap-2">
+      <span v-if="auth.user" class="badge scope-badge d-none d-md-inline-flex align-items-center gap-1">
+        <i class="bi" :class="auth.user.shopId ? 'bi-shop' : 'bi-diagram-3'" />
+        {{ auth.user.shopId ? auth.user.shopName || 'Shop' : 'Platform' }}
+      </span>
       <button
         type="button"
         class="btn theme-toggle-btn d-flex align-items-center justify-content-center"
@@ -116,6 +120,15 @@ const initials = computed(() =>
 }
 .admin-user-btn__chevron {
   opacity: 0.5;
+}
+.scope-badge {
+  background: rgba(231, 160, 60, 0.14);
+  color: var(--color-amber-deep);
+  border: 1px solid rgba(231, 160, 60, 0.3);
+  font-weight: 600;
+  font-size: 0.72rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 999px;
 }
 .admin-avatar {
   width: 32px;

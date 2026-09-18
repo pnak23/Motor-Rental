@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { queryOne, query, withTransaction } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { getBookingConflict } from '../../../utils/availability'
 import { paymentStatusEnum, paymentMethodEnum } from '../../../utils/schemas'
@@ -27,7 +27,7 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
   const id = getRouterParam(event, 'id')
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event) => {
     lateFeeAmount: string
     depositRefundedAmount: string
     depositRefundedAt: string | null
-  }>(`SELECT * FROM bookings WHERE id = $1`, [id])
+  }>(`SELECT * FROM bookings WHERE id = $1 AND "shopId" = $2`, [id, user.shopId])
   if (!existing) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
   }
@@ -117,7 +117,7 @@ export default defineEventHandler(async (event) => {
       notes = COALESCE($15, notes),
       "actualReturnAt" = $16, "lateFeeAmount" = $17, "depositRefundedAmount" = $18, "depositRefundedAt" = $19,
       "updatedAt" = now()
-     WHERE id = $20 RETURNING *`,
+     WHERE id = $20 AND "shopId" = $21 RETURNING *`,
     [
       motorbikeId,
       pickupDate,
@@ -138,11 +138,15 @@ export default defineEventHandler(async (event) => {
       lateFeeAmount,
       depositRefundedAmount,
       depositRefundedAt,
-      id
+      id,
+      user.shopId
     ]
   )
+  if (rows.length === 0) {
+    throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
+  }
 
-  await logAudit(event, user.id, 'UPDATE_BOOKING', 'Booking', id, 'Booking details edited')
+  await logAudit(event, user.id, 'UPDATE_BOOKING', 'Booking', id, 'Booking details edited', user.shopId)
 
   return { success: true, data: rows[0] }
 })

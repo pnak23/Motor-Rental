@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { query, queryOne } from '../../../utils/db'
+import { requireShopAdmin } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { customerIdTypeEnum } from '../../../utils/schemas'
 
@@ -18,11 +18,19 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
   const id = getRouterParam(event, 'id')
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid customer data' })
+  }
+
+  const owned = await queryOne<{ id: string }>(
+    `SELECT 1 as id FROM bookings WHERE "customerId" = $1 AND "shopId" = $2 LIMIT 1`,
+    [id, user.shopId]
+  )
+  if (!owned) {
+    throw createError({ statusCode: 404, statusMessage: 'Customer not found' })
   }
 
   const fields: string[] = []
@@ -42,7 +50,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Customer not found' })
   }
 
-  await logAudit(event, user.id, 'UPDATE_CUSTOMER', 'Customer', id, `Updated ${rows[0].fullName}`)
+  await logAudit(event, user.id, 'UPDATE_CUSTOMER', 'Customer', id, `Updated ${rows[0].fullName}`, user.shopId)
 
   return { success: true, data: rows[0] }
 })

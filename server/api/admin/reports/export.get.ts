@@ -1,12 +1,12 @@
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { getReportRange } from '../../../utils/reportRange'
 import { toCsv } from '../../../utils/csv'
 
 type ReportType = 'bookings' | 'motorbikes' | 'customers'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const admin = await requireShopAdmin(event)
   const { from, to } = getReportRange(event)
   const type = (getQuery(event).type as ReportType) || 'bookings'
 
@@ -38,9 +38,9 @@ export default defineEventHandler(async (event) => {
        FROM bookings b
        JOIN customers c ON c.id = b."customerId"
        JOIN motorbikes m ON m.id = b."motorbikeId"
-       WHERE b."createdAt"::date BETWEEN $1 AND $2
+       WHERE b."createdAt"::date BETWEEN $1 AND $2 AND b."shopId" = $3
        ORDER BY b."createdAt" ASC`,
-      [from, to]
+      [from, to, admin.shopId]
     )
     csv = toCsv(rows, [
       { header: 'Booking #', value: (r) => r.bookingNumber },
@@ -81,9 +81,10 @@ export default defineEventHandler(async (event) => {
         COALESCE((SELECT COUNT(*) FROM maintenance_records mr WHERE mr."motorbikeId" = m.id AND mr.date::date BETWEEN $1 AND $2),0)::text as "maintenanceCount"
        FROM motorbikes m
        LEFT JOIN bookings b ON b."motorbikeId" = m.id AND b."pickupDate" < ($2::date + 1) AND b."returnDate" > $1::date
+       WHERE m."shopId" = $3
        GROUP BY m.id, m.name, m.brand
        ORDER BY revenue DESC`,
-      [from, to]
+      [from, to, admin.shopId]
     )
     csv = toCsv(rows, [
       { header: 'Motorbike', value: (r) => r.name },
@@ -105,10 +106,10 @@ export default defineEventHandler(async (event) => {
     }>(
       `SELECT c."fullName", c.phone, c.email, c.nationality, COUNT(b.id)::text as bookings, COALESCE(SUM(b.total),0)::text as "totalSpent"
        FROM customers c JOIN bookings b ON b."customerId" = c.id AND b.status NOT IN ('CANCELLED','REJECTED')
-       WHERE b."createdAt"::date BETWEEN $1 AND $2
+       WHERE b."createdAt"::date BETWEEN $1 AND $2 AND b."shopId" = $3
        GROUP BY c.id, c."fullName", c.phone, c.email, c.nationality
        ORDER BY "totalSpent" DESC`,
-      [from, to]
+      [from, to, admin.shopId]
     )
     csv = toCsv(rows, [
       { header: 'Name', value: (r) => r.fullName },

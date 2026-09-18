@@ -20,6 +20,7 @@
           <h6 class="text-white mb-3">{{ t('footer.quickLinks') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2">
             <li><NuxtLink to="/motorbikes" class="text-white-50">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li><NuxtLink to="/shops" class="text-white-50">{{ t('nav.shops') }}</NuxtLink></li>
             <li><NuxtLink to="/about" class="text-white-50">{{ t('nav.about') }}</NuxtLink></li>
             <li><NuxtLink to="/rental-policy" class="text-white-50">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
             <li><NuxtLink to="/faq" class="text-white-50">{{ t('nav.faq') }}</NuxtLink></li>

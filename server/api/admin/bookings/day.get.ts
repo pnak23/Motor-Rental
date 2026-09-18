@@ -1,13 +1,13 @@
 import { z } from 'zod'
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 const querySchema = z.object({
   date: z.string().min(1)
 })
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
   const parsed = querySchema.safeParse(getQuery(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'date is required' })
@@ -24,9 +24,9 @@ export default defineEventHandler(async (event) => {
      FROM bookings b
      JOIN customers c ON c.id = b."customerId"
      JOIN motorbikes m ON m.id = b."motorbikeId"
-     WHERE b."pickupDate" < ($1::date + interval '1 day') AND b."returnDate" > $1::date
+     WHERE b."shopId" = $2 AND b."pickupDate" < ($1::date + interval '1 day') AND b."returnDate" > $1::date
      ORDER BY b."pickupDate" ASC`,
-    [date]
+    [date, user.shopId]
   )
 
   return {

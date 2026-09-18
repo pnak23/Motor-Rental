@@ -1,8 +1,8 @@
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requirePlatformAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  await requirePlatformAdmin(event)
   const rows = await query(`SELECT * FROM contact_messages ORDER BY "createdAt" DESC`)
   return { success: true, data: rows }
 })

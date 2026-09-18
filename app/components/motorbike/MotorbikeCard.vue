@@ -12,7 +12,15 @@
     </NuxtLink>
     <div class="card-body d-flex flex-column">
       <p class="eyebrow mb-1">{{ bike.brand }}</p>
-      <h3 class="h5 font-display mb-2">{{ bike.name }}</h3>
+      <h3 class="h5 font-display mb-1">{{ bike.name }}</h3>
+      <NuxtLink
+        v-if="bike.shopName"
+        :to="bike.shopSlug ? `/shops/${bike.shopSlug}` : '/shops'"
+        class="small text-muted mb-2 d-flex align-items-center gap-1 bike-card__shop text-decoration-none"
+        @click.stop
+      >
+        <i class="bi bi-shop" />{{ bike.shopName }}
+      </NuxtLink>
 
       <ul class="list-unstyled d-flex flex-wrap gap-2 gap-sm-3 small text-muted my-1 bike-card__specs">
         <li><i class="bi bi-gear me-1" />{{ formatTransmission(bike.transmission) }}</li>
@@ -43,6 +51,8 @@ defineProps<{
     dailyPrice: string | number
     isNewBike?: boolean
     image?: string | null
+    shopName?: string | null
+    shopSlug?: string | null
   }
 }>()
 
@@ -60,5 +70,11 @@ function formatTransmission(t: string) {
 .bike-card__cta {
   white-space: nowrap;
   flex-shrink: 0;
+}
+.bike-card__shop {
+  transition: color 0.2s ease;
+}
+.bike-card__shop:hover {
+  color: var(--color-amber-deep, var(--color-gold-deep));
 }
 </style>

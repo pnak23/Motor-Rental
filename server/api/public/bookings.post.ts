@@ -90,8 +90,9 @@ export default defineEventHandler(async (event) => {
     minRentalDays: number
     maxRentalDays: number
     status: string
+    shopId: string
   }>(
-    `SELECT id, name, "dailyPrice", "weeklyPrice", "monthlyPrice", deposit, "deliveryFee", "minRentalDays", "maxRentalDays", status FROM motorbikes WHERE id = $1`,
+    `SELECT id, name, "dailyPrice", "weeklyPrice", "monthlyPrice", deposit, "deliveryFee", "minRentalDays", "maxRentalDays", status, "shopId" FROM motorbikes WHERE id = $1`,
     [d.motorbikeId]
   )
   if (!motorbike) {
@@ -175,6 +176,7 @@ export default defineEventHandler(async (event) => {
 
   const booking = await createBookingSafely({
     motorbikeId: motorbike.id,
+    shopId: motorbike.shopId,
     customerId: customer.id,
     pickupDate,
     returnDate,
@@ -194,7 +196,7 @@ export default defineEventHandler(async (event) => {
     paymentProofUrl
   })
 
-  await notifyBookingCreated(d.customer.email, {
+  await notifyBookingCreated(d.customer.email, motorbike.shopId, {
     bookingNumber: booking.bookingNumber,
     motorbikeName: motorbike.name,
     pickupDate: booking.pickupDate,

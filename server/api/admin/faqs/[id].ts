@@ -1,17 +1,17 @@
 import { query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requirePlatformAdmin } from '../../../utils/auth'
 import { faqSchema } from '../../../utils/schemas'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')
 
   if (event.method === 'DELETE') {
-    await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+    await requirePlatformAdmin(event)
     await query(`DELETE FROM faqs WHERE id = $1`, [id])
     return { success: true, data: null }
   }
 
-  await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  await requirePlatformAdmin(event)
   const parsed = faqSchema.partial().safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid FAQ data' })

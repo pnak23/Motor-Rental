@@ -2,6 +2,7 @@
   "nav": {
     "home": "ទំព័រដើម",
     "motorbikes": "ម៉ូតូជួល",
+    "shops": "ហាង",
     "howItWorks": "របៀបប្រើប្រាស់",
     "about": "អំពីយើង",
     "rentalPolicy": "គោលការណ៍ជួល",
@@ -22,7 +23,6 @@
     "viewDetails": "មើលលម្អិត",
     "learnMore": "ស្វែងយល់បន្ថែម",
     "viewAll": "មើលទាំងអស់",
-    "viewAllMotorbikes": "មើលម៉ូតូទាំងអស់",
     "day": "ថ្ងៃ",
     "perDay": "/ថ្ងៃ",
     "from": "ចាប់ពី",
@@ -42,8 +42,8 @@
       "easyBooking": "កក់ងាយស្រួល",
       "localSupport": "ជំនួយក្នុងស្រុក"
     },
-    "ourFleet": "កងម៉ូតូរបស់យើង",
-    "featuredMotorbikes": "ម៉ូតូពេញនិយម",
+    "ourShops": "ហាងរបស់យើង",
+    "viewAllShops": "មើលហាងទាំងអស់",
     "whyChooseUsEyebrow": "អាជីវកម្មក្នុងស្រុកសៀមរាប",
     "whyRideWithUs": "ហេតុអ្វីជិះជាមួយយើង",
     "whyChooseUs": {
@@ -119,8 +119,10 @@
   "rentalPolicy": {
     "pleaseRead": "សូមអាន",
     "title": "គោលការណ៍ជួល",
+    "subtitle": "Siem Reap Wheels គឺជាទីផ្សាររបស់ហាងឯករាជ្យ — ហាងនីមួយៗកំណត់លក្ខខណ្ឌប្រាក់តម្កល់ ប្រេងឥន្ធនៈ និងការលុបចោលដោយខ្លួនឯង។ សូមចុចបើកហាងខាងក្រោមដើម្បីមើលគោលការណ៍របស់វា មុនពេលកក់។",
     "eligibility": "លក្ខខណ្ឌសិទ្ធិ",
     "minimumAge": "អាយុអប្បបរមា៖ {age} ឆ្នាំ",
+    "requiredDocuments": "ឯកសារតម្រូវ",
     "deposit": "ប្រាក់តម្កល់",
     "fuelPolicy": "គោលការណ៍ប្រេងឥន្ធនៈ",
     "lateReturn": "ការត្រឡប់យឺត",
@@ -129,6 +131,23 @@
     "accidentPolicy": "គោលការណ៍គ្រោះថ្នាក់",
     "trafficViolations": "ការល្មើសច្បាប់ចរាចរណ៍",
     "helmetPolicy": "គោលការណ៍កាបូបក្បាល"
+  },
+  "shopInfoCard": {
+    "aboutThisShop": "អំពីហាងនេះ",
+    "motorbikesAvailable": "ម៉ូតូ {count} គ្រឿងមានជួល",
+    "viewShop": "មើលហាង និងម៉ូតូទាំងអស់"
+  },
+  "shops": {
+    "eyebrow": "ដៃគូរបស់យើង",
+    "title": "រុករកតាមហាង",
+    "subtitle": "ជ្រើសរើសហាងមួយ ដើម្បីមើលម៉ូតូដែលមានជួល",
+    "searchPlaceholder": "ស្វែងរកហាង...",
+    "motorbikesAvailable": "ម៉ូតូ {count} គ្រឿងមានជួល",
+    "viewMotorbikes": "មើលម៉ូតូ",
+    "noShops": "រកមិនឃើញហាងទេ។",
+    "backToShops": "ត្រឡប់ទៅហាងទាំងអស់",
+    "rentalPolicies": "គោលការណ៍ជួល",
+    "contactInfo": "ទាក់ទង"
   },
   "motorbikes": {
     "ourFleet": "កងម៉ូតូរបស់យើង",

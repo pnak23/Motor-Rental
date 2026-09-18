@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { queryOne, query, newId, withTransaction } from '../../../../utils/db'
-import { requireAuth } from '../../../../utils/auth'
+import { requireShopAdmin } from '../../../../utils/auth'
 import { logAudit } from '../../../../utils/audit'
 import { bookingStatusEnum } from '../../../../utils/schemas'
 import { requiredDeposit, meetsDepositRequirement, calculateLateFee } from '../../../../utils/pricing'
@@ -12,7 +12,7 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN', 'STAFF'])
   const id = getRouterParam(event, 'id')
   const parsed = bodySchema.safeParse(await readBody(event))
   if (!parsed.success) {
@@ -27,7 +27,8 @@ export default defineEventHandler(async (event) => {
     total: string
     paidAmount: string
     returnDate: string
-  }>(`SELECT id, "motorbikeId", status, total, "paidAmount", "returnDate" FROM bookings WHERE id = $1`, [id])
+    shopId: string
+  }>(`SELECT id, "motorbikeId", status, total, "paidAmount", "returnDate", "shopId" FROM bookings WHERE id = $1 AND "shopId" = $2`, [id, user.shopId])
   if (!booking) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })
   }
@@ -48,8 +49,8 @@ export default defineEventHandler(async (event) => {
   let lateFeeAmount: number | null = null
   if (status === 'RETURNED') {
     actualReturnAt = new Date()
-    const settings = await queryOne<{ lateFeePerHour: string }>(`SELECT "lateFeePerHour" FROM business_settings WHERE id = 'main'`)
-    lateFeeAmount = calculateLateFee(new Date(booking.returnDate), actualReturnAt, Number(settings?.lateFeePerHour || 0))
+    const shop = await queryOne<{ lateFeePerHour: string }>(`SELECT "lateFeePerHour" FROM shops WHERE id = $1`, [booking.shopId])
+    lateFeeAmount = calculateLateFee(new Date(booking.returnDate), actualReturnAt, Number(shop?.lateFeePerHour || 0))
   }
 
   await withTransaction(async (client) => {
@@ -78,7 +79,7 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  await logAudit(event, user.id, 'UPDATE_BOOKING_STATUS', 'Booking', id, `Status changed to ${status}`)
+  await logAudit(event, user.id, 'UPDATE_BOOKING_STATUS', 'Booking', id, `Status changed to ${status}`, user.shopId)
 
   const updated = await query<{
     id: string
@@ -97,7 +98,7 @@ export default defineEventHandler(async (event) => {
     queryOne<{ fullName: string; email: string | null }>(`SELECT "fullName", email FROM customers WHERE id = $1`, [result.customerId]),
     queryOne<{ name: string }>(`SELECT name FROM motorbikes WHERE id = $1`, [result.motorbikeId])
   ])
-  await notifyBookingStatusChanged(customer?.email, {
+  await notifyBookingStatusChanged(customer?.email, booking.shopId, {
     bookingNumber: result.bookingNumber,
     motorbikeName: motorbike?.name || 'motorbike',
     pickupDate: result.pickupDate,

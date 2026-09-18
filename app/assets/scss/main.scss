@@ -360,6 +360,10 @@ a:hover {
   --font-display: 'Playfair Display', Georgia, serif;
 
   background: var(--color-cream);
+  /* Defensive safety net: catches any stray element (slider nav buttons,
+     long admin-set text, etc.) that would otherwise force page-level
+     horizontal scroll on narrow viewports. */
+  overflow-x: hidden;
 }
 
 .site-public h1,

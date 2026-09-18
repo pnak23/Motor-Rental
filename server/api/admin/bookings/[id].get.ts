@@ -1,8 +1,8 @@
 import { queryOne, query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
   const id = getRouterParam(event, 'id')
 
   const booking = await queryOne(
@@ -18,8 +18,8 @@ export default defineEventHandler(async (event) => {
      JOIN motorbikes m ON m.id = b."motorbikeId"
      LEFT JOIN locations pl ON pl.id = b."pickupLocationId"
      LEFT JOIN locations rl ON rl.id = b."returnLocationId"
-     WHERE b.id = $1`,
-    [id]
+     WHERE b.id = $1 AND b."shopId" = $2`,
+    [id, user.shopId]
   )
   if (!booking) {
     throw createError({ statusCode: 404, statusMessage: 'Booking not found' })

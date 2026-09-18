@@ -1,11 +1,11 @@
 import { motorbikeSchema } from '../../../utils/schemas'
 import { query, newId } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 import { logAudit } from '../../../utils/audit'
 import { slugify } from '../../../utils/response'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN'])
   const parsed = motorbikeSchema.safeParse(await readBody(event))
   if (!parsed.success) {
     throw createError({ statusCode: 400, statusMessage: parsed.error.issues[0]?.message || 'Invalid motorbike data' })
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const id = newId()
   const rows = await query(
     `INSERT INTO motorbikes (
-      id, name, slug, brand, model, year, "engineCc", "plateNumber", "plateProvince", color, "keyType",
+      id, "shopId", name, slug, brand, model, year, "engineCc", "plateNumber", "plateProvince", color, "keyType",
       "categoryId", transmission, "fuelType", "seatCapacity", "fuelConsumption",
       description, status, featured, "helmetIncluded", "phoneHolder", "usbCharger",
       "goodForCity", "goodForLongTrip", "isNewBike", popular,
@@ -35,10 +35,10 @@ export default defineEventHandler(async (event) => {
       "createdAt", "updatedAt"
     ) VALUES (
       $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,
-      $21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36, now(), now()
+      $21,$22,$23,$24,$25,$26,$27,$28,$29,$30,$31,$32,$33,$34,$35,$36,$37, now(), now()
     ) RETURNING *`,
     [
-      id, d.name, slug, d.brand, d.model, d.year ?? null, d.engineCc, d.plateNumber ?? null, d.plateProvince ?? null, d.color ?? null, d.keyType,
+      id, user.shopId, d.name, slug, d.brand, d.model, d.year ?? null, d.engineCc, d.plateNumber ?? null, d.plateProvince ?? null, d.color ?? null, d.keyType,
       d.categoryId ?? null, d.transmission, d.fuelType, d.seatCapacity ?? null, d.fuelConsumption ?? null,
       d.description ?? null, d.status, d.featured, d.helmetIncluded, d.phoneHolder, d.usbCharger,
       d.goodForCity, d.goodForLongTrip, d.isNewBike, d.popular,
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     ]
   )
 
-  await logAudit(event, user.id, 'CREATE_MOTORBIKE', 'Motorbike', id, `Created ${d.name}`)
+  await logAudit(event, user.id, 'CREATE_MOTORBIKE', 'Motorbike', id, `Created ${d.name}`, user.shopId)
 
   return { success: true, data: rows[0] }
 })

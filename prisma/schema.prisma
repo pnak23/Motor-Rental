@@ -99,11 +99,84 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Which shop this user belongs to. NULL means a platform-level super
+  // admin who manages Shop records, not any single shop's data.
+  shopId String?
+  shop   Shop?   @relation(fields: [shopId], references: [id])
+
   auditLogs          AuditLog[]
   bookingStatusEdits BookingStatusHistory[]
   passwordResetTokens PasswordResetToken[]
 
+  accessRequestsMade      ShopAccessRequest[] @relation("RequestedAccess")
+  accessRequestsAsTarget  ShopAccessRequest[] @relation("AccessTarget")
+  accessRequestsResponded ShopAccessRequest[] @relation("RespondedAccess")
+
+  @@index([shopId])
   @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// SHOPS
+// ─────────────────────────────────────────────
+
+/// An independently owned rental shop. Each shop manages its own bikes,
+/// locations, bookings, staff, and payment account; shops never see each
+/// other's data. Platform-level super admins (User.shopId = NULL) create
+/// and manage Shop records via the platform admin area.
+model Shop {
+  id     String  @id @default(cuid())
+  slug   String  @unique
+  name   String
+  logoUrl String?
+
+  phone    String?
+  email    String?
+  address  String?
+  telegram String?
+  whatsapp String?
+
+  khqrAccountId      String?
+  khqrMerchantName   String?
+  khqrMerchantCity   String?
+  khqrImageUrl       String?
+  khqrInstructions   String?
+  abaInstructions    String?
+  acledaInstructions String?
+  wingInstructions   String?
+  cardInstructions   String?
+
+  lateFeePerHour Decimal @default(0) @db.Decimal(10, 2)
+  minRentalDays  Int     @default(1)
+  maxRentalDays  Int     @default(60)
+
+  depositPolicy          String?
+  fuelPolicy             String?
+  lateReturnPolicy       String?
+  damagePolicy           String?
+  cancellationPolicy     String?
+  accidentPolicy         String?
+  trafficViolationPolicy String?
+  helmetPolicy           String?
+  minimumAge             Int?    @default(18)
+  requiredDocuments      String?
+
+  isActive Boolean @default(true)
+  /// Lifecycle status controlled from the Platform Super Admin Shop Control Center. Kept in sync with `isActive`.
+  status           String    @default("ACTIVE")
+  suspendedReason  String?
+  statusChangedAt  DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  users          User[]
+  motorbikes     Motorbike[]
+  locations      Location[]
+  bookings       Booking[]
+  auditLogs      AuditLog[]
+  accessRequests ShopAccessRequest[]
+
+  @@map("shops")
 }
 
 model PasswordResetToken {
@@ -146,6 +219,9 @@ model Motorbike {
   plateProvince String?
   color       String?
   keyType     KeyType @default(NORMAL_KEY)
+
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id])
 
   categoryId   String?
   category     Category?    @relation(fields: [categoryId], references: [id])
@@ -192,6 +268,7 @@ model Motorbike {
 
   @@index([slug])
   @@index([status])
+  @@index([shopId])
   @@map("motorbikes")
 }
 
@@ -249,9 +326,13 @@ model Location {
   isActive    Boolean @default(true)
   sortOrder   Int     @default(0)
 
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id])
+
   pickupBookings Booking[] @relation("PickupLocation")
   returnBookings Booking[] @relation("ReturnLocation")
 
+  @@index([shopId])
   @@map("locations")
 }
 
@@ -289,6 +370,11 @@ model Customer {
 model Booking {
   id            String @id @default(cuid())
   bookingNumber String @unique
+
+  // Denormalized from Motorbike.shopId at creation time so booking
+  // list/filter queries don't need to join through motorbikeId.
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id])
 
   motorbikeId String
   motorbike   Motorbike @relation(fields: [motorbikeId], references: [id])
@@ -339,6 +425,7 @@ model Booking {
   @@index([pickupDate])
   @@index([returnDate])
   @@index([status])
+  @@index([shopId])
   @@map("bookings")
 }
 
@@ -422,8 +509,10 @@ model ContactMessage {
   @@map("contact_messages")
 }
 
-/// Singleton table (single row, id = "main") holding all editable
-/// business content so nothing is hardcoded in the frontend.
+/// Singleton table (single row, id = "main") holding platform-wide
+/// branding/content shown across the whole marketplace site (not any one
+/// shop). Per-shop contact info, payment accounts, and policies live on
+/// Shop instead.
 model BusinessSetting {
   id String @id @default("main")
 
@@ -431,12 +520,7 @@ model BusinessSetting {
   logoUrl      String?
   faviconUrl   String?
   description  String?
-  phone        String?
-  email        String?
-  address      String?
 
-  telegram  String?
-  whatsapp  String?
   facebook  String?
   instagram String?
   tiktok    String?
@@ -456,31 +540,7 @@ model BusinessSetting {
 
   footerText String?
 
-  khqrAccountId      String?
-  khqrMerchantName   String?
-  khqrMerchantCity   String?
-  khqrImageUrl       String?
-  khqrInstructions   String?
-  abaInstructions    String?
-  acledaInstructions String?
-  wingInstructions   String?
-  cardInstructions   String?
-
   emailNotificationsEnabled Boolean @default(true)
-  lateFeePerHour            Decimal @default(0) @db.Decimal(10, 2)
-
-  minRentalDays Int @default(1)
-  maxRentalDays Int @default(60)
-  depositPolicy  String?
-  fuelPolicy     String?
-  lateReturnPolicy String?
-  damagePolicy   String?
-  cancellationPolicy String?
-  accidentPolicy String?
-  trafficViolationPolicy String?
-  helmetPolicy   String?
-  minimumAge     Int? @default(18)
-  requiredDocuments String?
 
   updatedAt DateTime @updatedAt
 
@@ -495,6 +555,8 @@ model AuditLog {
   id          String   @id @default(cuid())
   userId      String?
   user        User?    @relation(fields: [userId], references: [id])
+  shopId      String?
+  shop        Shop?    @relation(fields: [shopId], references: [id])
   action      String
   entityType  String?
   entityId    String?
@@ -503,6 +565,36 @@ model AuditLog {
   createdAt   DateTime @default(now())
 
   @@index([userId])
+  @@index([shopId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+/// A Platform Super Admin's request to access one shop's dashboard as its
+/// own user (impersonation). Must be approved by that shop's Admin before
+/// the "enter" step (see impersonate.post.ts) will issue a session.
+model ShopAccessRequest {
+  id     String @id @default(cuid())
+  shopId String
+  shop   Shop   @relation(fields: [shopId], references: [id])
+
+  requestedById String?
+  requestedBy   User?   @relation("RequestedAccess", fields: [requestedById], references: [id])
+  targetUserId  String?
+  targetUser    User?   @relation("AccessTarget", fields: [targetUserId], references: [id])
+  respondedById String?
+  respondedBy   User?   @relation("RespondedAccess", fields: [respondedById], references: [id])
+
+  reason       String
+  /// PENDING | APPROVED | DENIED | EXPIRED | USED
+  status       String    @default("PENDING")
+  responseNote String?
+  requestedAt  DateTime  @default(now())
+  respondedAt  DateTime?
+  expiresAt    DateTime
+  usedAt       DateTime?
+
+  @@index([shopId])
+  @@index([status])
+  @@map("shop_access_requests")
 }

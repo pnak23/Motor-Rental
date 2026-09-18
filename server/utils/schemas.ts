@@ -177,23 +177,27 @@ export const maintenanceSchema = z.object({
   status: z.enum(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED']).default('SCHEDULED')
 })
 
+/** A shop's own users are always Admin or Staff — SUPER_ADMIN is reserved for platform-level accounts (shopId null). */
 export const userCreateSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(1),
-  role: z.enum(['SUPER_ADMIN', 'ADMIN', 'STAFF']).default('STAFF')
+  role: z.enum(['ADMIN', 'STAFF']).default('STAFF')
 })
 
-export const settingsSchema = z.object({
+export const userUpdateSchema = z.object({
+  name: z.string().min(1).optional(),
+  role: z.enum(['ADMIN', 'STAFF']).optional(),
+  isActive: z.boolean().optional(),
+  password: z.string().min(8).optional()
+})
+
+/** Platform-wide branding, shown across the whole marketplace site (not any one shop). */
+export const platformSettingsSchema = z.object({
   businessName: z.string().min(1).optional(),
   logoUrl: z.string().optional().nullable(),
   faviconUrl: z.string().optional().nullable(),
   description: z.string().optional().nullable(),
-  phone: z.string().optional().nullable(),
-  email: z.string().optional().nullable(),
-  address: z.string().optional().nullable(),
-  telegram: z.string().optional().nullable(),
-  whatsapp: z.string().optional().nullable(),
   facebook: z.string().optional().nullable(),
   instagram: z.string().optional().nullable(),
   tiktok: z.string().optional().nullable(),
@@ -208,6 +212,18 @@ export const settingsSchema = z.object({
   aboutWhyChooseUs: z.string().optional().nullable(),
   aboutImage: z.string().optional().nullable(),
   footerText: z.string().optional().nullable(),
+  emailNotificationsEnabled: z.coerce.boolean().optional()
+})
+
+/** A single shop's own contact info, payment account, and policies. */
+export const shopSettingsSchema = z.object({
+  name: z.string().min(1).optional(),
+  logoUrl: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  telegram: z.string().optional().nullable(),
+  whatsapp: z.string().optional().nullable(),
   minRentalDays: z.coerce.number().int().optional(),
   maxRentalDays: z.coerce.number().int().optional(),
   depositPolicy: z.string().optional().nullable(),
@@ -229,6 +245,65 @@ export const settingsSchema = z.object({
   acledaInstructions: z.string().optional().nullable(),
   wingInstructions: z.string().optional().nullable(),
   cardInstructions: z.string().optional().nullable(),
-  emailNotificationsEnabled: z.coerce.boolean().optional(),
   lateFeePerHour: z.coerce.number().min(0).optional()
 })
+
+/** Platform super admin creating a brand-new shop plus its first (owner) admin. */
+export const shopCreateSchema = z.object({
+  name: z.string().min(1),
+  slug: z
+    .string()
+    .min(1)
+    .regex(/^[a-z0-9-]+$/, 'Slug may only contain lowercase letters, numbers, and hyphens')
+    .optional(),
+  phone: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  ownerEmail: z.string().email(),
+  ownerPassword: z.string().min(8),
+  ownerName: z.string().min(1)
+})
+
+/** Platform super admin editing any one shop's own info (name/slug immutable here). */
+export const shopUpdateSchema = z.object({
+  name: z.string().min(1).optional(),
+  isActive: z.coerce.boolean().optional(),
+  logoUrl: z.string().optional().nullable(),
+  phone: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
+  telegram: z.string().optional().nullable(),
+  whatsapp: z.string().optional().nullable(),
+  minRentalDays: z.coerce.number().int().optional(),
+  maxRentalDays: z.coerce.number().int().optional(),
+  depositPolicy: z.string().optional().nullable(),
+  fuelPolicy: z.string().optional().nullable(),
+  lateReturnPolicy: z.string().optional().nullable(),
+  damagePolicy: z.string().optional().nullable(),
+  cancellationPolicy: z.string().optional().nullable(),
+  accidentPolicy: z.string().optional().nullable(),
+  trafficViolationPolicy: z.string().optional().nullable(),
+  helmetPolicy: z.string().optional().nullable(),
+  minimumAge: z.coerce.number().int().optional().nullable(),
+  requiredDocuments: z.string().optional().nullable(),
+  khqrAccountId: z.string().optional().nullable(),
+  khqrMerchantName: z.string().optional().nullable(),
+  khqrMerchantCity: z.string().optional().nullable(),
+  khqrImageUrl: z.string().optional().nullable(),
+  khqrInstructions: z.string().optional().nullable(),
+  abaInstructions: z.string().optional().nullable(),
+  acledaInstructions: z.string().optional().nullable(),
+  wingInstructions: z.string().optional().nullable(),
+  cardInstructions: z.string().optional().nullable(),
+  lateFeePerHour: z.coerce.number().min(0).optional()
+})
+
+export const shopStatusSchema = z
+  .object({
+    status: z.enum(['ACTIVE', 'PENDING', 'SUSPENDED', 'CLOSED']),
+    reason: z.string().min(3).optional()
+  })
+  .refine((d) => d.status !== 'SUSPENDED' || !!d.reason, {
+    message: 'A reason is required to suspend a shop',
+    path: ['reason']
+  })

@@ -1,5 +1,5 @@
 import { query, queryOne } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 const SORTABLE_COLUMNS: Record<string, string> = {
   pickupDate: 'b."pickupDate"',
@@ -10,7 +10,7 @@ const SORTABLE_COLUMNS: Record<string, string> = {
 }
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
   const q = getQuery(event)
   const page = Math.max(1, Number(q.page) || 1)
   const pageSize = Math.min(100, Math.max(1, Number(q.pageSize) || 20))
@@ -25,6 +25,9 @@ export default defineEventHandler(async (event) => {
 
   const where: string[] = []
   const params: unknown[] = []
+
+  params.push(user.shopId)
+  where.push(`b."shopId" = $${params.length}`)
 
   if (status) {
     params.push(status)

@@ -36,6 +36,7 @@ interface ReminderBookingRow {
   customerName: string
   customerEmail: string | null
   motorbikeName: string
+  shopId: string
 }
 
 export default defineEventHandler(async (event) => {
@@ -45,7 +46,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const upcomingPickups = await query<ReminderBookingRow>(
-    `SELECT b.id, b."bookingNumber", b."pickupDate", b."returnDate", b.total, b."paidAmount", b.status,
+    `SELECT b.id, b."bookingNumber", b."pickupDate", b."returnDate", b.total, b."paidAmount", b.status, b."shopId",
             c."fullName" as "customerName", c.email as "customerEmail", m.name as "motorbikeName"
      FROM bookings b
      JOIN customers c ON c.id = b."customerId"
@@ -57,7 +58,7 @@ export default defineEventHandler(async (event) => {
     [LOOKAHEAD_HOURS]
   )
   for (const b of upcomingPickups) {
-    await notifyPickupReminder(b.customerEmail, {
+    await notifyPickupReminder(b.customerEmail, b.shopId, {
       bookingNumber: b.bookingNumber,
       motorbikeName: b.motorbikeName,
       pickupDate: b.pickupDate,
@@ -71,7 +72,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const upcomingReturns = await query<ReminderBookingRow>(
-    `SELECT b.id, b."bookingNumber", b."pickupDate", b."returnDate", b.total, b."paidAmount", b.status,
+    `SELECT b.id, b."bookingNumber", b."pickupDate", b."returnDate", b.total, b."paidAmount", b.status, b."shopId",
             c."fullName" as "customerName", c.email as "customerEmail", m.name as "motorbikeName"
      FROM bookings b
      JOIN customers c ON c.id = b."customerId"
@@ -83,7 +84,7 @@ export default defineEventHandler(async (event) => {
     [LOOKAHEAD_HOURS]
   )
   for (const b of upcomingReturns) {
-    await notifyReturnReminder(b.customerEmail, {
+    await notifyReturnReminder(b.customerEmail, b.shopId, {
       bookingNumber: b.bookingNumber,
       motorbikeName: b.motorbikeName,
       pickupDate: b.pickupDate,

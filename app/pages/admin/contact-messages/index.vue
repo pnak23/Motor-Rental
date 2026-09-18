@@ -17,7 +17,16 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin-auth', title: 'Contact Messages' })
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin-auth', function () {
+    const auth = useAuthStore()
+    if (auth.user && (auth.user.shopId || auth.user.role !== 'SUPER_ADMIN')) {
+      return navigateTo('/admin')
+    }
+  }],
+  title: 'Contact Messages'
+})
 
 interface ContactMessage {
   id: string

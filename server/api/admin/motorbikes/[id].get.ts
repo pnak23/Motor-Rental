@@ -1,11 +1,11 @@
 import { queryOne, query } from '../../../utils/db'
-import { requireAuth } from '../../../utils/auth'
+import { requireShopAdmin } from '../../../utils/auth'
 
 export default defineEventHandler(async (event) => {
-  await requireAuth(event)
+  const user = await requireShopAdmin(event)
   const id = getRouterParam(event, 'id')
 
-  const motorbike = await queryOne(`SELECT * FROM motorbikes WHERE id = $1`, [id])
+  const motorbike = await queryOne(`SELECT * FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [id, user.shopId])
   if (!motorbike) {
     throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
   }

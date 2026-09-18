@@ -15,10 +15,10 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: 'Angkor Wheels Rental — Motorbike Rental in Siem Reap',
+      title: 'Siem Reap Wheels — Compare Motorbike Rental Shops in Siem Reap',
       meta: [
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Reliable, affordable motorbike rental in Siem Reap, Cambodia. Automatic scooters and manual bikes for exploring Angkor and beyond.' }
+        { name: 'description', content: 'Compare and book motorbikes from trusted local rental shops in Siem Reap, Cambodia. Automatic scooters and manual bikes for exploring Angkor and beyond.' }
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/images/favicon.svg' }
@@ -48,6 +48,7 @@ export default defineNuxtConfig({
     errorHandler: '~~/server/error-handler',
     experimental: {
       // allow larger multipart bodies for image uploads
+      websocket: true
     }
   },
   routeRules: {

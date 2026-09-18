@@ -69,4 +69,29 @@ const label = computed(() => props.status.replace(/_/g, ' '))
   background: #e6e6e6;
   color: #4a4a4a;
 }
+.status-badge--active {
+  background: #dbeee0;
+  color: #256b3f;
+}
+.status-badge--suspended {
+  background: #fbdcd6;
+  color: #a3341c;
+}
+.status-badge--approved {
+  background: #dbeee0;
+  color: #256b3f;
+}
+.status-badge--denied {
+  background: #fbdcd6;
+  color: #a3341c;
+}
+.status-badge--expired,
+.status-badge--used {
+  background: #e6e6e6;
+  color: #4a4a4a;
+}
+.status-badge--closed {
+  background: #e6e6e6;
+  color: #4a4a4a;
+}
 </style>

@@ -4,21 +4,21 @@
       <h3 class="h5 font-display mb-3">{{ t('bookingForm.rentThisMotorbike') }}</h3>
 
       <div class="row g-2 mb-2">
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupDate') }}</label>
           <input v-model="pickupDate" type="date" class="form-control" :min="today" @change="checkAvailability" />
         </div>
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupTime') }}</label>
           <input v-model="pickupTime" type="time" class="form-control" @change="checkAvailability" />
         </div>
       </div>
       <div class="row g-2 mb-3">
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnDate') }}</label>
           <input v-model="returnDate" type="date" class="form-control" :min="pickupDate || today" @change="checkAvailability" />
         </div>
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnTime') }}</label>
           <input v-model="returnTime" type="time" class="form-control" @change="checkAvailability" />
         </div>
@@ -26,14 +26,14 @@
       <p class="small text-muted mb-3"><i class="bi bi-info-circle me-1" />{{ t('bookingForm.halfDayHint') }}</p>
 
       <div class="row g-2 mb-3">
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupLocation') }}</label>
           <select v-model="pickupLocationId" class="form-select">
             <option value="">{{ t('bookingForm.selectLocation') }}</option>
             <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
           </select>
         </div>
-        <div class="col-6">
+        <div class="col-12 col-sm-6">
           <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnLocation') }}</label>
           <select v-model="returnLocationId" class="form-select">
             <option value="">{{ t('bookingForm.sameAsPickup') }}</option>
@@ -81,27 +81,27 @@
           <div class="col-12">
             <input v-model="customer.fullName" required type="text" class="form-control mb-2" :placeholder="t('bookingForm.fullName')" />
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <input v-model="customer.phone" required type="tel" class="form-control mb-2" :placeholder="t('bookingForm.phone')" />
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <input v-model="customer.email" type="email" class="form-control mb-2" :placeholder="t('bookingForm.email')" />
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <input v-model="customer.nationality" type="text" class="form-control mb-2" :placeholder="t('bookingForm.nationality')" />
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <input v-model="customer.telegram" type="text" class="form-control mb-2" :placeholder="t('bookingForm.telegramOptional')" />
           </div>
 
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <select v-model="customer.idType" class="form-select mb-2">
               <option value="">{{ t('bookingForm.idType') }}</option>
               <option value="ID_CARD">{{ t('bookingForm.idCard') }}</option>
               <option value="PASSPORT">{{ t('bookingForm.passport') }}</option>
             </select>
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <input v-model="customer.passportId" type="text" class="form-control mb-2" :placeholder="t('bookingForm.idNumberPlaceholder')" />
           </div>
           <div class="col-12">
@@ -136,7 +136,7 @@
 
           <div v-if="paymentMethod === 'CARD'" class="col-12">
             <div class="payment-instructions p-3 mt-2">
-              <p class="small mb-0">{{ settings?.cardInstructions || t('bookingForm.noInstructionsYet') }}</p>
+              <p class="small mb-0">{{ props.bike.shopCardInstructions || t('bookingForm.noInstructionsYet') }}</p>
             </div>
           </div>
 
@@ -161,17 +161,17 @@
                 </p>
               </template>
               <template v-else>
-                <img v-if="paymentMethod === 'KHQR' && settings?.khqrImageUrl" :src="settings.khqrImageUrl" alt="KHQR" class="khqr-image mb-2" />
+                <img v-if="paymentMethod === 'KHQR' && props.bike.shopKhqrImageUrl" :src="props.bike.shopKhqrImageUrl" alt="KHQR" class="khqr-image mb-2" />
                 <p class="small mb-0">{{ currentInstructions || t('bookingForm.noInstructionsYet') }}</p>
               </template>
             </div>
           </div>
 
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <label class="form-label small text-muted mb-1">{{ t('bookingForm.amountPaid') }}</label>
             <input v-model.number="paidAmount" type="number" step="0.01" min="0" class="form-control" />
           </div>
-          <div class="col-6">
+          <div class="col-12 col-sm-6">
             <label class="form-label small text-muted mb-1">{{ t('bookingForm.transactionRef') }}</label>
             <input v-model="paymentReference" type="text" class="form-control" :placeholder="t('bookingForm.transactionRefPlaceholder')" />
           </div>
@@ -212,7 +212,7 @@
 
       <div class="receipt-print text-start bg-gray-light rounded p-3 mb-3">
         <div class="text-center mb-3">
-          <p class="fw-600 mb-0">{{ settings?.businessName || 'Angkor Wheels Rental' }}</p>
+          <p class="fw-600 mb-0">{{ props.bike.shopName || 'Your shop' }}</p>
           <p class="small text-muted mb-0">{{ t('bookingForm.receiptTitle') }}</p>
         </div>
         <p class="small mb-1"><strong>{{ t('bookingForm.bookingNumber') }}</strong> <span class="font-mono">{{ confirmation.bookingNumber }}</span></p>
@@ -259,7 +259,7 @@
         <a v-if="whatsappLink" :href="whatsappLink" target="_blank" rel="noopener" class="btn btn-outline-charcoal">
           <i class="bi bi-whatsapp me-2" />{{ t('bookingForm.contactUsWhatsapp') }}
         </a>
-        <a v-if="settings?.phone" :href="`tel:${settings.phone}`" class="btn btn-outline-charcoal">
+        <a v-if="props.bike.shopPhone" :href="`tel:${props.bike.shopPhone}`" class="btn btn-outline-charcoal">
           <i class="bi bi-telephone me-2" />{{ t('bookingForm.callUs') }}
         </a>
       </div>
@@ -274,6 +274,16 @@ const props = defineProps<{
     dailyPrice: string | number
     deliveryFee: string | number
     deposit: string | number
+    shopName?: string | null
+    shopPhone?: string | null
+    shopTelegram?: string | null
+    shopWhatsapp?: string | null
+    shopKhqrImageUrl?: string | null
+    shopKhqrInstructions?: string | null
+    shopAbaInstructions?: string | null
+    shopAcledaInstructions?: string | null
+    shopWingInstructions?: string | null
+    shopCardInstructions?: string | null
   }
 }>()
 
@@ -304,8 +314,6 @@ interface Confirmation {
 
 const { t, locale } = useI18n()
 const toast = useToast()
-const settingsStore = useSettingsStore()
-const settings = computed(() => settingsStore.settings)
 
 const today = new Date().toISOString().slice(0, 10)
 const pickupDate = ref('')
@@ -426,7 +434,7 @@ async function refreshKhqr() {
     try {
       khqr.value = await useApi<KhqrResult>('/api/public/payments/khqr', {
         method: 'POST',
-        body: { amount: paidAmount.value, reference: customer.phone || undefined }
+        body: { motorbikeId: props.bike.id, amount: paidAmount.value, reference: customer.phone || undefined }
       })
     } catch {
       khqr.value = { available: false }
@@ -438,19 +446,17 @@ async function refreshKhqr() {
 watch([paymentMethod, paidAmount], refreshKhqr)
 
 const currentInstructions = computed(() => {
-  const s = settings.value
-  if (!s) return ''
   switch (paymentMethod.value) {
     case 'KHQR':
-      return s.khqrInstructions
+      return props.bike.shopKhqrInstructions
     case 'ABA':
-      return s.abaInstructions
+      return props.bike.shopAbaInstructions
     case 'ACLEDA':
-      return s.acledaInstructions
+      return props.bike.shopAcledaInstructions
     case 'WING':
-      return s.wingInstructions
+      return props.bike.shopWingInstructions
     case 'CARD':
-      return s.cardInstructions
+      return props.bike.shopCardInstructions
     default:
       return ''
   }
@@ -458,7 +464,7 @@ const currentInstructions = computed(() => {
 
 onMounted(async () => {
   try {
-    locations.value = await useApi<Location[]>('/api/public/locations')
+    locations.value = await useApi<Location[]>('/api/public/locations', { query: { motorbikeId: props.bike.id } })
   } catch {
     locations.value = []
   }
@@ -554,19 +560,21 @@ function printReceipt() {
 }
 
 const telegramLink = computed(() => {
-  const t = settings.value?.telegram?.replace('@', '')
+  const t = props.bike.shopTelegram?.replace('@', '')
   return t ? `https://t.me/${t}` : null
 })
 const whatsappLink = computed(() => {
-  const w = settings.value?.whatsapp?.replace(/\D/g, '')
+  const w = props.bike.shopWhatsapp?.replace(/\D/g, '')
   return w ? `https://wa.me/${w}` : null
 })
 </script>
 
 <style scoped>
-.booking-form {
-  position: sticky;
-  top: 90px;
+@media (min-width: 992px) {
+  .booking-form {
+    position: sticky;
+    top: 90px;
+  }
 }
 .quote-box {
   border-radius: var(--radius-md);
@@ -586,6 +594,7 @@ const whatsappLink = computed(() => {
 .id-preview {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 .id-preview__img {

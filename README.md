@@ -39,7 +39,11 @@ npm run db:seed                          # seeds demo data + admin login
 npm run dev                              # http://localhost:3000
 ```
 
-**Admin login (seeded):** `admin@angkorwheels.com` / `Admin123!`
+**Admin login (seeded):**
+- Platform super admin: `admin@siemreapwheels.com` / `Admin123!`
+- Angkor Wheels Rental shop owner: `owner@angkorwheels.com` / `Owner123!`
+- Pub Street Scooters shop owner: `owner@pubstreetscooters.com` / `Owner123!`
+
 Admin dashboard: **http://localhost:3000/admin**
 
 ### Production build

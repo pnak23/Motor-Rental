@@ -1,13 +1,18 @@
 import { unlink } from 'node:fs/promises'
 import { join } from 'node:path'
 import { query, queryOne, newId } from '../../../../../utils/db'
-import { requireAuth } from '../../../../../utils/auth'
+import { requireShopAdmin } from '../../../../../utils/auth'
 import { logAudit } from '../../../../../utils/audit'
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event, ['SUPER_ADMIN', 'ADMIN'])
+  const user = await requireShopAdmin(event, ['SUPER_ADMIN', 'ADMIN'])
   const motorbikeId = getRouterParam(event, 'id')
   const imageId = getRouterParam(event, 'imageId')
+
+  const motorbike = await queryOne(`SELECT id FROM motorbikes WHERE id = $1 AND "shopId" = $2`, [motorbikeId, user.shopId])
+  if (!motorbike) {
+    throw createError({ statusCode: 404, statusMessage: 'Motorbike not found' })
+  }
 
   const image = await queryOne<{ filename: string; isPrimary: boolean }>(
     `SELECT filename, "isPrimary" FROM motorbike_images WHERE id = $1 AND "motorbikeId" = $2`,
@@ -39,7 +44,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  await logAudit(event, user.id, 'DELETE_MOTORBIKE_IMAGE', 'Motorbike', motorbikeId ?? newId(), `Deleted image ${imageId}`)
+  await logAudit(event, user.id, 'DELETE_MOTORBIKE_IMAGE', 'Motorbike', motorbikeId ?? newId(), `Deleted image ${imageId}`, user.shopId)
 
   return { success: true, data: null }
 })

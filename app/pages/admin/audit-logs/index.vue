@@ -26,7 +26,16 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({ layout: 'admin', middleware: 'admin-auth', title: 'Audit Logs' })
+definePageMeta({
+  layout: 'admin',
+  middleware: ['admin-auth', function () {
+    const auth = useAuthStore()
+    if (auth.user && auth.user.role !== 'ADMIN') {
+      return navigateTo('/admin')
+    }
+  }],
+  title: 'Audit Logs'
+})
 
 interface AuditLog {
   id: string
