@@ -96,6 +96,10 @@ onBeforeUnmount(() => {
   aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
+  transition: transform 0.4s ease;
+}
+.gallery-main:hover .gallery-main__image {
+  transform: scale(1.04);
 }
 .gallery-zoom-hint {
   position: absolute;
@@ -141,6 +145,13 @@ onBeforeUnmount(() => {
   width: 70px;
   height: 56px;
   background: none;
+  transition:
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+  opacity: 0.7;
+}
+.thumb-btn:hover {
+  opacity: 1;
 }
 .thumb-btn img {
   width: 100%;
@@ -149,6 +160,7 @@ onBeforeUnmount(() => {
 }
 .thumb-btn--active {
   border-color: var(--color-amber);
+  opacity: 1;
 }
 .gallery-fullscreen {
   position: fixed;

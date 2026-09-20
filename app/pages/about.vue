@@ -6,13 +6,17 @@
       <div class="container">
         <div class="row g-5 align-items-center mb-5">
           <div class="col-lg-6" v-reveal>
-            <img
-              :src="settings?.aboutImage || 'https://images.unsplash.com/photo-1596178060810-72660ee8d859?w=1000'"
-              class="img-fluid rounded-4 about-hero-img"
-              alt="Our team"
-            />
+            <div class="about-hero-frame">
+              <img
+                :src="settings?.aboutImage || 'https://images.unsplash.com/photo-1596178060810-72660ee8d859?w=1000'"
+                class="img-fluid rounded-4 about-hero-img"
+                alt="Our team"
+              />
+              <MotorbikeMotif class="about-hero-motif" />
+            </div>
           </div>
           <div class="col-lg-6" v-reveal>
+            <p class="fs-5 fw-600 mb-3">{{ t('about.freedomLead') }}</p>
             <p class="text-muted fs-5">{{ settings?.aboutDescription }}</p>
           </div>
         </div>
@@ -58,7 +62,28 @@ useHead({ title: 'About Us — ' + (settings.value?.businessName || 'RideNow') }
 </script>
 
 <style scoped>
+.about-hero-frame {
+  position: relative;
+}
 .about-hero-img {
   box-shadow: 0 20px 40px rgba(51, 40, 31, 0.18);
+}
+.about-hero-frame .about-hero-motif {
+  position: absolute;
+  width: 90px !important;
+  height: auto;
+  bottom: -20px;
+  right: -16px;
+  color: var(--color-gold, #d4af37);
+  background: var(--color-cream, #f7f2e8);
+  border-radius: 50%;
+  padding: 14px;
+  box-shadow: 0 10px 24px rgba(51, 40, 31, 0.16);
+}
+@media (max-width: 575.98px) {
+  .about-hero-frame .about-hero-motif {
+    width: 64px !important;
+    padding: 10px;
+  }
 }
 </style>

@@ -3,58 +3,74 @@
     <div v-if="!confirmation">
       <h3 class="h5 font-display mb-3">{{ t('bookingForm.rentThisMotorbike') }}</h3>
 
-      <div class="row g-2 mb-2">
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupDate') }}</label>
-          <input v-model="pickupDate" type="date" class="form-control" :min="today" @change="checkAvailability" />
+      <div class="booking-section" :class="{ 'booking-section--done': datesComplete }">
+        <div class="booking-section__header">
+          <span class="booking-section__num"><i v-if="datesComplete" class="bi bi-check-lg" /><template v-else>1</template></span>
+          <span class="booking-section__title">{{ t('bookingForm.pickupDate') }} &amp; {{ t('bookingForm.returnDate') }}</span>
         </div>
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupTime') }}</label>
-          <input v-model="pickupTime" type="time" class="form-control" @change="checkAvailability" />
+        <div class="row g-2 mb-2">
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupDate') }}</label>
+            <input v-model="pickupDate" type="date" class="form-control" :min="today" @change="checkAvailability" />
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupTime') }}</label>
+            <input v-model="pickupTime" type="time" class="form-control" @change="checkAvailability" />
+          </div>
         </div>
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnDate') }}</label>
+            <input v-model="returnDate" type="date" class="form-control" :min="pickupDate || today" @change="checkAvailability" />
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnTime') }}</label>
+            <input v-model="returnTime" type="time" class="form-control" @change="checkAvailability" />
+          </div>
+        </div>
+        <p class="small text-muted mb-0"><i class="bi bi-info-circle me-1" />{{ t('bookingForm.halfDayHint') }}</p>
       </div>
-      <div class="row g-2 mb-3">
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnDate') }}</label>
-          <input v-model="returnDate" type="date" class="form-control" :min="pickupDate || today" @change="checkAvailability" />
-        </div>
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnTime') }}</label>
-          <input v-model="returnTime" type="time" class="form-control" @change="checkAvailability" />
-        </div>
-      </div>
-      <p class="small text-muted mb-3"><i class="bi bi-info-circle me-1" />{{ t('bookingForm.halfDayHint') }}</p>
 
-      <div class="row g-2 mb-3">
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupLocation') }}</label>
-          <select v-model="pickupLocationId" class="form-select">
-            <option value="">{{ t('bookingForm.selectLocation') }}</option>
-            <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-          </select>
+      <div class="booking-section">
+        <div class="booking-section__header">
+          <span class="booking-section__num">2</span>
+          <span class="booking-section__title">{{ t('bookingForm.pickupLocation') }}</span>
         </div>
-        <div class="col-12 col-sm-6">
-          <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnLocation') }}</label>
-          <select v-model="returnLocationId" class="form-select">
-            <option value="">{{ t('bookingForm.sameAsPickup') }}</option>
-            <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-          </select>
+        <div class="row g-2">
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.pickupLocation') }}</label>
+            <select v-model="pickupLocationId" class="form-select">
+              <option value="">{{ t('bookingForm.selectLocation') }}</option>
+              <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
+            </select>
+          </div>
+          <div class="col-12 col-sm-6">
+            <label class="form-label small text-muted mb-1">{{ t('bookingForm.returnLocation') }}</label>
+            <select v-model="returnLocationId" class="form-select">
+              <option value="">{{ t('bookingForm.sameAsPickup') }}</option>
+              <option v-for="loc in locations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
+            </select>
+          </div>
         </div>
       </div>
 
       <div v-if="quote" class="quote-box p-3 mb-3" :class="quote.available ? 'quote-box--ok' : 'quote-box--warn'">
         <template v-if="quote.available">
-          <div class="d-flex justify-content-between small mb-1">
-            <span v-if="quote.isHalfDay">{{ t('bookingForm.halfDayRate') }}</span>
-            <span v-else>{{ quote.days }} day(s) &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
-            <span>${{ quote.subtotal.toFixed(2) }}</span>
+          <p class="quote-box__eyebrow mb-2">{{ t('bookingForm.priceSummary') }}</p>
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <span>
+              <span class="d-block fw-600">{{ t('bookingForm.rentalLabel') }}</span>
+              <span v-if="quote.isHalfDay" class="small text-muted">{{ t('bookingForm.halfDayRate') }}</span>
+              <span v-else class="small text-muted">{{ quote.days }} day(s) &times; ${{ quote.ratePerDay.toFixed(2) }}</span>
+            </span>
+            <span class="fw-600">${{ quote.subtotal.toFixed(2) }}</span>
           </div>
           <div v-if="Number(bike.deliveryFee) > 0" class="d-flex justify-content-between small mb-1">
             <span>{{ t('bookingForm.deliveryFee') }}</span>
             <span>${{ Number(bike.deliveryFee).toFixed(2) }}</span>
           </div>
           <hr class="my-2" />
-          <div class="d-flex justify-content-between fw-600">
+          <div class="d-flex justify-content-between fw-600 fs-5">
             <span>{{ t('bookingForm.total') }}</span>
             <span class="price-tag">${{ quote.total.toFixed(2) }}</span>
           </div>
@@ -76,7 +92,10 @@
       </div>
 
       <form @submit.prevent="submitBooking">
-        <h4 class="h6 mt-4 mb-3">{{ t('bookingForm.yourInformation') }}</h4>
+        <div class="booking-section__header booking-section__header--form">
+          <span class="booking-section__num">3</span>
+          <span class="booking-section__title">{{ t('bookingForm.yourInformation') }}</span>
+        </div>
         <div class="row g-2">
           <div class="col-12">
             <input v-model="customer.fullName" required type="text" class="form-control mb-2" :placeholder="t('bookingForm.fullName')" />
@@ -116,7 +135,10 @@
           </div>
         </div>
 
-        <h4 class="h6 mt-4 mb-3">{{ t('bookingForm.paymentTitle') }}</h4>
+        <div class="booking-section__header booking-section__header--form mt-4">
+          <span class="booking-section__num">4</span>
+          <span class="booking-section__title">{{ t('bookingForm.paymentTitle') }}</span>
+        </div>
         <div class="row g-2">
           <div class="col-12">
             <div class="payment-method-grid">
@@ -334,6 +356,9 @@ const printedAt = ref<Date | null>(null)
 
 const pickupLocationName = computed(() => locations.value.find((l) => l.id === pickupLocationId.value)?.name || '')
 const returnLocationName = computed(() => locations.value.find((l) => l.id === returnLocationId.value)?.name || '')
+
+// Display-only — purely for the section header's check icon, never gates submission.
+const datesComplete = computed(() => !!pickupDate.value && !!returnDate.value)
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])
@@ -576,6 +601,55 @@ const whatsappLink = computed(() => {
     top: 90px;
   }
 }
+
+/* ── Section grouping ── */
+.booking-section {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
+}
+.booking-section__header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.85rem;
+}
+.booking-section__header--form {
+  margin-top: 0.25rem;
+}
+.booking-section__num {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: var(--color-gray-light);
+  color: var(--color-gray-mid);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.booking-section--done .booking-section__num {
+  background: var(--color-amber-deep, var(--color-gold-deep));
+  color: var(--text-on-dark, #fff);
+}
+.booking-section__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+.quote-box__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-gray-mid);
+  font-weight: 600;
+}
+
 .quote-box {
   border-radius: var(--radius-md);
   background: var(--color-gray-light);

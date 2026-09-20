@@ -35,6 +35,8 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5434/motorbike_rental?sch
 ```bash
 npm install
 cp .env.example .env                     # point DATABASE_URL at your Postgres
+npx prisma generate
+npx prisma migrate dev
 psql "$DATABASE_URL" -f prisma/migrations/0001_init/migration.sql
 npm run db:seed                          # seeds demo data + admin login
 npm run dev                              # http://localhost:3000

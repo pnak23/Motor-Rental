@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     '~/assets/scss/main.scss'
   ],
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'RideNow — Compare Motorbike Rental Shops in Cambodia',
       meta: [

@@ -127,12 +127,35 @@ onBeforeUnmount(() => {
   filter: invert(1);
 }
 .nav-link {
+  position: relative;
   font-weight: 500;
   color: var(--color-forest, var(--color-charcoal));
   transition: color 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.1rem;
+  height: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+.nav-link:hover {
+  color: var(--color-gold-deep, var(--color-amber-deep));
+}
+.site-header--transparent .nav-link:hover {
+  color: var(--color-gold, #d4af37);
+}
+.nav-link:hover::after,
+.nav-link.router-link-active::after {
+  transform: scaleX(1);
 }
 .nav-link.router-link-active {
   color: var(--color-gold-deep, var(--color-amber-deep));

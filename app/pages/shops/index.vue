@@ -29,11 +29,11 @@
         <p class="text-muted">{{ t('shops.noShops') }}</p>
       </div>
 
-      <div v-else class="row g-4 pt-3">
+      <TransitionGroup v-else tag="div" name="filter-fade" class="row g-4 pt-3">
         <div v-for="(shop, i) in shops" :key="shop.id" class="col-md-6 col-xl-4" v-reveal :class="`reveal-delay-${i % 4}`">
           <ShopCard :shop="shop" />
         </div>
-      </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>

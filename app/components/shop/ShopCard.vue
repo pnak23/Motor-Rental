@@ -11,7 +11,7 @@
     <div class="shop-card__body">
       <h3 class="h5 font-display mb-1 text-center">{{ shop.name }}</h3>
       <p v-if="shop.province" class="text-center mb-2">
-        <span class="shop-card__province"><i class="bi bi-geo-alt-fill me-1" />{{ shop.province }}</span>
+        <span class="shop-card__province"><span class="shop-card__pin"><i class="bi bi-geo-alt-fill" /></span>{{ shop.province }}</span>
       </p>
       <p v-if="shop.address" class="small text-muted text-center mb-1 shop-card__line">
         <i class="bi bi-geo-alt text-gold" />{{ shop.address }}
@@ -164,6 +164,32 @@ const initials = computed(() =>
   border-radius: 999px;
   background: var(--color-gray-light);
   color: var(--color-forest, var(--color-charcoal));
+}
+.shop-card__pin {
+  position: relative;
+  display: inline-flex;
+  margin-right: 0.3rem;
+}
+.shop-card__pin::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: var(--color-gold, #d4af37);
+  opacity: 0;
+}
+.shop-card:hover .shop-card__pin::before {
+  animation: shopPinPulse 1.3s ease-out 2;
+}
+@keyframes shopPinPulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 .shop-card__cta {
   font-size: 0.85rem;

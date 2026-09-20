@@ -7,31 +7,31 @@
           <p class="text-white-50 mb-3">
             {{ settings?.footerText || settings?.description || 'Reliable motorbike rental in Siem Reap, Cambodia.' }}
           </p>
-          <div class="d-flex gap-3 fs-5">
-            <a v-if="settings?.facebook" :href="settings.facebook" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook" /></a>
-            <a v-if="settings?.instagram" :href="settings.instagram" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram" /></a>
-            <a v-if="settings?.tiktok" :href="settings.tiktok" target="_blank" rel="noopener" aria-label="TikTok"><i class="bi bi-tiktok" /></a>
-            <a v-if="settings?.telegram" :href="telegramLink" target="_blank" rel="noopener" aria-label="Telegram"><i class="bi bi-telegram" /></a>
-            <a v-if="settings?.whatsapp" :href="whatsappLink" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="bi bi-whatsapp" /></a>
+          <div class="d-flex gap-2 fs-5">
+            <a v-if="settings?.facebook" :href="settings.facebook" target="_blank" rel="noopener" aria-label="Facebook" class="footer-social"><i class="bi bi-facebook" /></a>
+            <a v-if="settings?.instagram" :href="settings.instagram" target="_blank" rel="noopener" aria-label="Instagram" class="footer-social"><i class="bi bi-instagram" /></a>
+            <a v-if="settings?.tiktok" :href="settings.tiktok" target="_blank" rel="noopener" aria-label="TikTok" class="footer-social"><i class="bi bi-tiktok" /></a>
+            <a v-if="settings?.telegram" :href="telegramLink" target="_blank" rel="noopener" aria-label="Telegram" class="footer-social"><i class="bi bi-telegram" /></a>
+            <a v-if="settings?.whatsapp" :href="whatsappLink" target="_blank" rel="noopener" aria-label="WhatsApp" class="footer-social"><i class="bi bi-whatsapp" /></a>
           </div>
         </div>
 
         <div class="col-6 col-lg-2">
           <h6 class="text-white mb-3">{{ t('footer.quickLinks') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2">
-            <li><NuxtLink to="/motorbikes" class="text-white-50">{{ t('nav.motorbikes') }}</NuxtLink></li>
-            <li><NuxtLink to="/shops" class="text-white-50">{{ t('nav.shops') }}</NuxtLink></li>
-            <li><NuxtLink to="/about" class="text-white-50">{{ t('nav.about') }}</NuxtLink></li>
-            <li><NuxtLink to="/rental-policy" class="text-white-50">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
-            <li><NuxtLink to="/faq" class="text-white-50">{{ t('nav.faq') }}</NuxtLink></li>
+            <li><NuxtLink to="/motorbikes" class="text-white-50 footer-link">{{ t('nav.motorbikes') }}</NuxtLink></li>
+            <li><NuxtLink to="/shops" class="text-white-50 footer-link">{{ t('nav.shops') }}</NuxtLink></li>
+            <li><NuxtLink to="/about" class="text-white-50 footer-link">{{ t('nav.about') }}</NuxtLink></li>
+            <li><NuxtLink to="/rental-policy" class="text-white-50 footer-link">{{ t('nav.rentalPolicy') }}</NuxtLink></li>
+            <li><NuxtLink to="/faq" class="text-white-50 footer-link">{{ t('nav.faq') }}</NuxtLink></li>
           </ul>
         </div>
 
         <div class="col-6 col-lg-3">
           <h6 class="text-white mb-3">{{ t('footer.locations') }}</h6>
           <ul class="list-unstyled d-flex flex-column gap-2">
-            <li><NuxtLink to="/locations" class="text-white-50">{{ t('footer.allRentalLocations') }}</NuxtLink></li>
-            <li><NuxtLink to="/contact" class="text-white-50">{{ t('footer.contactUs') }}</NuxtLink></li>
+            <li><NuxtLink to="/locations" class="text-white-50 footer-link">{{ t('footer.allRentalLocations') }}</NuxtLink></li>
+            <li><NuxtLink to="/contact" class="text-white-50 footer-link">{{ t('footer.contactUs') }}</NuxtLink></li>
           </ul>
         </div>
 
@@ -69,3 +69,35 @@ const whatsappLink = computed(() => {
   return w ? `https://wa.me/${w}` : '#'
 })
 </script>
+
+<style scoped>
+.footer-link {
+  text-decoration: none;
+  transition:
+    color 0.2s ease,
+    padding-left 0.2s ease;
+}
+.footer-link:hover {
+  color: var(--color-gold, #d4af37) !important;
+  padding-left: 0.25rem;
+}
+.footer-social {
+  width: 38px;
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+.footer-social:hover {
+  background: var(--color-gold, #d4af37);
+  color: var(--color-forest, #263a2e);
+  transform: translateY(-2px);
+}
+</style>

@@ -21,6 +21,16 @@
         <div class="mt-4" v-reveal>
           <p class="eyebrow mb-1">{{ bike.brand }} &middot; {{ bike.categoryName }}</p>
           <h1 class="font-display mb-2">{{ bike.name }}</h1>
+          <p class="quick-specs text-muted mb-3">
+            {{ formatTransmission(bike.transmission) }} &middot; {{ bike.engineCc }}cc &middot; {{ t('motorbikeDetail.seatsCount', { count: bike.seatCapacity || 2 }) }}
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+            <span class="price-tag fs-2">${{ Number(bike.dailyPrice).toFixed(0) }}<span class="fs-6 fw-normal text-muted">{{ t('motorbikeDetail.perDay') }}</span></span>
+            <span class="availability-badge"><i class="bi bi-check-circle-fill me-1" />{{ t('motorbikeDetail.availableNow') }}</span>
+          </div>
+          <button type="button" class="btn btn-amber btn-lg btn-shine d-lg-none mb-3" @click="scrollToBooking">
+            <i class="bi bi-calendar-check me-2" />{{ t('motorbikeDetail.reserveThisBike') }}
+          </button>
           <p class="text-muted">{{ bike.description }}</p>
         </div>
 
@@ -66,7 +76,7 @@
       </div>
 
       <div class="col-lg-5">
-        <div class="booking-sticky d-flex flex-column gap-3">
+        <div id="booking-form" class="booking-sticky d-flex flex-column gap-3">
           <ShopInfoCard v-if="bike.shopSlug" :shop="bike" />
           <BookingForm :bike="bike" />
         </div>
@@ -157,9 +167,30 @@ useHead({
   title: bike.seoTitle || `${bike.name} — Rent in Siem Reap`,
   meta: [{ name: 'description', content: bike.seoDescription || bike.description || '' }]
 })
+
+function formatTransmission(value: string) {
+  return value.replace(/_/g, '-').replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+function scrollToBooking() {
+  document.getElementById('booking-form')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
 </script>
 
 <style scoped>
+.quick-specs {
+  font-weight: 500;
+}
+.availability-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(63, 140, 95, 0.12);
+  color: var(--color-success);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
 .spec-box {
   background: var(--color-gray-light);
   border-radius: var(--radius-md);

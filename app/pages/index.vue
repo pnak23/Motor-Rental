@@ -2,22 +2,37 @@
   <div>
     <!-- Hero -->
     <section class="hero position-relative overflow-hidden">
-      <div class="hero__bg hero__bg--pan" :style="heroImageStyle" />
-      <div class="hero__overlay" />
-      <div class="hero__glow" />
+      <div class="hero__blob hero__blob--a" />
+      <div class="hero__blob hero__blob--b" />
       <div class="container position-relative py-5">
-        <div class="row align-items-center min-vh-hero">
-          <div class="col-lg-8 text-white">
+        <div class="row align-items-center min-vh-hero g-5">
+          <div class="col-lg-6 text-white">
             <p class="eyebrow text-gold-light mb-3 hero-fade-in">{{ t('home.heroLocation') }}</p>
             <h1 class="hero__title font-display mb-4 hero-fade-in-1">
               {{ settings?.heroTitle || t('home.heroTitleDefault') }}
             </h1>
-            <p class="fs-5 text-white-75 mb-4 hero-fade-in-2" style="max-width: 36rem">
+            <p class="fs-5 text-white-75 mb-4 hero-fade-in-2" style="max-width: 34rem">
               {{ settings?.heroSubtitle || t('home.heroSubtitleDefault') }}
             </p>
             <div class="d-flex flex-wrap gap-3 hero-fade-in-3">
               <NuxtLink to="/motorbikes" class="btn btn-amber btn-lg rounded-pill px-4 btn-shine">{{ t('home.exploreMotorbikes') }}</NuxtLink>
               <NuxtLink to="/shops" class="btn btn-lg btn-outline-cream rounded-pill px-4">{{ t('home.bookNow') }}</NuxtLink>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="hero__visual hero-fade-in-2">
+              <div class="hero__frame" :style="{ transform: heroParallax }">
+                <img :src="heroImageUrl" alt="" class="hero__photo" loading="eager" />
+              </div>
+              <RouteMotif class="hero__route route-draw" v-reveal :style="{ transform: heroMotifParallax }" />
+              <span class="hero__pin pin-pulse" :style="{ transform: heroMotifParallax }">
+                <i class="bi bi-geo-alt-fill" />
+              </span>
+              <div class="hero__badge" :style="{ transform: heroMotifParallax }">
+                <span class="hero__badge-icon"><MotorbikeMotif /></span>
+                <span class="hero__badge-text">{{ t('home.heroLocation') }}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -66,8 +81,39 @@
       </div>
     </section>
 
+    <!-- Find Your Ride -->
+    <section class="section bg-white find-ride">
+      <div class="container">
+        <div class="text-center mb-4" v-reveal>
+          <p class="eyebrow mb-1">{{ t('home.findRide.eyebrow') }}</p>
+          <h2 class="font-display">{{ t('home.findRide.title') }}</h2>
+          <p class="text-muted fs-5 mx-auto find-ride__subtitle mt-2">{{ t('home.findRide.subtitle') }}</p>
+        </div>
+
+        <div v-if="rideCategories.length" class="d-flex flex-wrap justify-content-center gap-2 mb-4" v-reveal>
+          <NuxtLink to="/motorbikes" class="filter-pill active">{{ t('home.findRide.all') }}</NuxtLink>
+          <NuxtLink
+            v-for="c in rideCategories"
+            :key="c.id"
+            :to="{ path: '/motorbikes', query: { category: c.slug } }"
+            class="filter-pill"
+          >{{ c.name }}</NuxtLink>
+        </div>
+
+        <div class="row g-4">
+          <div v-for="(bike, i) in rideBikes" :key="bike.id" class="col-6 col-md-4" v-reveal :class="`reveal-delay-${i % 4}`">
+            <MotorbikeCard :bike="bike" />
+          </div>
+        </div>
+
+        <div class="text-center mt-4" v-reveal>
+          <NuxtLink to="/motorbikes" class="btn btn-charcoal btn-lg btn-shine">{{ t('home.findRide.viewAll') }}</NuxtLink>
+        </div>
+      </div>
+    </section>
+
     <!-- Shops -->
-    <section class="section bg-white">
+    <section class="section bg-cream">
       <div class="container">
         <div class="d-flex align-items-end justify-content-between mb-4" v-reveal>
           <div>
@@ -128,7 +174,7 @@
     </section>
 
     <!-- Travel story -->
-    <section class="section bg-cream">
+    <section class="section bg-white">
       <div class="container">
         <div class="row align-items-center g-4 g-lg-5">
           <div class="col-lg-6" v-reveal>
@@ -152,8 +198,29 @@
       </div>
     </section>
 
+    <!-- Your Ride. Your Route. -->
+    <section class="section bg-forest text-white position-relative overflow-hidden journey">
+      <MotorbikeMotif class="journey__bg-motif journey__bg-motif--a" />
+      <MotorbikeMotif class="journey__bg-motif journey__bg-motif--b" />
+      <div class="container position-relative">
+        <div class="text-center mb-5" v-reveal>
+          <p class="eyebrow text-gold-light mb-1">{{ t('home.journey.eyebrow') }}</p>
+          <h2 class="font-display">{{ t('home.journey.title') }}</h2>
+          <p class="mt-2 mb-0 mx-auto journey__subtitle" style="opacity: 0.82">{{ t('home.journey.subtitle') }}</p>
+        </div>
+
+        <div class="journey__stepper" v-reveal>
+          <div v-for="stop in journeyStops" :key="stop" class="journey__stop">
+            <span class="journey__dot"><i class="bi bi-geo-alt-fill" /></span>
+            <span class="journey__label">{{ t(stop) }}</span>
+          </div>
+          <span class="journey__marker"><i class="bi bi-scooter" /></span>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ teaser -->
-    <section class="section bg-white">
+    <section class="section bg-cream">
       <div class="container">
         <div class="row justify-content-between align-items-end mb-4" v-reveal>
           <div class="col-lg-6">
@@ -186,6 +253,7 @@
       <div class="cta__glow" />
       <TempleSilhouette class="cta__silhouette cta__silhouette--top" />
       <TempleSilhouette class="cta__silhouette cta__silhouette--bottom" />
+      <MotorbikeMotif class="cta__motif" v-reveal />
       <div class="container position-relative py-5" v-reveal>
         <p class="eyebrow text-gold-light mb-2">{{ t('home.readyWhenYouAre') }}</p>
         <h2 class="font-display display-6 mb-3">{{ t('home.readyToExplore') }}</h2>
@@ -225,22 +293,53 @@ interface Faq {
   question: string
   answer: string
 }
+interface RideBike {
+  id: string
+  name: string
+  slug: string
+  brand: string
+  engineCc: number
+  transmission: string
+  dailyPrice: string
+  isNewBike?: boolean
+  image?: string | null
+  shopName?: string | null
+  shopSlug?: string | null
+  categoryName?: string | null
+  categorySlug?: string | null
+}
+interface Category {
+  id: string
+  name: string
+  slug: string
+}
+interface MotorbikesResponse {
+  items: RideBike[]
+  total: number
+  filters: { brands: string[]; categories: Category[] }
+}
 
-const [shops, banners, faqs] = await Promise.all([
+const [shops, banners, faqs, rideRes] = await Promise.all([
   useApi<Shop[]>('/api/public/shops'),
   useApi<Banner[]>('/api/public/banners'),
-  useApi<Faq[]>('/api/public/faqs')
+  useApi<Faq[]>('/api/public/faqs'),
+  useApi<MotorbikesResponse>('/api/public/motorbikes', { query: { pageSize: 6, sort: 'popular' } })
 ])
+
+const rideBikes = rideRes.items
+const rideCategories = rideRes.filters.categories.slice(0, 5)
 
 const shopSliderEl = ref<HTMLElement | null>(null)
 function scrollShops(dir: 1 | -1) {
   shopSliderEl.value?.scrollBy({ left: dir * 320, behavior: 'smooth' })
 }
 
-const heroImageStyle = computed(() => {
-  const img = settings.value?.heroImage || 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=1800'
-  return { backgroundImage: `url(${img})` }
-})
+const heroImageUrl = computed(() => settings.value?.heroImage || 'https://images.unsplash.com/photo-1563492065599-3520f775eeed?w=1800')
+
+const heroOffset = useParallax(0.06)
+const heroMotifOffset = useParallax(0.03)
+const heroParallax = computed(() => `translateY(${Math.min(heroOffset.value, 46)}px)`)
+const heroMotifParallax = computed(() => `translateY(${Math.min(heroMotifOffset.value, 22)}px)`)
 
 const quickFacts = [
   { icon: 'bi-motorcycle', labelKey: 'home.quickFacts.availableMotorbikes' },
@@ -258,50 +357,50 @@ const whyChooseUs = [
   { icon: 'bi-building', titleKey: 'home.whyChooseUs.hotelDelivery' }
 ]
 
+const journeyStops = [
+  'home.journey.siemReap',
+  'home.journey.angkorWat',
+  'home.journey.bayon',
+  'home.journey.taProhm',
+  'home.journey.countryside'
+]
+
 useHead({ title: settings.value?.businessName ? `${settings.value.businessName} — Motorbike Rental in Cambodia` : 'RideNow — Motorbike Rental in Cambodia' })
 </script>
 
 <style scoped>
 .hero {
-  min-height: 100vh;
+  min-height: 92vh;
   display: flex;
   align-items: stretch;
+  background-color: var(--color-forest);
 }
 .min-vh-hero {
-  min-height: 70vh;
+  min-height: 74vh;
 }
-.hero__bg {
+.hero__blob {
   position: absolute;
-  inset: 0;
-  background-size: cover;
-  background-position: center;
-  transform: scale(1.02);
-}
-.hero__bg--pan {
-  animation: heroPan 18s ease-in-out infinite alternate;
-}
-@keyframes heroPan {
-  from {
-    transform: scale(1.06) translate(0, 0);
-  }
-  to {
-    transform: scale(1.14) translate(-1.5%, -1%);
-  }
-}
-.hero__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(38, 30, 20, 0.35) 0%, rgba(33, 26, 18, 0.55) 55%, rgba(24, 19, 13, 0.82) 100%);
-}
-.hero__glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(60% 50% at 30% 20%, rgba(212, 175, 55, 0.22), transparent 70%);
-  z-index: 1;
+  border-radius: 50%;
+  background-color: var(--color-gold, #d4af37);
+  filter: blur(90px);
+  opacity: 0.16;
   pointer-events: none;
 }
+.hero__blob--a {
+  width: 380px;
+  height: 380px;
+  top: -80px;
+  left: -100px;
+}
+.hero__blob--b {
+  width: 320px;
+  height: 320px;
+  bottom: -100px;
+  right: 5%;
+  opacity: 0.1;
+}
 .hero__title {
-  font-size: clamp(2.1rem, 6vw, 4rem);
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
   line-height: 1.08;
 }
 .text-white-75 {
@@ -309,6 +408,78 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
 }
 .text-gold-light {
   color: var(--color-gold, #d4af37);
+}
+
+/* ── Hero visual composition ── */
+.hero__visual {
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.hero__frame {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid rgba(212, 175, 55, 0.55);
+  box-shadow: 0 30px 60px rgba(15, 20, 16, 0.45);
+  will-change: transform;
+}
+.hero__photo {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.hero__route {
+  position: absolute;
+  width: 96px;
+  height: 78px;
+  top: -30px;
+  left: -34px;
+  color: var(--color-gold, #d4af37);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.hero__pin {
+  position: absolute;
+  top: 14px;
+  right: -14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--color-forest);
+  border: 2px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  font-size: 1.05rem;
+}
+.hero__badge {
+  position: absolute;
+  left: 1.25rem;
+  bottom: -1.1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem 0.55rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-cream, #f7f2e8);
+  box-shadow: 0 12px 26px rgba(15, 20, 16, 0.28);
+}
+.hero__badge-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-forest);
+  color: var(--color-gold, #d4af37);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+}
+.hero__badge-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--color-forest);
+  white-space: nowrap;
 }
 .hero__scroll-cue {
   position: absolute;
@@ -433,6 +604,11 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
     max-width: 100%;
     height: 200px;
   }
+}
+
+/* ── Find Your Ride ── */
+.find-ride__subtitle {
+  max-width: 34rem;
 }
 
 /* ── Shops slider ── */
@@ -580,6 +756,112 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   transform: translateY(-4px);
 }
 
+/* ── Your Ride. Your Route. journey ── */
+.journey {
+  padding: 5.5rem 0;
+}
+.journey__subtitle {
+  max-width: 34rem;
+}
+svg.journey__bg-motif {
+  position: absolute;
+  width: 220px;
+  height: auto;
+  color: var(--color-gold, #d4af37);
+  opacity: 0.06;
+  pointer-events: none;
+}
+.journey__bg-motif--a {
+  top: 6%;
+  left: -40px;
+  transform: rotate(-8deg);
+}
+.journey__bg-motif--b {
+  bottom: 4%;
+  right: -30px;
+  transform: scaleX(-1) rotate(-6deg);
+}
+.journey__stepper {
+  position: relative;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.journey__stepper::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  bottom: 22px;
+  width: 2px;
+  background: rgba(212, 175, 55, 0.28);
+}
+.journey__stepper::after {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  width: 2px;
+  height: 0;
+  background: var(--color-gold, #d4af37);
+  transition: height 1.5s ease;
+}
+.journey__stepper.is-visible::after {
+  height: calc(100% - 44px);
+}
+.journey__stop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 0;
+}
+.journey__dot {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-forest);
+  border: 2px solid var(--color-gold, #d4af37);
+  color: var(--color-gold, #d4af37);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+.journey__label {
+  font-weight: 600;
+  opacity: 0.92;
+}
+.journey__marker {
+  position: absolute;
+  left: 22px;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--color-gold, #d4af37);
+  color: var(--color-forest);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  opacity: 0;
+}
+.journey__stepper.is-visible .journey__marker {
+  opacity: 1;
+  animation: journeyMarker 1.6s ease-in-out 0.3s 1 both;
+}
+@keyframes journeyMarker {
+  0% {
+    top: 22px;
+  }
+  100% {
+    top: calc(100% - 22px);
+  }
+}
+
 /* ── FAQ cards ── */
 .faq-card {
   transition:
@@ -617,20 +899,41 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
 .cta__silhouette--bottom {
   bottom: 0;
 }
+svg.cta__motif {
+  position: absolute;
+  width: 160px;
+  height: auto;
+  bottom: 14%;
+  left: -180px;
+  color: var(--color-gold, #d4af37);
+  opacity: 0.14;
+  transition: transform 1.4s ease;
+}
+.cta__motif.is-visible {
+  transform: translateX(340px);
+}
 
 /* ── Responsive tuning ── */
 @media (max-width: 767.98px) {
   .min-vh-hero {
-    min-height: 62vh;
+    min-height: 0;
   }
   .hero {
-    min-height: 88vh;
+    min-height: 0;
+    padding: 2.5rem 0 3.5rem;
+  }
+  .hero__visual {
+    max-width: 320px;
+    margin-top: 2.5rem;
   }
   .cta {
     padding: 3rem 0;
   }
   .section {
     padding: 3rem 0;
+  }
+  .journey {
+    padding: 3.5rem 0;
   }
 }
 @media (min-width: 768px) and (max-width: 1199.98px) {
@@ -639,13 +942,18 @@ useHead({ title: settings.value?.businessName ? `${settings.value.businessName} 
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hero__bg--pan,
   .hero__scroll-cue span,
   .hero-fade-in,
   .hero-fade-in-1,
   .hero-fade-in-2,
   .hero-fade-in-3 {
     animation: none !important;
+  }
+  .hero__frame,
+  .hero__route,
+  .hero__pin,
+  .hero__badge {
+    transform: none !important;
   }
 }
 </style>

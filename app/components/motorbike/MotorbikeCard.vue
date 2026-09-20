@@ -16,7 +16,10 @@
       <span v-if="bike.isNewBike" class="bike-card__new">{{ t('motorbikeCard.new') }}</span>
     </NuxtLink>
     <div class="card-body d-flex flex-column">
-      <p class="eyebrow mb-1">{{ bike.brand }}</p>
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+        <p class="eyebrow mb-0">{{ bike.brand }}</p>
+        <span v-if="bike.categoryName" class="bike-card__category">{{ bike.categoryName }}</span>
+      </div>
       <h3 class="h5 font-display mb-1">{{ bike.name }}</h3>
       <NuxtLink
         v-if="bike.shopName"
@@ -58,6 +61,7 @@ defineProps<{
     image?: string | null
     shopName?: string | null
     shopSlug?: string | null
+    categoryName?: string | null
   }
 }>()
 
@@ -75,11 +79,31 @@ function formatTransmission(t: string) {
 .bike-card__cta {
   white-space: nowrap;
   flex-shrink: 0;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+.bike-card:hover .bike-card__cta {
+  background-color: var(--color-amber-deep, var(--color-gold-deep));
+  border-color: var(--color-amber-deep, var(--color-gold-deep));
+  color: var(--text-on-dark, #fff);
 }
 .bike-card__shop {
   transition: color 0.2s ease;
 }
 .bike-card__shop:hover {
   color: var(--color-amber-deep, var(--color-gold-deep));
+}
+.bike-card__category {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-gray-light);
+  color: var(--color-forest, var(--color-charcoal));
+  white-space: nowrap;
 }
 </style>

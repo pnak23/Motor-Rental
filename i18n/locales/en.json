@@ -64,14 +64,32 @@
     "readyWhenYouAre": "Ready When You Are",
     "readyToExplore": "Ready to Explore Siem Reap?",
     "adventureStarts": "Your adventure starts here.",
-    "browseMotorbikes": "Browse Motorbikes"
+    "browseMotorbikes": "Browse Motorbikes",
+    "findRide": {
+      "eyebrow": "Our Fleet",
+      "title": "Find Your Ride",
+      "subtitle": "From easy city scooters to adventure-ready bikes, choose the ride that fits your journey.",
+      "all": "All",
+      "viewAll": "View All Motorbikes"
+    },
+    "journey": {
+      "eyebrow": "Plan Your Route",
+      "title": "Your Ride. Your Route.",
+      "subtitle": "A glimpse of where the road can take you — plan your own stops along the way.",
+      "siemReap": "Siem Reap",
+      "angkorWat": "Angkor Wat",
+      "bayon": "Bayon Temple",
+      "taProhm": "Ta Prohm",
+      "countryside": "Countryside Roads"
+    }
   },
   "about": {
     "ourStory": "Our Story",
-    "titleDefault": "About Us",
+    "titleDefault": "See Siem Reap Your Way",
     "ourMission": "Our Mission",
     "whyChooseUs": "Why Choose Us",
-    "browseOurMotorbikes": "Browse Our Motorbikes"
+    "browseOurMotorbikes": "Browse Our Motorbikes",
+    "freedomLead": "Renting a motorbike means you're never tied to a tour bus schedule — you choose when to stop, which back road to follow, and how long to stay."
   },
   "contact": {
     "getInTouch": "Get in Touch",
@@ -208,10 +226,15 @@
     "gasoline": "Gasoline",
     "keyType": "Key Type",
     "smartKey": "Smart Key",
-    "normalKey": "Normal Key"
+    "normalKey": "Normal Key",
+    "seatsCount": "{count} Seats",
+    "availableNow": "Available now",
+    "reserveThisBike": "Reserve This Bike"
   },
   "bookingForm": {
     "rentThisMotorbike": "Rent This Motorbike",
+    "priceSummary": "Price Summary",
+    "rentalLabel": "Rental",
     "pickupDate": "Pickup date",
     "pickupTime": "Pickup time",
     "returnDate": "Return date",

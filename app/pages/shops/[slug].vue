@@ -51,11 +51,11 @@
         <p class="text-muted">{{ t('motorbikes.noMatch') }}</p>
       </div>
 
-      <div v-else class="row g-4">
+      <TransitionGroup v-else tag="div" name="filter-fade" class="row g-4">
         <div v-for="(bike, i) in items" :key="bike.id" class="col-md-6 col-xl-4" v-reveal :class="`reveal-delay-${i % 4}`">
           <MotorbikeCard :bike="bike" />
         </div>
-      </div>
+      </TransitionGroup>
 
       <div class="d-flex justify-content-center mt-5">
         <Pagination :page="page" :total-pages="totalPages" @update:page="page = $event" />
